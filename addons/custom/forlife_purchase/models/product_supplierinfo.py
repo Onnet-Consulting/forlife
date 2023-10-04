@@ -63,3 +63,4 @@ class SupplierInfo(models.Model):
                 if fields.index('product_uom') and not mouse[fields.index('product_uom')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở dòng - {}".format(line_number)))
                 line_number += 1
+        return super().load(fields, data)
