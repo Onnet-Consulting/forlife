@@ -74,6 +74,9 @@
                                     <field name="quantity_inventory_store" string="Tồn"/>
                                     <field name="defective_type_id" required="1" attrs="{'readonly': [('state', 'not in', ('new'))]}"/>
                                     <field name="detail_defective" attrs="{'readonly': [('state', 'not in', ('new'))]}"/>
+                                    <field name="image_1920" widget="image" options="{'image_preview': 'image_128'}"
+                                           attrs="{'readonly': [('state', 'not in', ('new', 'waiting approve'))]}"/>
+                                    <button name="view_image" type="object" icon="fa-image"/>
                                     <field name="state" readonly="1" force_save="True"/>
                                     <field name="transfer_state" attrs="{'column_invisible': [('parent.show_transfer_state_col', '=', False)]}"/>
                                     <field name="price"/>

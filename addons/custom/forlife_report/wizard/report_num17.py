@@ -7,7 +7,7 @@ from odoo.exceptions import ValidationError
 TITLES = [
     'STT', 'Phân loại', 'Mã chi nhánh', 'Chi nhánh', 'Ngày', 'Số CT', 'Mã KH', 'SĐT', 'Tên KH', 'Mô tả', 'Mã thẻ GG', 'Voucher', 'Số lượng',
     'Cộng', 'Giảm giá', 'Tổng cộng', 'Giảm trên HĐ', 'Cộng lại', 'Tiền đặt cọc', 'Tiền trả lại', 'Tiền tích lũy', 'Tích lũy HĐ',
-    'Trừ tích lũy', 'Tiền thẻ GG', 'Phải thu', 'DT cửa hàng', 'Tiền mặt', 'Tiền thẻ', 'Tiền VNPay', 'Tiền NextPay', 'Tiền voucher',
+    'Trừ tích lũy', 'Tiền thẻ GG', 'Phải thu', 'DT cửa hàng', 'Tiền mặt', 'Vietinbank', 'Tiền VNPay', 'Tiền NextPay', 'Tiền voucher',
     'Người lập', 'Ngày lập', 'Người sửa', 'Ngày sửa', 'Số CT gốc', 'Ngày CT gốc', 'Nhân viên', 'Nhóm khách', 'Kênh bán',
 ]
 
@@ -158,7 +158,7 @@ with po_datas as (select po.id                  as po_id,
                                sum(tien_giam_gia)::float                as tien_giam_gia,
                                sum(tien_the_gg)::float                  as tien_the_gg,
                                sum(tru_tich_luy)::float                 as tru_tich_luy,
-                               sum(tien_sp_voucher - tien_giam_gia)     as tien_sp_voucher
+                               sum(tien_sp_voucher)::float              as tien_sp_voucher
                         from chi_tiet_mua
                         group by po_id),
      so_luong_x_tl as (select po_id                                    as po_id,
@@ -167,7 +167,7 @@ with po_datas as (select po.id                  as po_id,
                               sum(tien_giam_gia)::float                as tien_giam_gia,
                               sum(tien_the_gg)::float                  as tien_the_gg,
                               sum(tru_tich_luy)::float                 as tru_tich_luy,
-                              sum(tien_sp_voucher - tien_giam_gia)     as tien_sp_voucher
+                              sum(tien_sp_voucher)::float              as tien_sp_voucher
                        from chi_tiet_tl
                        group by po_id),
      data_final_mua as (
@@ -225,7 +225,7 @@ with po_datas as (select po.id                  as po_id,
                                                and journal_id in (select id
                                                                   from account_journal
                                                                   where type = 'bank'
-                                                                  and code = 'BA01'))), 0)   as tien_the,
+                                                                  and code = 'VTI01'))), 0)   as tien_the,
        coalesce((select sum(amount)
                  from pos_payment
                  where pos_order_id = po.id

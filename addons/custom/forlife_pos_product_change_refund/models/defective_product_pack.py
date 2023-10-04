@@ -144,8 +144,8 @@ class ProductDefectivePack(models.Model):
                 line_data.append((0, 0, {
                     'product_id': line.product_id.id,
                     'uom_id': line.uom_id.id,
-                    'qty_plan': line.quantity_defective_approved,
-                    'qty_out': line.quantity_defective_approved,
+                    'qty_plan': line.quantity_require,
+                    'qty_out': line.quantity_require,
                     'qty_in': 0,
                     'stock_request_id': False,
                     'defective_product_id': line.id,
@@ -157,12 +157,14 @@ class ProductDefectivePack(models.Model):
                 'department_id': self.department_id.id or False,
                 'document_type': 'same_branch',
                 'stock_request_id': False,
-                'type': 'excess',
                 'is_diff_transfer': False,
                 'location_id': location_id.id,
+                'location_name': location_id.display_name,
                 'location_dest_id': location_dest_id.id,
+                'location_dest_name': location_dest_id.display_name,
                 'state': 'approved',
                 'stock_transfer_line': line_data,
                 'defective_product_ids': [(6, False, [line.id for line in grouped_lines])],
                 'company_id': company_id.id
             })
+        transfers.action_out_approve()

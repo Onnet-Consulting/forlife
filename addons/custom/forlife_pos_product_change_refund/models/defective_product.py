@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 
+
 class ProductDefective(models.Model):
     _name = 'product.defective'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
@@ -54,6 +55,7 @@ class ProductDefective(models.Model):
     from_location_id = fields.Many2one(
         'stock.location', string='From Location')
     to_location_id = fields.Many2one('stock.location', string='To Location')
+    image_1920 = fields.Image("Ảnh",  max_width=1920, max_height=1920)
 
     @api.depends('transfer_line_ids', 'is_transferred')
     def _compute_transfer_state(self):
@@ -251,6 +253,7 @@ class ProductDefective(models.Model):
             values['money_reduce'] = 0
             values['percent_reduce'] = 0
             values['active'] = True
+            values['is_transferred'] = False
         return data_list
 
     def view_request(self):
@@ -261,3 +264,18 @@ class ProductDefective(models.Model):
         action['views'] = form_view
         action['domain'] = [('id', '=', self.id)]
         return action
+
+    def view_image(self):
+        # kanban_view = self.env.ref('forlife_pos_product_change_refund.product_defective_view_kanban_preview')
+        form_view = self.env.ref('forlife_pos_product_change_refund.product_defective_view_form_preview')
+        return {
+            'name': _('Detailed Defective Products'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'kanban',
+            'res_model': 'product.defective',
+            'views': [(form_view.id, 'form')],
+            'view_id': form_view.id,
+            'target': 'new',
+            'res_id': self.id,
+            'domain': [('id', '=', self.id)],
+        }
