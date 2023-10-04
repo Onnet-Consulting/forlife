@@ -40,6 +40,7 @@
                                     <field name="uom_id"/>
                                     <field name="defective_type_id" required="1"/>
                                     <field name="detail_defective"/>
+                                    <field name="image_1920"/>
                                 </tree>
                             </field>
                         </page>
