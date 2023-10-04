@@ -275,7 +275,7 @@ class TransferRequestLine(models.Model):
 
     @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_out', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_transfer(self):
-        for item in self:
+        for item in self.filtered(lambda x: x.stock_transfer_line_ids):
             data_str_line = item.get_value_str_line(['out_approve', 'in_approve', 'done'])
             quantity_reality_transfer = 0
             for transfer_line_id in data_str_line:
@@ -283,16 +283,19 @@ class TransferRequestLine(models.Model):
                     continue
                 else:
                     quantity_reality_transfer += transfer_line_id.qty_out
-            item.quantity_reality_transfer = quantity_reality_transfer
+            if item.quantity_reality_transfer != quantity_reality_transfer:
+                item.quantity_reality_transfer = quantity_reality_transfer
 
     @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_in', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_receive(self):
-        for item in self:
+        for item in self.filtered(lambda x: x.stock_transfer_line_ids):
             data_str_line = item.get_value_str_line(['in_approve', 'done'])
             if data_str_line:
-                item.quantity_reality_receive = sum(data_str_line.mapped('qty_in'))
+                quantity_reality_receive = sum(data_str_line.mapped('qty_in'))
             else:
-                item.quantity_reality_receive = 0
+                quantity_reality_receive = 0
+            if item.quantity_reality_receive != quantity_reality_receive:
+                item.quantity_reality_receive = quantity_reality_receive
 
     def get_value_str_line(self, states):
         return self.env['stock.transfer.line'].search([('parent_state', 'in', states), ('product_str_id', '=', self.id)])

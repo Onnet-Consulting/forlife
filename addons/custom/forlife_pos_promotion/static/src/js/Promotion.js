@@ -696,6 +696,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         line.selectedReward = options.selectedReward || false;
         line.is_not_create = options.is_not_create || false;
         line.pricelist_item = options.pricelist_item || false;
+        line.employee_id = options.employee_id || false;
         // Áp dụng CT làm giá tự động TH add_product (line chưa tồn tại trong order.orderlines)
         line.matched_finished_program = options.matched_finished_program || false;
         if (!line.order.orderlines.find(l => l.cid == line.cid)) {
@@ -1125,6 +1126,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             price: price_unit == undefined ? line.price : price_unit,
             isNew: true,
             is_new_line: line.is_new_line,
+            employee_id: line.employee_id,
             pricelist_item: line.pricelist_item,
             selectedReward: line.selectedReward,
             promotion_usage_ids: [...line.promotion_usage_ids],
@@ -2737,6 +2739,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             quantity: arg['quantity'],
             is_reward_line: arg.is_reward_line,
             is_new_line: arg.is_new_line || false,
+            employee_id: arg.employee_id || false,
             pricelist_item: arg.pricelist_item,
             selectedReward: arg.selectedReward,
             merge: false,

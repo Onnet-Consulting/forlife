@@ -40,7 +40,7 @@
                                     <field name="uom_id"/>
                                     <field name="defective_type_id" required="1"/>
                                     <field name="detail_defective"/>
-                                    <field name="image_1920"/>
+                                    <field name="image_1920" widget="image" options="{'image_preview': 'image_128'}"/>
                                 </tree>
                             </field>
                         </page>

@@ -261,8 +261,9 @@ class ImportSalaryRecord(models.TransientModel):
     def map_partner_data(self, data):
         if not data:
             return {}, {}
-        partner = self.env['res.partner'].search(['&', ('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_4').id),
-                                                  '|', ('ref', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
+        partner = self.env['res.partner'].with_context(active_test=False).search(['&', ('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_4').id),
+                                                                                  '|', ('ref', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
+        partner.filtered(lambda p: not p.active).update({'active': True})
         error_by_code = {}
         partner_by_code = {}
         partner_data_by_code = {pn.ref: (pn.name, pn.id) for pn in partner}

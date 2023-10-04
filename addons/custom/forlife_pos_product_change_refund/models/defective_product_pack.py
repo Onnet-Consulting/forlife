@@ -62,6 +62,12 @@ class ProductDefectivePack(models.Model):
         for record in self:
             record.show_create_transfer = any(line.is_transferred and not line.transfer_line_ids for line in record.line_ids)
 
+    def unlink(self):
+        for rec in self:
+            if rec.state != 'new' or any(line.state != 'new' for line in self.line_ids):
+                raise ValidationError(_(f"Bạn chỉ có thể xóa yêu cầu ở trạng thái Mới"))
+        return super(ProductDefectivePack, self).unlink()
+
     def action_send_requests(self):
         self._send_mail_approve(self.id)
         if not self.line_ids:

@@ -251,7 +251,7 @@ class InheritPosOrder(models.Model):
                     with_purchase_condition = not (
                          (p.reward_type == 'combo_percent' and p.combo_line_ids and p.disc_percent == 100 and not p.disc_max_amount)
                          or (p.reward_type == 'code_percent' and p.disc_percent == 100 and not p.disc_max_amount)
-                         or (p.reward_type == 'cart_discount_percent' and not p.order_amount_min and not p.product_count and p.disc_percent == 100 and not p.disc_max_amount and p.reward_product_ids)
+                         or (p.reward_type == 'cart_discount_percent' and not p.order_amount_min and not p.product_count and p.disc_percent == 100 and not p.disc_max_amount and p.discount_product_ids)
                          or (p.reward_type == 'cart_get_x_free' and not p.product_count and not p.order_amount_min and p.reward_product_ids)
                         )
         return is_reward_line, with_purchase_condition
