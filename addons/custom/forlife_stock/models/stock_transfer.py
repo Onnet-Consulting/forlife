@@ -255,6 +255,12 @@ class StockTransfer(models.Model):
                 'date_in_approve': fields.Datetime.now(),
                 'done_transfer_uid': self._uid,
             })
+        if self.stock_request_id:
+            self.update_quantity_reality_transfer_request()
+
+    def update_quantity_reality_transfer_request(self):
+        product_str_ids = self.stock_transfer_line.mapped('product_str_id')
+        product_str_ids.compute_quantity_reality_transfer()
 
     def _update_forlife_production(self):
         for line in self.stock_transfer_line:
@@ -371,6 +377,10 @@ class StockTransfer(models.Model):
             'done_transfer_uid': self._uid,
         })
         return self._action_in_approve_in_process()
+
+    def update_quantity_reality_receive_transfer_request(self):
+        product_str_ids = self.stock_transfer_line.mapped('product_str_id')
+        product_str_ids.compute_quantity_reality_receive()
 
     def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         for data_line in data:
@@ -523,6 +533,9 @@ class StockTransfer(models.Model):
                                                        type='excess') if diff_transfer_data_in else diff_transfer_in
         diff_transfer_out |= self._create_diff_transfer(diff_transfer_data_out, state='out_approve',
                                                         type='lack') if diff_transfer_data_out else diff_transfer_out
+
+        if self.stock_request_id:
+            self.update_quantity_reality_receive_transfer_request()
         if diff_transfer_in or diff_transfer_out:
             return {
                 'type': 'ir.actions.client',
