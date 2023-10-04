@@ -160,7 +160,7 @@ class ReportNum31(models.TransientModel):
         if self.request_id:
             query += f""" and pr.user_id = {self.request_id.id}"""
         if self.receive_id:
-            query += f""" and pr.receiver_id = {self.receive_id.id}"""
+            query += f""" and pr.x_receiver_id = {self.receive_id.id}"""
         if self.brand_id:
             query += f""" and p_cate.id_pc5 = {self.brand_id.id}"""
         if self.group_id:
