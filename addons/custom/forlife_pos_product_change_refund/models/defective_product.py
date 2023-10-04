@@ -43,7 +43,7 @@ class ProductDefective(models.Model):
     approval_date = fields.Datetime('Ngày duyệt', readonly=True)
     department_id = fields.Many2one('hr.department', 'Bộ phận', related='pack_id.department_id')
     pack_id = fields.Many2one('product.defective.pack', 'Defective Pack', ondelete='cascade')
-    selected = fields.Boolean('Selected', default=False)
+    selected = fields.Boolean('Selected', default=False, copy=False)
     is_transferred = fields.Boolean()
     transfer_state = fields.Selection([
         ('none', 'None'),
@@ -53,8 +53,8 @@ class ProductDefective(models.Model):
     transfer_line_ids = fields.One2many(
         'stock.transfer.line', 'defective_product_id')  # compute='_compute_transfer_line_ids')
     from_location_id = fields.Many2one(
-        'stock.location', string='From Location')
-    to_location_id = fields.Many2one('stock.location', string='To Location')
+        'stock.location', string='From Location', copy=False)
+    to_location_id = fields.Many2one('stock.location', string='To Location', copy=False)
     image_1920 = fields.Image("Ảnh",  max_width=1920, max_height=1920)
 
     @api.depends('transfer_line_ids', 'is_transferred')

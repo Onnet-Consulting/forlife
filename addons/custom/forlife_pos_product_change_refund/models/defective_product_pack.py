@@ -92,6 +92,7 @@ class ProductDefectivePack(models.Model):
         selected_lines = self.line_ids.filtered(lambda l: l.selected)
         if not selected_lines:
             raise UserError('Không có dòng nào được chọn để Từ chối !')
+        selected_lines.selected = False
         selected_lines.action_refuse()
 
     def action_approves(self):
@@ -101,6 +102,7 @@ class ProductDefectivePack(models.Model):
         selected_lines = self.line_ids.filtered(lambda l: l.selected)
         if not selected_lines:
             raise UserError('Không có dòng nào được chọn để Hủy !')
+        selected_lines.selected = False
         selected_lines.action_cancel()
 
     def open_scan(self):
