@@ -22,7 +22,7 @@ class ProductDefective(models.Model):
     percent_reduce = fields.Float('Phần trăm giảm (%)')
     total_reduce = fields.Monetary('Tổng giảm', compute='_compute_total_reduce', store=True)
     defective_type_id = fields.Many2one(
-        'defective.type', 'Loại lỗi', domain="[('department_id', 'in', [False, department_id])]")
+        'defective.type', 'Loại lỗi')
     detail_defective = fields.Char('Chi tiết lỗi')
     state = fields.Selection([
         ('new', 'New'),
@@ -56,6 +56,13 @@ class ProductDefective(models.Model):
         'stock.location', string='From Location', copy=False)
     to_location_id = fields.Many2one('stock.location', string='To Location', copy=False)
     image_1920 = fields.Image("Ảnh",  max_width=1920, max_height=1920)
+
+    @api.constrains('defective_type_id', 'pack_id')
+    def constrain_defective_type_id(self):
+        for record in self:
+            if len(record.pack_id.line_ids.mapped('defective_type_id.department_id.id')) > 1:
+                raise ValidationError(
+                    'Không được chọn loại lỗi thuộc bộ phận khác bộ phận đã khai báo trên cùng phiếu tổng hợp !')
 
     @api.depends('transfer_line_ids', 'is_transferred')
     def _compute_transfer_state(self):

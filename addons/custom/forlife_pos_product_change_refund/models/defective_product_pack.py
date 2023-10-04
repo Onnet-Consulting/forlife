@@ -18,7 +18,7 @@ class ProductDefectivePack(models.Model):
     brand_id = fields.Many2one('res.brand', string='Brand', store=True)
     store_id = fields.Many2one('store', 'Cửa hàng', required=True, domain="[('brand_id', '=', brand_id)]")
     user_id = fields.Many2one('res.users', 'Request User', default=lambda self: self.env.user.id)
-    department_id = fields.Many2one('hr.department', 'Bộ phận')
+    department_id = fields.Many2one('hr.department', 'Bộ phận', compute='_compute_department_id', store=False)
     note = fields.Text(tracking=True)
     line_ids = fields.One2many(
         'product.defective', 'pack_id', 'Defective Products', context={'active_test': False}, copy=True)
@@ -61,6 +61,11 @@ class ProductDefectivePack(models.Model):
     def _show_create_transfer(self):
         for record in self:
             record.show_create_transfer = any(line.is_transferred and not line.transfer_line_ids for line in record.line_ids)
+
+    @api.depends('line_ids', 'line_ids.defective_type_id')
+    def _compute_department_id(self):
+        for record in self:
+            record.department_id = record.line_ids and record.line_ids[0].defective_type_id.department_id or False
 
     def unlink(self):
         for rec in self:
