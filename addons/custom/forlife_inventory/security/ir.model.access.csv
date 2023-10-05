@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_stock_location_mapping,access_stock_location_mapping,model_stock_location_mapping,base.group_user,1,1,1,1
+access_stock.location.intercompany,access_stock.location.intercompany,model_stock_location_intercompany,base.group_user,1,1,1,1
