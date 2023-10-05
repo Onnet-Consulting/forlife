@@ -51,8 +51,10 @@ class SaleOrderNhanh(models.Model):
         ('returned', 'Đã chuyển hoàn')
     ], 'Nhanh status')
     delivery_carrier_id = fields.Many2one('delivery.carrier', 'Delivery Carrier')
-    x_voucher = fields.Float(string='Giá trị voucher (Nhanh)')
+    x_voucher = fields.Float(string='Số tiền đã nhận (Nhanh)')
     x_code_voucher = fields.Char(string="Mã voucher/code (Nhanh)")
+    nhanh_voucher_amount = fields.Float('Giá trị voucher')
+    nhanh_transfer_amount = fields.Float('Số tiền chuyển khoản', tracking=True)
     x_is_change = fields.Boolean(string="Đơn đổi hàng")
     nhanh_return_id = fields.Char(string='Id đơn trả Nhanh.vn', copy=False)
     x_transfer_code = fields.Char(string='Mã vận đơn', copy=False)
@@ -137,11 +139,13 @@ class SaleOrderNhanh(models.Model):
         )
         order_data["order_line"] = order_line
         
-        x_voucher, x_code_voucher = n_client.order_paid_online(order)
+        x_voucher, x_code_voucher, nhanh_voucher_amount, nhanh_transfer_amount = n_client.order_paid_online(order)
 
         order_data.update({
             "x_voucher": x_voucher,
-            "x_code_voucher": x_code_voucher
+            "x_code_voucher": x_code_voucher,
+            "nhanh_voucher_amount": nhanh_voucher_amount,
+            "nhanh_transfer_amount": nhanh_transfer_amount
         })
 
         return_changed = n_client.order_return_and_changed(order)
