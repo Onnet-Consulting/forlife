@@ -26,16 +26,15 @@ class CheckPromotion(models.TransientModel):
         return super(CheckPromotion, self).default_get(fields_list)
 
     def action_ok(self):
-
+        active_id = self._context and self._context.get('active_id')
+        sale_id = self.env['sale.order'].search([('id', '=', active_id)], limit=1)
         # Thay đổi giá trị Voucher
         if self.voucher_name_change:
             voucher_id = self.env['voucher.voucher'].search([('name', '=', self.voucher_name_change)])
             if not voucher_id:
                 raise ValidationError('Voucher %s không tồn tại trong hệ thống, vui lòng kiểm tra lại' % self.voucher_name_change)
-            if voucher_id.state not in ['sold', 'valid']:
-                raise ValidationError('Trạng thái của Voucher phải là "Đã bán" hoặc "Còn giá trị"')
-            active_id = self._context and self._context.get('active_id')
-            sale_id = self.env['sale.order'].search([('id', '=', active_id)], limit=1)
+            if not (voucher_id.state in ['sold', 'valid'] or sale_id and voucher_id.state == 'off value' and voucher_id.nhanh_id == sale_id.nhanh_id):
+                raise ValidationError('Trạng thái của Voucher phải là "Đã bán", "Còn giá trị" hoặc "Hết giá trị" có gán Nhanh ID')
             if sale_id:
                 sale_id.message_post(body='Voucher thay đổi: %s -> %s' % (sale_id.x_code_voucher, self.voucher_name_change))
                 sale_id.x_code_voucher = self.voucher_name_change
