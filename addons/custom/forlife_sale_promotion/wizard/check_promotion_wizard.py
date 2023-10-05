@@ -48,8 +48,9 @@ class CheckPromotion(models.TransientModel):
                 voucher_id = self.env['voucher.voucher'].search([('name', '=', sale_id.x_code_voucher)])
                 if voucher_id.price_residual < self.voucher_value_change:
                     raise ValidationError(_("Giá trị voucher (Nhanh) không được vượt quá %s" % "{:0,.0f}".format(voucher_id.price_residual)))
-                sale_id.message_post(body='Voucher thay đổi giá trị: %s -> %s' % ("{:0,.0f}".format(sale_id.x_voucher), "{:0,.0f}".format(self.voucher_value_change)))
-                sale_id.x_voucher = self.voucher_value_change
+                sale_id.message_post(body='Voucher thay đổi giá trị: %s -> %s' % ("{:0,.0f}".format(sale_id.nhanh_voucher_amount), "{:0,.0f}".format(self.voucher_value_change)))
+                sale_id.nhanh_voucher_amount = self.voucher_value_change
+                sale_id.nhanh_transfer_amount = sale_id.x_voucher - self.voucher_value_change
 
         else:
             pass

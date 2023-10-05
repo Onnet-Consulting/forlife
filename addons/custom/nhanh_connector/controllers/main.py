@@ -181,11 +181,13 @@ class MainController(http.Controller):
                 )
                 order_data["order_line"] = order_line
              
-                x_voucher, x_code_voucher = n_client.order_paid_online(order)
+                x_voucher, x_code_voucher, nhanh_voucher_amount, nhanh_transfer_amount = n_client.order_paid_online(order)
 
                 order_data.update({
                     "x_voucher": x_voucher,
-                    "x_code_voucher": x_code_voucher
+                    "x_code_voucher": x_code_voucher,
+                    "nhanh_voucher_amount": nhanh_voucher_amount,
+                    "nhanh_transfer_amount": nhanh_transfer_amount
                 })
 
                 return_changed = n_client.order_return_and_changed(order)
