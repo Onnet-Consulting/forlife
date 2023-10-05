@@ -372,14 +372,13 @@ class SaleOrder(models.Model):
                                 'promotion_used': ' , '.join(list_promotion_used)
                             })
                             return action
-
-                        if voucher_id.state not in ['sold', 'valid', 'off value']:
+                        if not (voucher_id.state in ['sold', 'valid'] or voucher_id.state == 'off value' and voucher_id.nhanh_id == rec.nhanh_id):
                             rec.write({
                                 "state": "check_promotion"
                             })
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {
-                                'default_message': _('Trạng thái của Voucher %s phải là "Đã bán", "Còn giá trị", "Hết giá trị"' % rec.x_code_voucher),
+                                'default_message': _('Trạng thái của Voucher %s phải là "Đã bán", "Còn giá trị" hoặc "Hết giá trị" có gán Nhanh ID' % rec.x_code_voucher),
                                 'default_voucher_name': rec.x_code_voucher
                             }
                             rec.write({
@@ -387,14 +386,14 @@ class SaleOrder(models.Model):
                             })
                             return action
 
-                        if voucher_id and voucher_id.price_residual < rec.x_voucher:
+                        if voucher_id and voucher_id.price_residual < rec.nhanh_voucher_amount:
                             rec.write({
                                 "state": "check_promotion"
                             })
                             action = self.env['ir.actions.actions'].sudo()._for_xml_id('forlife_sale_promotion.action_check_promotion_wizard')
                             action['context'] = {
                                 'default_message': _("Giá trị voucher (Nhanh) không được vượt quá %s" % "{:0,.0f}".format(voucher_id.price_residual)),
-                                'default_voucher_value': rec.x_voucher
+                                'default_voucher_value': rec.nhanh_voucher_amount
                             }
                             rec.write({
                                 'promotion_used': ' , '.join(list_promotion_used)
