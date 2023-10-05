@@ -126,8 +126,11 @@ order by num
         sheet = workbook.add_worksheet('Báo cáo tình hình thực hiện đơn hàng mua')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo tình hình thực hiện đơn hàng mua', formats.get('header_format'))
-        sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
-        sheet.write(2, 2, 'Số YC: %s' % (self.po_number or ''), formats.get('italic_format'))
+        if self.from_date and self.to_date:
+            sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+            sheet.write(2, 2, 'Số YC: %s' % (self.po_number or ''), formats.get('italic_format'))
+        else:
+            sheet.write(2, 0, 'Số YC: %s' % (self.po_number or ''), formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(4, idx, title, formats.get('title_format'))
         sheet.set_column(0, len(TITLES), 20)
