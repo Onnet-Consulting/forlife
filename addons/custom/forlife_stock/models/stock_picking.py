@@ -58,7 +58,7 @@ class StockPicking(models.Model):
                 rec.check_inter_company = False
 
     def prepare_po_values(self):
-        location_mapping = self.env['stock.location.mapping'].search([
+        location_mapping = self.env['stock.location.intercompany'].search([
             ('location_id', '=', self.location_dest_id.id),
             ('location_id.virtual_location_inter_company', '=', True)
         ], limit=1)
@@ -116,7 +116,7 @@ class StockPicking(models.Model):
         return po
 
     def create_order_inter_company(self):
-        location_mapping = self.env['stock.location.mapping'].search([
+        location_mapping = self.env['stock.location.intercompany'].search([
             ('location_id', '=', self.location_dest_id.id),
             ('location_id.virtual_location_inter_company', '=', True)
         ], limit=1)

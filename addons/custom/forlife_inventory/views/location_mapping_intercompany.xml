@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="stock_location_mapping_inter_company_tree_view">
+            <field name="name">stock.location.intercompany.tree.view</field>
+            <field name="model">stock.location.intercompany</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="location_id"/>
+                    <field name="location_map_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="stock_location_mapping_form_intercompany_view">
+            <field name="name">stock.location.intercompany.form.view</field>
+            <field name="model">stock.location.intercompany</field>
+            <field name="arch" type="xml">
+                <form string="Địa điểm cấu hình">
+                    <sheet>
+                        <group>
+                            <field name="inter_company"/>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="company_location_id"/>
+                                <field name="location_id" domain="[('virtual_location_inter_company', '=', inter_company and True or False)]"/>
+                            </group>
+                            <group>
+                                <field name="company_location_map_id"/>
+                                <field name="location_map_id" domain="[('virtual_location_inter_company', '=', inter_company and True or False)]"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="stock_location_mapping_search_view_intercompany">
+            <field name="name">stock.location.intercompany.search</field>
+            <field name="model">stock.location.intercompany</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="location_id"/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="forlife_stock_location_mapping_action_intercompany">
+            <field name="name">Location Mapping</field>
+            <field name="res_model">stock.location.intercompany</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new record
+              </p>
+            </field>
+        </record>
+        <menuitem name="Cấu hình kho liên công ty" id="stock_location_mapping_intercompany_menu_item" action="forlife_stock_location_mapping_action_intercompany" parent="stock.menu_stock_config_settings"/>
+    </data>
+</odoo>
