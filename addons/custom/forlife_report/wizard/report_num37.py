@@ -18,9 +18,9 @@ TITLES = [
     'Chính sách kiểm soát',
     'Thương hiệu',
     'Danh mục sản phẩm',
-    'Nhóm hàng 1',
-    'Dòng hàng 1',
-    'Kết cấu 1',
+    'Nhóm hàng',
+    'Dòng hàng',
+    'Kết cấu',
     'Đối tượng',
     'Nhãn hiệu',
     'Đơn vị tính',
@@ -89,6 +89,8 @@ class ReportNum37(models.TransientModel):
     _description = 'Báo cáo thông tin sản phẩm'
 
     product_id = fields.Many2many('product.product', string='Sản phẩm')
+    category_code = fields.Char(related='category_type_id.code')
+    categ_id = fields.Many2one('product.category', string='Danh mục sản phẩm', domain="[('parent_id', '=', False), ('category_type_id', '=', category_type_id)]")
     brand_id = fields.Many2one('product.category', string='Thương hiệu', domain="[('parent_id', '=', False), ('category_type_id', '=', category_type_id)]")
     group_id = fields.Many2one('product.category', string='Nhóm hàng',
                                domain="[('parent_id', '=', brand_id), ('parent_id', '!=', False)]")
@@ -100,9 +102,32 @@ class ReportNum37(models.TransientModel):
     def _get_query(self, allowed_company):
         self.ensure_one()
         attr_value = self.env['res.utility'].get_attribute_code_config()
+
         query = f"""
-            select
+            WITH RECURSIVE category_tree AS (
+                SELECT
+                    pc.id AS pc_id,
+                    pc.name AS pc_name,
+                    pc.parent_id
+                FROM
+                    product_category pc
+                WHERE
+                    pc.parent_id IS NULL
+                
+                UNION ALL
+                
+                SELECT
+                    pc.id AS pc_id,
+                    pc.name AS pc_name,
+                    pc.parent_id
+                FROM
+                    product_category pc
+                INNER JOIN category_tree ct ON pc.parent_id = ct.pc_id
+                ),
+                product_info as (
+                select
                 pp.id as id,
+                pt.categ_id as categ_id,
                 pp.barcode as barcode,
                 pt.sku_code as sku_code,
                 pt.makithuat as makithuat,
@@ -132,13 +157,7 @@ class ReportNum37(models.TransientModel):
                 case
                     when pt.purchase_method = 'purchase' then 'Theo số lượng mua'
                     when pt.purchase_method = 'receive' then 'Theo số lượng nhận'
-                    else ''
-                end as cs_kiem_soat,
-                pc.pc4_name as thuong_hieu,
-                pc.pc_name as dm_sanpham,
-                pc.pc1_name as ketcau,
-                pc.pc2_name as donghang,
-                pc.pc3_name as nhomhang,
+                    else '' end,
                 coalesce (uu.name ->> 'vi_VN',
                 uu.name ->> 'en_US') as donvi,
                 coalesce (uu2.name ->> 'vi_VN',
@@ -160,9 +179,9 @@ class ReportNum37(models.TransientModel):
                 pt.number_days_change_refund as number_days_change_refund,
                 pt.material_composition as material_composition,
                 pt.user_manual as user_manual,
-                case when pt.sale_ok is true then 'x' else '' end as cotheban,
-                case when pt.purchase_ok is true then 'x' else '' end as cothemua,
-                case when pt.pos_ok is true then 'x' else '' end as khadung_pos,
+                case when pt.sale_ok is true then 'TRUE' else '' end as cotheban,
+                case when pt.purchase_ok is true then 'TRUE' else '' end as cothemua,
+                case when pt.pos_ok is true then 'TRUE' else '' end as khadung_pos,
                 pt.list_price as price,
                 attr.attrs->'{attr_value.get('doi_tuong')}' ->> 0 as doi_tuong,
                 attr.attrs->'{attr_value.get('nhan_hieu')}' ->> 0 as nhan_hieu,
@@ -202,86 +221,83 @@ class ReportNum37(models.TransientModel):
                 attr.attrs->'{attr_value.get('mau_cu')}' ->> 0 as mau_cu,
                 attr.attrs->'{attr_value.get('kenh_ban_hang')}' ->> 0 as kenh_ban_hang,
                 attr.attrs->'{attr_value.get('menh_gia')}' ->> 0 as menh_gia
-            from
-                product_product pp
-            left join product_template pt on
-                pp.product_tmpl_id = pt.id
-            left join uom_uom uu on
-                pt.uom_id = uu.id
-            left join uom_uom uu2 on
-                pt.uom_po_id = uu2.id
-            left join (
-                select
-                    pc.id as pc_id,
-                    pc.id as pc,
-                    pc.name as pc_name,
-                    pc1.id as pc1,
-                    pc1.name as pc1_name,
-                    pc2.id as pc2,
-                    pc2.name as pc2_name,
-                    pc3.id as pc3,
-                    pc3.name as pc3_name,
-                    pc4.id as pc4,
-                    pc4.name as pc4_name
                 from
-                    product_category pc
-                join product_category pc1 on
-                    pc.parent_id = pc1.id
-                join product_category pc2 on
-                    pc1.parent_id = pc2.id
-                join product_category pc3 on
-                    pc2.parent_id = pc3.id
-                join product_category pc4 on
-                    pc3.parent_id = pc4.id
-            ) as pc on
-                pc.pc_id = pt.categ_id
-            left join (
-                select
-                    product_id,
-                    json_object_agg(attrs_code,
-                    value) as attrs
-                from
-                    (
+                    product_product pp
+                left join product_template pt on
+                    pp.product_tmpl_id = pt.id
+                left join uom_uom uu on
+                    pt.uom_id = uu.id
+                left join uom_uom uu2 on
+                    pt.uom_po_id = uu2.id
+                left join (
                     select
-                        pp.id as product_id,
-                        pa.attrs_code as attrs_code,
-                        array_agg(coalesce(pav.name::json -> 'vi_VN',
-                        pav.name::json -> 'en_US')) as value
+                        product_id,
+                        json_object_agg(attrs_code,
+                        value) as attrs
                     from
-                        product_template_attribute_line ptal
-                    left join product_product pp on
-                        pp.product_tmpl_id = ptal.product_tmpl_id
-                    left join product_attribute_value_product_template_attribute_line_rel rel on
-                        rel.product_template_attribute_line_id = ptal.id
-                    left join product_attribute pa on
-                        ptal.attribute_id = pa.id
-                    left join product_attribute_value pav on
-                        pav.id = rel.product_attribute_value_id
-                    where
-                        pa.attrs_code is not null
+                        (
+                        select
+                            pp.id as product_id,
+                            pa.attrs_code as attrs_code,
+                            array_agg(coalesce(pav.name::json -> 'vi_VN',
+                        pav.name::json -> 'en_US')) as value
+                        from
+                            product_template_attribute_line ptal
+                        left join product_product pp on
+                            pp.product_tmpl_id = ptal.product_tmpl_id
+                        left join product_attribute_value_product_template_attribute_line_rel rel on
+                            rel.product_template_attribute_line_id = ptal.id
+                        left join product_attribute pa on
+                            ptal.attribute_id = pa.id
+                        left join product_attribute_value pav on
+                            pav.id = rel.product_attribute_value_id
+                        where
+                            pa.attrs_code is not null
+                        group by
+                            pp.id,
+                            pa.attrs_code
+                      ) as att
                     group by
-                        pp.id,
-                        pa.attrs_code
-                  ) as att
-                group by
-                    product_id
-            ) attr on
-                attr.product_id = pp.id
-            left join res_brand rb on
-                pt.brand_id = rb.id
-            where
-                1=1
+                        product_id
+                ) attr on
+                    attr.product_id = pp.id
+                left join res_brand rb on
+                    pt.brand_id = rb.id
+                )
+                
+                SELECT
+                    ct.pc_id as id_thuonghieu,
+                    ct.pc_name as thuong_hieu,
+                    ct1.pc_id AS id_nhomhang,
+                    ct1.pc_name AS nhomhang,
+                    ct2.pc_id AS id_donghang,
+                    ct2.pc_name AS donghang,
+                    ct3.pc_id AS id_ketcau,
+                    ct3.pc_name AS ketcau,
+                    ct4.pc_id AS id_danhmuc,
+                    ct4.pc_name AS dm_sanpham,
+                    pi.*
+                FROM
+                    category_tree ct
+                LEFT JOIN category_tree ct1 ON ct.pc_id = ct1.parent_id
+                LEFT JOIN category_tree ct2 ON ct1.pc_id = ct2.parent_id
+                LEFT JOIN category_tree ct3 ON ct2.pc_id = ct3.parent_id
+                LEFT JOIN category_tree ct4 ON ct3.pc_id = ct4.parent_id
+                JOIN product_info pi ON pi.categ_id = {self.categ_id and 'ct.pc_id' or 'ct4.pc_id'}
+                where 1 = 1
         """
         if self.product_id:
             query += f" and pp.id = any(array{self.product_id.ids})"
         if self.brand_id:
-            query += f" and pc.pc4 = {self.brand_id.id}"
+            query += f" and ct.pc_id = {self.brand_id.id}"
+        if self.categ_id:
+            query += f" and ct.pc_id = {self.categ_id.id}"
         if self.group_id:
-            query += f" and pc.pc3 = {self.group_id.id}"
+            query += f" and ct1.pc_id = {self.group_id.id}"
         if self.line_id:
-            query += f" and pc.pc2 = {self.line_id.id}"
+            query += f" and ct2.pc_id = {self.line_id.id}"
         if self.structure_id:
-            query += f" and pc.pc1 = {self.structure_id.id}"
+            query += f" and ct3.pc_id = {self.structure_id.id}"
 
         return query
 
