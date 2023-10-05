@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="forlife_pos_product_change_refund.product_defective_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_approve']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_product_defective_approve_refuse, forlife_permission_management.group_customer_service</attribute>
+                    <attribute name="groups">forlife_permission_management.group_customer_service</attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_refuse']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_product_defective_approve_refuse</attribute>
@@ -24,7 +24,7 @@
             <field name="inherit_id" ref="forlife_pos_product_change_refund.product_defective_pack_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_approves']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_product_defective_approve_refuse, forlife_permission_management.group_customer_service</attribute>
+                    <attribute name="groups">forlife_permission_management.group_customer_service</attribute>
                 </xpath>
             </field>
         </record>
