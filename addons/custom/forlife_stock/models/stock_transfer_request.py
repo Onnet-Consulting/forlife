@@ -242,7 +242,13 @@ class StockTransferRequest(models.Model):
 
     def compute_count_stock_transfer(self):
         for item in self:
-            item.count_stock_transfer = len(item.stock_transfer_ids)
+            self._cr.execute("""
+                SELECT 
+                    count(st.id) as qty
+                FROM stock_transfer st where stock_request_id = %s;
+            """ % item.id)
+            data = self._cr.dictfetchone()
+            item.count_stock_transfer = data.get('qty', 0)
 
     @api.depends('request_lines', 'request_lines.quantity_remaining', 'stock_transfer_ids', 'stock_transfer_ids.state')
     def compute_is_no_more_quantity(self):
@@ -266,18 +272,17 @@ class TransferRequestLine(models.Model):
     request_id = fields.Many2one('stock.transfer.request', string="Stock Transfer Request", required=True, ondelete='cascade')
     quantity = fields.Float(default=1, string='Quantity', required=True)
     plan_quantity = fields.Float(string="Plan Quantity")
-    quantity_reality_transfer = fields.Float(string="Quantity reality transfer", compute='compute_quantity_reality_transfer', default=0)
-    quantity_reality_receive = fields.Float(string="Quantity reality receive", compute='compute_quantity_reality_receive', default=0)
+    quantity_reality_transfer = fields.Float(string="Quantity reality transfer", default=0)
+    quantity_reality_receive = fields.Float(string="Quantity reality receive", default=0)
     quantity_remaining = fields.Float(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_transfer_line_ids = fields.One2many('stock.transfer.line', 'product_str_id')
     production_from = fields.Many2one('forlife.production', string="Từ LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
     production_to = fields.Many2one('forlife.production', string="Đến LSX", domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
 
-    @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_out', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_transfer(self):
         for item in self:
             if item.stock_transfer_line_ids:
-                data_str_line = item.get_value_str_line(['out_approve', 'in_approve', 'done'])
+                data_str_line = item.stock_transfer_line_ids.filtered(lambda x: x.parent_state in ['out_approve', 'in_approve', 'done'])
                 quantity_reality_transfer = 0
                 for transfer_line_id in data_str_line:
                     if transfer_line_id.parent_state == 'in_approve' and transfer_line_id.stock_transfer_id.type == 'excess':
@@ -289,11 +294,10 @@ class TransferRequestLine(models.Model):
             if item.quantity_reality_transfer != quantity_reality_transfer:
                 item.quantity_reality_transfer = quantity_reality_transfer
 
-    @api.depends('stock_transfer_line_ids', 'stock_transfer_line_ids.qty_in', 'stock_transfer_line_ids.parent_state')
     def compute_quantity_reality_receive(self):
         for item in self:
             if item.stock_transfer_line_ids:
-                data_str_line = item.get_value_str_line(['in_approve', 'done'])
+                data_str_line = item.stock_transfer_line_ids.filtered(lambda x: x.parent_state in ['in_approve', 'done'])
                 if data_str_line:
                     quantity_reality_receive = sum(data_str_line.mapped('qty_in'))
                 else:

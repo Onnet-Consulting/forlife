@@ -10,13 +10,32 @@ class ProductDefectiveScan(models.TransientModel):
 
     pack_id = fields.Many2one('product.defective.pack',
                               default=lambda self: self.env.context.get('active_id'))
-    department_id = fields.Many2one('hr.department', related='pack_id.department_id')
     defective_type_id = fields.Many2one(
-        'defective.type', 'Defective Type', domain="[('department_id', 'in', [False, department_id])]")
+        'defective.type', 'Defective Type')
     barcode = fields.Char('Barcode')
     warning_msg = fields.Text('Message Warning')
     on_value = fields.Text(default="{}")
     line_ids = fields.One2many('product.defective.scan.line', 'wizard_id')
+
+    @api.constrains('defective_type_id', 'line_ids')
+    def check_required(self):
+        for record in self:
+            if (len(record.line_ids.mapped('defective_type_id.department_id.id')) > 1
+                    or record.pack_id.line_ids and
+                    any(line.defective_type_id.department_id.id not in record.pack_id.line_ids.mapped('defective_type_id.department_id.id') for line in record.line_ids)):
+                raise ValidationError(
+                    'Không được chọn loại lỗi thuộc bộ phận khác bộ phận đã khai báo trên cùng phiếu tổng hợp !')
+
+    @api.onchange('defective_type_id')
+    def onchange_defective_type_id(self):
+        if self.defective_type_id:
+            if (self.pack_id.line_ids.mapped('defective_type_id')
+                    and self.defective_type_id.department_id.id not in self.pack_id.line_ids.mapped('defective_type_id.department_id.id')):
+                raise ValidationError(
+                    'Không được chọn loại lỗi thuộc bộ phận khác bộ phận đã khai báo trên cùng phiếu tổng hợp !')
+            elif self.line_ids.mapped('defective_type_id') and self.defective_type_id.department_id.id not in self.line_ids.mapped('defective_type_id.department_id.id'):
+                raise ValidationError(
+                    'Không được chọn loại lỗi thuộc bộ phận khác bộ phận đã khai báo trên cùng phiếu tổng hợp !')
 
     @api.onchange('barcode')
     def onchange_barcode(self):
@@ -85,9 +104,7 @@ class ProductDefectiveScanLine(models.TransientModel):
     barcode = fields.Char(required=True)
     quantity = fields.Float(compute='_compute_scan_quantity', inverse='_inverse_scan_quantity')
     uom_id = fields.Many2one('uom.uom', related='product_id.uom_id')
-    department_id = fields.Many2one('hr.department', related='wizard_id.department_id')
-    defective_type_id = fields.Many2one(
-        'defective.type', 'Defective Type', domain="[('department_id', 'in', [False, department_id])]")
+    defective_type_id = fields.Many2one('defective.type', 'Defective Type')
     detail_defective = fields.Char('Chi tiết lỗi')
     image_1920 = fields.Image("Ảnh",  max_width=1920, max_height=1920)
 
@@ -118,7 +135,24 @@ class ProductDefectiveScanLine(models.TransientModel):
         if self.wizard_id.defective_type_id:
             self.defective_type_id = self.wizard_id.defective_type_id
 
+    @api.onchange('defective_type_id')
+    def onchange_defective_type_id(self):
+        if self.defective_type_id:
+            if (self.wizard_id.pack_id.line_ids.mapped('defective_type_id')
+                    and self.defective_type_id.department_id.id not in self.wizard_id.pack_id.line_ids.mapped('defective_type_id.department_id.id')):
+                raise ValidationError(
+                    'Không được chọn loại lỗi thuộc bộ phận khác bộ phận đã khai báo trên cùng phiếu tổng hợp !')
+            elif self.defective_type_id.department_id.id not in self.wizard_id.line_ids.mapped('defective_type_id.department_id.id'):
+                raise ValidationError(
+                    'Không được chọn loại lỗi thuộc bộ phận khác bộ phận đã khai báo trên cùng phiếu tổng hợp !')
+
     @api.constrains('quantity')
+    def check_required(self):
+        for line in self:
+            if line.quantity <= 0:
+                raise ValidationError('Số lượng sản phẩm phải lớn hơn 0 !')
+
+    @api.constrains('defective_type_id', 'wizard_id')
     def check_required(self):
         for line in self:
             if line.quantity <= 0:
