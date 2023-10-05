@@ -28,6 +28,13 @@ class ImportProductionFromExcel(models.TransientModel):
         }
         return export
 
+    def validate_date(self, date_string):
+        try:
+            date_string = datetime.strptime(date_string.strip(), '%d/%m/%Y').strftime('%Y-%m-%d')
+        except:
+            date_string = date_string
+        return date_string
+
     def apply(self):
         wb = xlrd.open_workbook(file_contents=base64.decodebytes(self.file))
         orders = list(self.env['res.utility'].read_xls_book(book=wb, sheet_index=0))[1:]
@@ -135,8 +142,8 @@ class ImportProductionFromExcel(models.TransientModel):
                     'implementation_id': department.get(order[2].strip(), False),
                     'management_id': department.get(order[3].strip(), False),
                     'production_department': order[4],
-                    'produced_from_date': order[5],
-                    'to_date': order[6],
+                    'produced_from_date': self.validate_date(order[5]),
+                    'to_date': self.validate_date(order[6]),
                     'production_price': order[7],
                     'brand_id': brand.get(order[8].strip(), False),
                     'leader_id':  employee.get(order[9].strip(), False),
@@ -147,11 +154,13 @@ class ImportProductionFromExcel(models.TransientModel):
                     raise ValidationError(_('Không có Mã thành phẩm với mã %s trong danh mục sản phẩm.' % order[11]))
                 child_value = {
                     'product_id': product_dict.get(order[11], False),
-                    'produce_qty': int(order[12]),
+                    'produce_qty': int(round(float(order[12]), 0)),
                 }
 
-                product_variant = self.env['product.product'].browse(product_dict.get(order[11]))\
-                    .mapped('attribute_line_ids.value_ids.name')
+                product = self.env['product.product'].browse(product_dict.get(order[11]))
+                attribute_code = product.attribute_line_ids.mapped('attribute_id.attrs_code')
+                attr_value = self.env['res.utility'].get_attribute_code_config()
+                product_variant = product.mapped('attribute_line_ids.value_ids.name')
                 list_material = []
                 create_material_vals = []
                 for m in data_material_good.get(production_code, []):
@@ -163,6 +172,10 @@ class ImportProductionFromExcel(models.TransientModel):
                         raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.'%m[2]))
                     if not uom_dict.get(m[5], False):
                         raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.'%m[5]))
+                    if m[3] and m[3].strip() not in product_variant and attr_value.get('size') in attribute_code:
+                        raise ValidationError(_('Size %s không tồn tại trong bảng giá trị thuộc tính.' % m[3]))
+                    if m[4] and m[4].strip() not in product_variant and attr_value.get('mau_sac') in attribute_code:
+                        raise ValidationError(_('Màu %s không tồn tại trong bảng giá trị thuộc tính.' % m[4]))
 
                     common_data = {
                         'product_id': product_dict.get(m[0], False),
