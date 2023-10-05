@@ -1,4 +1,5 @@
 import datetime
+import re
 
 import requests
 import logging
@@ -300,16 +301,19 @@ class NhanhClient:
     def order_paid_online(self, order):
         # Check the order is paid online or not
         private_description = order["privateDescription"]
-        if private_description.find("#VC") != -1:
-            x_voucher = order["moneyTransfer"]
-            x = private_description.split("#VC")
-            y = x[1].strip()
-            z = y.split()
-            x_code_voucher = z[0]
+        pattern = re.compile(r'#VC[A-Za-z0-9]+')
+        matched_str = pattern.search(private_description)
+        x_voucher = order["moneyTransfer"] or 0
+        nhanh_voucher_amount = 0
+        if matched_str:
+            x_code_voucher = matched_str.group().split('#VC')[-1]
+            matched_voucher_value = re.compile(r'#VC[A-Za-z0-9]+ +\d+').search(private_description)
+            if matched_voucher_value:
+                nhanh_voucher_amount = matched_voucher_value.group().split(' ')[-1]
         else:
-            x_voucher = 0
-            x_code_voucher = ""
-        return x_voucher, x_code_voucher
+            x_code_voucher = ''
+        nhanh_transfer_amount = x_voucher - float(nhanh_voucher_amount)
+        return x_voucher, x_code_voucher, nhanh_voucher_amount, nhanh_transfer_amount
 
 
     def order_return_and_changed(self, order):
