@@ -99,9 +99,53 @@ class ReportNum37(models.TransientModel):
     structure_id = fields.Many2one('product.category', string='Kết cấu',
                                    domain="[('parent_id', '=', line_id), ('parent_id', '!=', False)]")
 
+    @api.onchange('category_type_id')
+    def _onchange_category_type_id(self):
+        self.update({
+            'categ_id': False,
+            'brand_id': False,
+            'group_id': False,
+            'line_id': False,
+            'structure_id': False,
+        })
+
+    @api.onchange('brand_id')
+    def _onchange_brand_id(self):
+        self.update({
+            'group_id': False,
+            'line_id': False,
+            'structure_id': False,
+        })
+
     def _get_query(self, allowed_company):
         self.ensure_one()
         attr_value = self.env['res.utility'].get_attribute_code_config()
+
+        field_with_brand_id = """
+            ct.pc_id as id_thuonghieu,
+            ct.pc_name as thuong_hieu,
+            ct1.pc_id AS id_nhomhang,
+            ct1.pc_name AS nhomhang,
+            ct2.pc_id AS id_donghang,
+            ct2.pc_name AS donghang,
+            ct3.pc_id AS id_ketcau,
+            ct3.pc_name AS ketcau,
+            ct4.pc_id AS id_danhmuc,
+            ct4.pc_name AS dm_sanpham,
+        """
+
+        field_with_categ_id = """
+            ct.pc_id as id_danhmuc,
+            ct.pc_name as dm_sanpham,
+            ct1.pc_id AS id_nhomhang,
+            ct1.pc_name AS nhomhang,
+            ct2.pc_id AS id_donghang,
+            ct2.pc_name AS donghang,
+            ct3.pc_id AS id_ketcau,
+            ct3.pc_name AS ketcau,
+            ct4.pc_id AS id_thuonghieu,
+            ct4.pc_name AS thuong_hieu,
+        """
 
         query = f"""
             WITH RECURSIVE category_tree AS (
@@ -266,16 +310,7 @@ class ReportNum37(models.TransientModel):
                 )
                 
                 SELECT
-                    ct.pc_id as id_thuonghieu,
-                    ct.pc_name as thuong_hieu,
-                    ct1.pc_id AS id_nhomhang,
-                    ct1.pc_name AS nhomhang,
-                    ct2.pc_id AS id_donghang,
-                    ct2.pc_name AS donghang,
-                    ct3.pc_id AS id_ketcau,
-                    ct3.pc_name AS ketcau,
-                    ct4.pc_id AS id_danhmuc,
-                    ct4.pc_name AS dm_sanpham,
+                    {self.categ_id and field_with_categ_id or field_with_brand_id}
                     pi.*
                 FROM
                     category_tree ct
