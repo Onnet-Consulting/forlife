@@ -49,7 +49,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProduct', function (requ
             if (!this._check_can_be_apply_defective_discount(selected_line)) {
                 this.showPopup('ErrorPopup', {
                     title: this.env._t("Warning"),
-                    body: _.str.sprintf(this.env._t("Sản phẩm đã được áp dụng chương trình khuyến mãi khác. \n Vui lòng đặt lại CTKM trước khi kiểm tra giá hàng lỗi !"), ''),
+                    body: _.str.sprintf(this.env._t("Giá trị hàng lỗi không được áp dụng đồng thời với ưu đãi khác !"), ''),
                 });
                 return;
             };

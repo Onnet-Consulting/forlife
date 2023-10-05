@@ -50,7 +50,7 @@
                             <field name="brand_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="store_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             <field name="user_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                            <field name="department_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            <field name="department_id"/>
                             <field name="create_date"/>
                             <field name="show_transfer_state_col" invisible="1"/>
                             <field name="note"/>

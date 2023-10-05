@@ -31,6 +31,7 @@ class ReasonRefuse(models.TransientModel):
                     'to_location_id': self.to_location_id.id,
                     'is_transferred': True
                 })
+            line_ids.selected = False
             line_ids.action_refuse()
         elif object_id.exists() and active_model == 'product.defective':
             object_id.reason_refuse_product = self.name
