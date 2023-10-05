@@ -28,7 +28,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-
+            'forlife_invoice/static/src/css/common_invoice.scss',
         ]
     },
     "application": True,
