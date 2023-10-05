@@ -30,7 +30,7 @@ class ReportNum42(models.TransientModel):
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         po_number_list = self.po_number.split(',') if self.po_number else []
-        po_number_condition = f"and po.name = any (array{[x.strip('') for x in po_number_list if x]})" if po_number_list else ''
+        po_number_condition = f"and po.name = any (array{[x.strip() for x in po_number_list if x]})" if po_number_list else ''
         sql = f"""
 select row_number() over (order by po.date_order desc)                      as num,
     pr.name                                                                 as pr_name,

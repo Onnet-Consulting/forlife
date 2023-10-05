@@ -313,16 +313,7 @@ class NhanhClient:
         else:
             x_code_voucher = ''
         nhanh_transfer_amount = x_voucher - float(nhanh_voucher_amount)
-        # if private_description.find("#VC") != -1:
-        #     x_voucher = order["moneyTransfer"]
-        #     x = private_description.split("#VC")
-        #     y = x[1].strip()
-        #     z = y.split()
-        #     x_code_voucher = z[0]
-        # else:
-        #     x_voucher = 0
-        #     x_code_voucher = ""
-        return x_voucher, x_code_voucher, nhanh_voucher_amount, nhanh_transfer_amount > 0 and nhanh_transfer_amount or 0
+        return x_voucher, x_code_voucher, nhanh_voucher_amount, nhanh_transfer_amount
 
 
     def order_return_and_changed(self, order):
