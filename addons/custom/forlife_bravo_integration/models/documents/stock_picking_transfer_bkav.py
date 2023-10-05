@@ -47,7 +47,7 @@ class StockPickingTransferBkav(models.Model):
             "Stt": picking.name or None,
             "DocCode": 'DC',
             "DocNo": picking.name or None,
-            "DocDate": picking.date_done and (picking.date_done + timedelta(days=7)).strftime('%Y-%m-%d') or None,
+            "DocDate": picking.date_done and (picking.date_done + timedelta(hours=7)).strftime('%Y-%m-%d') or None,
             "CurrencyCode": self.env.company.currency_id.name or None,
             "ExchangeRate": 1,
             "CustomerCode": partner.ref or None,

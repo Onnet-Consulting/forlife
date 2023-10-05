@@ -15,8 +15,8 @@ class ReportNum13(models.TransientModel):
     _inherit = ['report.base', 'report.category.type']
     _description = 'Báo cáo tình hình thực hiện đơn hàng mua'
 
-    from_date = fields.Date('From date', required=True)
-    to_date = fields.Date('To date', required=True)
+    from_date = fields.Date('From date')
+    to_date = fields.Date('To date')
     po_number = fields.Char(string='PO number')
     product_ids = fields.Many2many('product.product', 'report_num13_product_rel', string='Products')
     product_group_ids = fields.Many2many('product.category', 'report_num13_group_rel', string='Level 2')
@@ -45,13 +45,22 @@ class ReportNum13(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        po_number_list = self.po_number.split(',') if self.po_number else []
-        po_number_condition = f"and po.name = any (array{[x.strip('') for x in po_number_list if x]})" if po_number_list else ''
+        po_number_list = [x.strip() for x in self.po_number.split(',') if x] if self.po_number else []
+        po_number_condition = f"and po.name = any (array{po_number_list})" if po_number_list else ''
+
         sql = f"""
-with cates as (select distinct pt.categ_id
+with data_pol as (select pol.id         as pol_id,
+                         pol.product_id as product_id
+                  from purchase_order_line pol
+                           join purchase_order po on pol.order_id = po.id
+                  where pol.company_id = any(array{allowed_company})
+                  {f"and {format_date_query('po.date_order', tz_offset)} between '{self.from_date}' and '{self.to_date}'" if not self.po_number else ''}
+                  {f'and pol.product_id = any(array{product_ids})' if product_ids else ''}
+                  {po_number_condition}),
+     cates as (select distinct pt.categ_id
                from product_product pp
                         join product_template pt on pp.product_tmpl_id = pt.id
-                            and pp.id = any(array{product_ids})),
+                            {f"and pp.id = any(array{product_ids})" if product_ids else "and pp.id in (select distinct product_id from data_pol)"}),
      category_types as (with RECURSIVE find_root AS (SELECT id as root_id, id, parent_id, category_type_id
                                                      FROM product_category
                                                      WHERE id in (select id from cates)
@@ -62,7 +71,7 @@ with cates as (select distinct pt.categ_id
                         select json_object_agg(fr.root_id, pct.name) as data
                         from find_root fr
                                  left join product_category_type pct on pct.id = fr.category_type_id
-                        where parent_id isnull)
+                        where parent_id isnull)                  
 select row_number() over (order by po.date_order desc)                      as num,
     pr.name                                                                 as pr_name,
     to_char(pr.request_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')      as pr_date,
@@ -86,10 +95,7 @@ from purchase_order_line pol
     left join purchase_request pr on pr.id = po.request_id
     left join product_product pp on pp.id = pol.product_id
     left join product_template pt on pt.id = pp.product_tmpl_id
-where {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
-    and pol.company_id = any(array{allowed_company})
-    and pol.product_id = any(array{product_ids})
-    {po_number_condition}
+where pol.id in (select distinct pol_id from data_pol)    
 order by num
 """
         return sql
@@ -105,7 +111,7 @@ order by num
         elif categ_ids:
             product_ids = Product.search([('categ_id', 'in', Utility.get_all_category_last_level(categ_ids))]).ids or [-1]
         else:
-            product_ids = [-1]
+            product_ids = []
         query = self._get_query(allowed_company, product_ids)
         data = self.env['res.utility'].execute_postgresql(query=query, param=[], build_dict=True)
         values.update({
@@ -120,8 +126,11 @@ order by num
         sheet = workbook.add_worksheet('Báo cáo tình hình thực hiện đơn hàng mua')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo tình hình thực hiện đơn hàng mua', formats.get('header_format'))
-        sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
-        sheet.write(2, 2, 'Số YC: %s' % (self.po_number or ''), formats.get('italic_format'))
+        if self.from_date and self.to_date:
+            sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+            sheet.write(2, 2, 'Số YC: %s' % (self.po_number or ''), formats.get('italic_format'))
+        else:
+            sheet.write(2, 0, 'Số YC: %s' % (self.po_number or ''), formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(4, idx, title, formats.get('title_format'))
         sheet.set_column(0, len(TITLES), 20)
