@@ -10,18 +10,15 @@
                         <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
+                    <div class="alert alert-danger">Nếu đã nhập thông tin Số PO thì không bắt buộc nhập ngày, sản phẩm và danh mục sản phẩm</div>
                     <group>
-                        <group>
-                            <label for="from_date" string="Date"/>
-                            <div>from
-                                <field name="from_date" class="oe_inline" required="1"/>
-                                to
-                                <field name="to_date" class="oe_inline" required="1"/>
-                            </div>
-                        </group>
-                        <group>
-                            <field name="po_number" placeholder="PO001,PO002,..."/>
-                        </group>
+                        <field name="po_number" placeholder="PO001,PO002,..."/>
+                        <label for="from_date" string="Date"/>
+                        <div>from
+                            <field name="from_date" class="oe_inline" attrs="{'required': [('po_number', '=', False)]}"/>
+                            to
+                            <field name="to_date" class="oe_inline" attrs="{'required': [('po_number', '=', False)]}"/>
+                        </div>
                     </group>
                     <group>
                         <field name="product_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num13,product.product'}"/>
