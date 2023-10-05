@@ -239,6 +239,8 @@ class StockTransfer(models.Model):
             'date_transfer': fields.Datetime.now(),
             'out_confirm_uid': self._uid,
         })
+        if self.stock_request_id:
+            self.update_quantity_reality_transfer_request()
         if stock_transfer_line_less:
             return {
                 'type': 'ir.actions.client',
@@ -255,8 +257,6 @@ class StockTransfer(models.Model):
                 'date_in_approve': fields.Datetime.now(),
                 'done_transfer_uid': self._uid,
             })
-        if self.stock_request_id:
-            self.update_quantity_reality_transfer_request()
 
     def update_quantity_reality_transfer_request(self):
         product_str_ids = self.stock_transfer_line.mapped('product_str_id')
