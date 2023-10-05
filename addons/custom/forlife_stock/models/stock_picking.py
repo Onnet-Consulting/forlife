@@ -197,6 +197,15 @@ class StockPicking(models.Model):
                 'res_id': scan_id.id
             }
 
+    def name_get(self):
+        if self._context.get('show_location_name'):
+            result = []
+            for r in self:
+                name = f"[{r.location_dest_id.code + '-' + r.location_dest_id.name or ''}] {r.name or ''}"
+                result.append((r.id, name))
+            return result
+        return super().name_get()
+
     def button_forlife_validate(self):
         self.ensure_one()
         if self.is_pk_purchase:
