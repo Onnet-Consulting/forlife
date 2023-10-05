@@ -537,7 +537,7 @@
             <field name="name">product_defective_read</field>
             <field name="model_id" ref="forlife_pos_product_change_refund.model_product_defective"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_product_defective_permission'))]"/>
-            <field name="domain_force">[('defective_type_id.team_id','in', user.get_team())]</field>
+            <field name="domain_force">['&amp;','|',('defective_type_id.team_id','=',False),('defective_type_id.team_id','in', user.get_team()), '&amp;', '|', ('store_id','in', user.get_store()), ('store_id','=', False), '|', ('defective_type_id.department_id','in', user.get_department()), ('defective_type_id.department_id','=', False)]</field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>
@@ -548,7 +548,7 @@
             <field name="name">product_defective_write_create</field>
             <field name="model_id" ref="forlife_pos_product_change_refund.model_product_defective"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_product_defective_permission'))]"/>
-            <field name="domain_force">[('defective_type_id.team_id','in', user.get_team())]</field>
+            <field name="domain_force">['&amp;','|',('defective_type_id.team_id','=',False),('defective_type_id.team_id','in', user.get_team()), '&amp;', '|', ('store_id','in', user.get_store()), ('store_id','=', False), '|', ('defective_type_id.department_id','in', user.get_department()), ('defective_type_id.department_id','=', False)]</field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
             <field name="perm_create" eval="True"/>
@@ -559,7 +559,7 @@
             <field name="name">product_defective_unlink</field>
             <field name="model_id" ref="forlife_pos_product_change_refund.model_product_defective"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_product_defective_permission'))]"/>
-            <field name="domain_force">[('defective_type_id.team_id','in', user.get_team())]</field>
+            <field name="domain_force">['&amp;','|',('defective_type_id.team_id','=',False),('defective_type_id.team_id','in', user.get_team()), '&amp;', '|', ('store_id','in', user.get_store()), ('store_id','=', False), '|', ('defective_type_id.department_id','in', user.get_department()), ('defective_type_id.department_id','=', False)]</field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
             <field name="perm_create" eval="False"/>

@@ -18,20 +18,21 @@ class SupplierInfo(models.Model):
         mes = ''
         for rec in self:
             count += 1
-            if rec.partner_id and rec.product_tmpl_id and rec.product_id and rec.date_start and rec.date_end and rec.amount_conversion and rec.price and rec.product_uom and rec.search_count(
-                    [('partner_id', '=', rec.partner_id.id),
-                     '|', ('product_tmpl_id', '=', rec.product_tmpl_id.id),
-                     ('product_id', '=', rec.product_id.id),
-                     ('date_start', '=', rec.date_start),
-                     ('date_end', '=', rec.date_end),
-                     ('amount_conversion', '=', rec.amount_conversion),
-                     ('price', '=', rec.price),
-                     ('product_uom', '=', rec.product_uom.id)]) > 1:
+            domain = [
+                ('partner_id', '=', rec.partner_id.id),
+                '|', ('product_tmpl_id', '=', rec.product_tmpl_id.id),
+                ('product_id', '=', rec.product_id.id),
+                ('date_start', '=', rec.date_start),
+                ('date_end', '=', rec.date_end),
+                ('amount_conversion', '=', rec.amount_conversion),
+                ('price', '=', rec.price),
+                ('company_id', '=', self.env.company.id),
+                ('product_uom', '=', rec.product_uom.id)
+            ]
+            if rec.partner_id and rec.product_tmpl_id and rec.product_id and rec.date_start and rec.date_end and rec.amount_conversion and rec.price and rec.product_uom and rec.search_count(domain) > 1:
                 mes += str(count-1) + ','
-        if mes and count > 2:
-            raise ValidationError(_('Bảng giá nhà cung cấp đã tồn tại!\n Kiểm tra tại các dòng: '+mes[0:-1]))
-        elif mes:
-            raise ValidationError(_('Bảng giá nhà cung cấp đã tồn tại!'))
+        if mes != '':
+            raise ValidationError(_('Bảng giá nhà cung cấp đã tồn tại!\n Kiểm tra tại các dòng: ' + mes[0:-1]))
 
     @api.constrains('amount_conversion')
     def constrains_amount_conversion(self):

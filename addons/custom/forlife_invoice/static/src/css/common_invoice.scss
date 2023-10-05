@@ -1,8 +1,4 @@
-//change width hàng hóa
-.width-hh th:not(.o_handle_cell) {
-    width: 160px !important;
-    max-width: 160px !important;
-    .text-end {
-        text-align: left !important;
-    }
+
+.fix-with-tag > div.o_badge_text, div.o_tag_badge_text {
+    max-width: 100% !important;
 }
