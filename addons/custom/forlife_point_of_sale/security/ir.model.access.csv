@@ -5,3 +5,8 @@ access_res_brand_manager,res.brand manager,model_res_brand,base.group_system,1,1
 access_res_brand_user,res.brand user,model_res_brand,base.group_user,1,0,0,0
 access_store_first_order,store.first.order,model_store_first_order,base.group_user,1,0,0,0
 access_import_store_first_order,import.store.first.order,model_import_store_first_order,base.group_system,1,1,1,0
+access_pos.laundry,pos.laundry,model_pos_laundry,base.group_system,1,1,1,1
+access_pos.laundry.line,pos.laundry.line,model_pos_laundry_line,base.group_system,1,1,1,1
+access_laundry.product.status,laundry.product.status,model_laundry_product_status,base.group_system,1,1,1,1
+access_laundry.service,laundry.service,model_laundry_service,base.group_system,1,1,1,1
+access_laundry.repair.status,laundry.repair.status,model_laundry_repair_status,base.group_system,1,1,1,1

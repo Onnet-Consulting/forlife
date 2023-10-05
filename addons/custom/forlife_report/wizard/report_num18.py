@@ -65,7 +65,7 @@ class ReportNum18(models.TransientModel):
             where_condition += f"""\nand pr.user_id = any( array{self.request_user_ids.ids})"""
 
         if self.receiver_ids:
-            where_condition += f"""\nand pr.receiver_id = any( array{self.receiver_ids.ids})"""
+            where_condition += f"""\nand pr.x_receiver_id = any( array{self.receiver_ids.ids})"""
 
         Product = self.env['product.product']
         Utility = self.env['res.utility']

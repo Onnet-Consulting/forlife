@@ -2310,8 +2310,8 @@ class PurchaseOrderLine(models.Model):
     @api.depends('exchange_quantity', 'product_qty', 'product_id', 'purchase_uom', 'order_id.purchase_type', 'vendor_price_import',
                  'order_id.partner_id', 'order_id.partner_id.is_passersby', 'order_id', 'order_id.currency_id', 'free_good')
     def compute_vendor_price_ncc(self):
-        date_order = (self.order_id.date_order + timedelta(hours=7)).date() if self.order_id.date_order else datetime.now().date()
         for rec in self:
+            date_order = (rec.order_id.date_order + timedelta(hours=7)).date() if rec.order_id.date_order else datetime.now().date()
             if rec.free_good:
                 rec.vendor_price = 0
                 rec.price_subtotal = 0
