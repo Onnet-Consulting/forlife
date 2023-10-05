@@ -206,7 +206,10 @@ class ForlifeOtherInOutRequest(models.Model):
                         key: dict_data
                     })
             for item in value:
-                data_other_import_export = self.env['stock.picking'].create(value.get(item))
+                picking_ids = self.env['stock.picking'].create(value.get(item))
+                for picking_id in picking_ids:
+                    picking_id.action_confirm()
+                    picking_id.action_assign()
             record.write({'status': 'approved'})
             context = {'other_import_export_request_id': self.id, 'create': False, 'delete': True, 'edit': True}
             return {
