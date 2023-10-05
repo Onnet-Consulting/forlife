@@ -25,6 +25,7 @@
         'security/forlife_point_of_sale_security.xml',
         'security/ir.model.access.csv',
         'data/brand_data.xml',
+        'data/ir_sequence.xml',
         'data/ir_attachment_data.xml',
 
         'views/brand_views.xml',
@@ -37,6 +38,8 @@
         'data/cron.xml',
         'views/ir_cron_views.xml',
         'views/account_move_views.xml',
+        'views/laundry_views.xml',
+        'views/laundry_meta.xml',
 
         'wizard/import_store_first_order_views.xml',
     ],

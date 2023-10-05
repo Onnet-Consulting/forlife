@@ -7,7 +7,6 @@
             <form string="Thêm sản phẩm lỗi">
                 <sheet>
                     <field name="pack_id" invisible="1"/>
-                    <field name="department_id" invisible="1"/>
                     <field name="on_value" invisible="1"/>
                     <group>
                         <group>
@@ -33,14 +32,13 @@
                         <page string="Hàng lỗi">
                             <field name="line_ids" force_save="1">
                                 <tree no_open="True" editable="bottom">
-                                    <field name="department_id" invisible="1"/>
                                     <field name="product_id"/>
                                     <field name="barcode"/>
                                     <field name="quantity" readonly="1" force_save="1"/>
                                     <field name="uom_id"/>
                                     <field name="defective_type_id" required="1"/>
                                     <field name="detail_defective"/>
-                                    <field name="image_1920"/>
+                                    <field name="image_1920" widget="image" options="{'image_preview': 'image_128'}"/>
                                 </tree>
                             </field>
                         </page>

@@ -14,17 +14,25 @@ class SupplierInfo(models.Model):
 
     @api.constrains('partner_id', 'product_tmpl_id', 'product_id', 'date_start', 'date_end', 'amount_conversion', 'price', 'product_uom')
     def constrains_supplier(self):
+        count = 1
+        mes = ''
         for rec in self:
-            if rec.partner_id and rec.product_tmpl_id and rec.product_id and rec.date_start and rec.date_end and rec.amount_conversion and rec.price and rec.product_uom and rec.search_count(
-                    [('partner_id', '=', rec.partner_id.id),
-                     '|', ('product_tmpl_id', '=', rec.product_tmpl_id.id),
-                     ('product_id', '=', rec.product_id.id),
-                     ('date_start', '=', rec.date_start),
-                     ('date_end', '=', rec.date_end),
-                     ('amount_conversion', '=', rec.amount_conversion),
-                     ('price', '=', rec.price),
-                     ('product_uom', '=', rec.product_uom.id)]) > 1:
-                raise ValidationError(_('Bảng giá nhà cung cấp đã tồn tại!'))
+            count += 1
+            domain = [
+                ('partner_id', '=', rec.partner_id.id),
+                '|', ('product_tmpl_id', '=', rec.product_tmpl_id.id),
+                ('product_id', '=', rec.product_id.id),
+                ('date_start', '=', rec.date_start),
+                ('date_end', '=', rec.date_end),
+                ('amount_conversion', '=', rec.amount_conversion),
+                ('price', '=', rec.price),
+                ('company_id', '=', self.env.company.id),
+                ('product_uom', '=', rec.product_uom.id)
+            ]
+            if rec.partner_id and rec.product_tmpl_id and rec.product_id and rec.date_start and rec.date_end and rec.amount_conversion and rec.price and rec.product_uom and rec.search_count(domain) > 1:
+                mes += str(count-1) + ','
+        if mes != '':
+            raise ValidationError(_('Bảng giá nhà cung cấp đã tồn tại!\n Kiểm tra tại các dòng: ' + mes[0:-1]))
 
     @api.constrains('amount_conversion')
     def constrains_amount_conversion(self):
@@ -63,3 +71,4 @@ class SupplierInfo(models.Model):
                 if fields.index('product_uom') and not mouse[fields.index('product_uom')]:
                     raise ValidationError(_("Thiếu giá trị bắt buộc cho trường Đơn vị mua ở dòng - {}".format(line_number)))
                 line_number += 1
+        return super().load(fields, data)

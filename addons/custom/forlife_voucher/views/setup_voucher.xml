@@ -9,10 +9,9 @@
                     <field name="purpose_voucher"/>
                     <field name="applicable_object"/>
                     <field name="ref"/>
+                    <field name="is_gift"/>
                 </tree>
             </field>
         </record>
-
-
     </data>
 </odoo>

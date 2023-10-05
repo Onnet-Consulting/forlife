@@ -14,10 +14,12 @@
                         <group>
                             <field name="product_id" widget="many2many_tags"/>
                             <field name="category_type_id" string="Nhóm sản phẩm"/>
-                            <field name="brand_id"/>
-                            <field name="group_id"/>
-                            <field name="line_id"/>
-                            <field name="structure_id"/>
+                            <field name="category_code" invisible="1"/>
+                            <field name="categ_id" attrs="{'readonly': ['|', ('brand_id', '!=', False), ('category_code', '=', '1')]}" force_save="1"/>
+                            <field name="brand_id" attrs="{'readonly': [('categ_id', '!=', False)]}" force_save="1"/>
+                            <field name="group_id" attrs="{'readonly': [('categ_id', '!=', False)]}" force_save="1"/>
+                            <field name="line_id" attrs="{'readonly': [('categ_id', '!=', False)]}" force_save="1"/>
+                            <field name="structure_id" attrs="{'readonly': [('categ_id', '!=', False)]}" force_save="1"/>
                         </group>
                     </group>
                 </sheet>

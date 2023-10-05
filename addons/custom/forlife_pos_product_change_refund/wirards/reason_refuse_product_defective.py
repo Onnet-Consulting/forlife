@@ -13,6 +13,11 @@ class ReasonRefuse(models.TransientModel):
         'stock.location', domain="[('warehouse_id', '=', warehouse_id)]")
     to_location_id = fields.Many2one('stock.location')
 
+    @api.onchange('is_transferred')
+    def onchange_transfer(self):
+        if self.is_transferred and self.warehouse_id:
+            self.from_location_id = self.warehouse_id.lot_stock_id
+
     def action_confirm(self):
         active_model = self.env.context.get('active_model', 'product.defective')
         object_id = self.env[active_model].browse(self._context.get('active_id'))
@@ -26,6 +31,7 @@ class ReasonRefuse(models.TransientModel):
                     'to_location_id': self.to_location_id.id,
                     'is_transferred': True
                 })
+            line_ids.selected = False
             line_ids.action_refuse()
         elif object_id.exists() and active_model == 'product.defective':
             object_id.reason_refuse_product = self.name

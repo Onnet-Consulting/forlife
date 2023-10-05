@@ -11,3 +11,5 @@ from . import res_partner
 from . import pos_session
 from . import account_move
 from . import product
+from . import laundry_meta
+from . import laundry
