@@ -228,12 +228,15 @@ class StockTransfer(models.Model):
     def _action_out_approve(self):
         # self.ensure_one()
         # self._check_qty_available()
+        if len(self) > 1 and self.filtered(lambda x: x.state != 'approve'):
+            raise ValidationError("Vui lòng chọn những phiếu ở trạng thái 'Đã phê duyệt'")
+
         self._validate_product_quantity()
         self._validate_product_tolerance('out')
         for record in self:
             stock_transfer_line_less = record.stock_transfer_line.filtered(lambda r: r.qty_out < r.qty_plan)
             if stock_transfer_line_less:
-                self._out_approve_less_quantity(stock_transfer_line_less)
+                record._out_approve_less_quantity(stock_transfer_line_less)
             record._update_forlife_production()
             record.write({
                 'state': 'out_approve',
@@ -242,7 +245,7 @@ class StockTransfer(models.Model):
             })
             if record.stock_request_id:
                 record.update_quantity_reality_transfer_request()
-            if stock_transfer_line_less:
+            if stock_transfer_line_less and len(self) == 1:
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
