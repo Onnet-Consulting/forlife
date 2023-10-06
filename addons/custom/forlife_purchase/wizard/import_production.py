@@ -4,6 +4,7 @@ from odoo import fields, api, models, _
 from datetime import datetime
 from odoo.exceptions import ValidationError
 from odoo.modules.module import get_resource_path
+import itertools
 
 
 class ImportProductionFromExcel(models.TransientModel):
@@ -158,8 +159,15 @@ class ImportProductionFromExcel(models.TransientModel):
                 }
 
                 product = self.env['product.product'].browse(product_dict.get(order[11]))
-                attribute_code = product.attribute_line_ids.mapped('attribute_id.attrs_code')
                 attr_value = self.env['res.utility'].get_attribute_code_config()
+                sql = f"""
+                    select COALESCE(pav.name->>'vi_VN', pav.name->>'en_US') AS name from product_attribute_value pav 
+                    join product_attribute pa on pav.attribute_id = pa.id 
+                    where pa.attrs_code  in ('{attr_value.get('size')}', '{attr_value.get('mau_sac')}');
+                """
+                self._cr.execute(sql)
+                attributes = self._cr.fetchall()
+                attributes = list(itertools.chain(*attributes))
                 product_variant = product.mapped('attribute_line_ids.value_ids.name')
                 list_material = []
                 create_material_vals = []
@@ -172,9 +180,9 @@ class ImportProductionFromExcel(models.TransientModel):
                         raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.'%m[2]))
                     if not uom_dict.get(m[5], False):
                         raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.'%m[5]))
-                    if m[3] and m[3].strip() not in product_variant and attr_value.get('size') in attribute_code:
+                    if m[3] and m[3].strip() not in attributes:
                         raise ValidationError(_('Size %s không tồn tại trong bảng giá trị thuộc tính.' % m[3]))
-                    if m[4] and m[4].strip() not in product_variant and attr_value.get('mau_sac') in attribute_code:
+                    if m[4] and m[4].strip() not in attributes:
                         raise ValidationError(_('Màu %s không tồn tại trong bảng giá trị thuộc tính.' % m[4]))
 
                     common_data = {
