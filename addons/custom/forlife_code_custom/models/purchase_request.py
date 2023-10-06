@@ -8,7 +8,7 @@ class PurchaseRequest(models.Model):
         result = super(PurchaseRequest, self).create(vals)
         sequence = 0
         for res in result:
-            declare_code_id = self.env['declare.code']._get_declare_code('001', self.env.company.id)
+            declare_code_id = self.env['declare.code']._get_declare_code('001', res.company_id.id)
             if declare_code_id:
                 res.name = declare_code_id.genarate_code(res.company_id.id,'purchase.request','name',sequence)
                 sequence += 1
