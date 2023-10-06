@@ -14,7 +14,7 @@ class StockPickingTransferBkav(models.Model):
         for record in self:
             user_id = str(record.user_id.id) or str(self._uid)
             employee = employees.get(user_id) or {}
-            res.extend(record.bravo_get_picking_transfer_bkav_value(employee))
+            res.extend(record.bravo_get_picking_transfer_bkav_value(employee.get('code')))
         return columns, res
 
     @api.model
