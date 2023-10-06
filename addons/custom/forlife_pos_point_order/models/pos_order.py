@@ -46,7 +46,7 @@ class PosOrder(models.Model):
     @api.model
     def _process_order(self, order, draft, existing_order):
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
-        HistoryPoint = self.env['partner.history.point']
+        # HistoryPoint = self.env['partner.history.point']
         if not existing_order:
             pos = self.env['pos.order'].browse(pos_id)
             store = pos._get_store_brand_from_program()
@@ -57,13 +57,34 @@ class PosOrder(models.Model):
             if brand_pos_id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id \
                     and not pos.partner_id.is_purchased_of_forlife and pos.program_store_point_id and store:
                 pos.partner_id.is_purchased_of_forlife = True
-            if pos.program_store_point_id:
-                if store is not None:
-                    history_values = pos._prepare_history_point_value(store)
-                    HistoryPoint.sudo().create(history_values)
-                    pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
-                    pos.action_point_addition()
+            # if pos.program_store_point_id:
+            #     if store is not None:
+            #         history_values = pos._prepare_history_point_value(store)
+            #         HistoryPoint.sudo().create(history_values)
+            #         pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
+                    # pos.action_point_addition()
         return pos_id
+
+    def _process_payment_lines(self, pos_order, order, pos_session, draft):
+        res = super(PosOrder, self)._process_payment_lines(pos_order, order, pos_session, draft)
+        if order.program_store_point_id:
+            store = order._get_store_brand_from_program()
+            if store is not None:
+                history_values = order._prepare_history_point_value(store)
+                self.env['partner.history.point'].sudo().create(history_values)
+                order.partner_id._compute_reset_day(order.date_order, order.program_store_point_id.point_expiration, store)
+                order.action_point_addition()
+        if order.pay_point > 0 or order.refund_point > 0:
+            if order.partner_id.is_member_app_format or order.partner_id.is_member_app_forlife:
+                store = order._get_store_brand_from_program()
+                history_values = order._prepare_history_point_back_order_value(
+                    store=order._get_store_brand_from_order(), points_back=order.pay_point)
+                self.env['partner.history.point'].sudo().create(history_values)
+                if order.program_store_point_id and store is not None:
+                    order.partner_id._compute_reset_day(
+                        order.date_order, order.program_store_point_id.point_expiration, store)
+            order.action_point_refund()
+        return res
 
     def btn_compensate_points_all(self, reason):
         for order in self.filtered(lambda x: x.allow_compensate_point):
@@ -214,7 +235,7 @@ class PosOrder(models.Model):
         else:
             return None
 
-    @api.depends('program_store_point_id')
+    @api.depends('program_store_point_id', 'payment_ids', 'payment_ids.amount')
     def _compute_point_order(self):
         for rec in self:
             valid_money_payment_method = 0  # X
