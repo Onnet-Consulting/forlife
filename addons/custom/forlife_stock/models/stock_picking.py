@@ -202,7 +202,7 @@ class StockPicking(models.Model):
             result = []
             for r in self:
                 location_code = r.location_dest_id.code or ''
-                location_name = r.location_dest_id.name or ''
+                location_name = r.location_dest_id.location_id.name + '/' + r.location_dest_id.name or ''
                 name = f"[{location_code + '-' + location_name}] {r.name or ''}"
                 result.append((r.id, name))
             return result
