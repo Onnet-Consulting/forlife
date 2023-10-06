@@ -2315,7 +2315,7 @@ class PurchaseOrderLine(models.Model):
             if rec.free_good:
                 rec.vendor_price = 0
                 rec.price_subtotal = 0
-
+                continue
             if not (rec.product_id and rec.order_id.partner_id and rec.purchase_uom and rec.order_id.currency_id) or rec.order_id.partner_id.is_passersby:
                 if rec.vendor_price_import:
                     if not rec.free_good:
