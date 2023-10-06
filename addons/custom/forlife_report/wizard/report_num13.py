@@ -50,7 +50,8 @@ class ReportNum13(models.TransientModel):
 
         sql = f"""
 with data_pol as (select pol.id         as pol_id,
-                         pol.product_id as product_id
+                         pol.product_id as product_id,
+                         po.id          as po_id
                   from purchase_order_line pol
                            join purchase_order po on pol.order_id = po.id
                   where pol.company_id = any(array{allowed_company})
@@ -71,10 +72,23 @@ with data_pol as (select pol.id         as pol_id,
                         select json_object_agg(fr.root_id, pct.name) as data
                         from find_root fr
                                  left join product_category_type pct on pct.id = fr.category_type_id
-                        where parent_id isnull)                  
+                        where parent_id isnull),
+     pr_info as (select po_id,
+                        array_to_string(array_agg(pr_name), ', ') as pr_name,
+                        array_to_string(array_agg(pr_date), ', ') as pr_date
+                 from (select poprr.purchase_order_id                                  as po_id,
+                              pr.name                                                  as pr_name,
+                              to_char(pr.request_date + '7 h'::interval, 'DD/MM/YYYY') as pr_date
+                       from purchase_order_purchase_request_rel poprr
+                                join purchase_request pr on poprr.purchase_request_id = pr.id
+                       where poprr.purchase_order_id in (select distinct po_id from data_pol)) as x
+                 group by po_id),
+     pr_info_final as (select json_object_agg(po_id, pr_name) as pr_names,
+                              json_object_agg(po_id, pr_date) as pr_dates
+                       from pr_info)              
 select row_number() over (order by po.date_order desc)                      as num,
-    pr.name                                                                 as pr_name,
-    to_char(pr.request_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')      as pr_date,
+    (select pr_names::json -> po.id::text from pr_info_final)               as pr_name,
+    (select pr_dates::json -> po.id::text from pr_info_final)               as pr_date,
     po.name                                                                 as po_name,
     to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')        as po_date,
     rp.name                                                                 as suppliers_name,
@@ -92,7 +106,6 @@ select row_number() over (order by po.date_order desc)                      as n
 from purchase_order_line pol
     join purchase_order po on pol.order_id = po.id
     left join res_partner rp on rp.id = po.partner_id
-    left join purchase_request pr on pr.id = po.request_id
     left join product_product pp on pp.id = pol.product_id
     left join product_template pt on pt.id = pp.product_tmpl_id
 where pol.id in (select distinct pol_id from data_pol)    
