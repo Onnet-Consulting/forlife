@@ -228,8 +228,8 @@ class StockTransfer(models.Model):
     def _action_out_approve(self):
         # self.ensure_one()
         # self._check_qty_available()
-        if len(self) > 1 and self.filtered(lambda x: x.state != 'approve'):
-            raise ValidationError("Vui lòng chọn những phiếu ở trạng thái 'Đã phê duyệt'")
+        if len(self) > 1 and self.filtered(lambda x: x.state not in ['approve', 'in_approve']):
+            raise ValidationError("Vui lòng chọn những phiếu ở trạng thái 'Đã phê duyệt' và 'Xác nhận nhập'")
 
         self._validate_product_quantity()
         self._validate_product_tolerance('out')
