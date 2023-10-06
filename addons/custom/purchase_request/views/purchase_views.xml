@@ -28,8 +28,7 @@
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
                     <field name="account_analytic_id" force_save="1"
                            attrs="{
-                           'readonly': ['&amp;',('account_analytic_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))],
-                           'required': [('purchase_type', 'in', ('service', 'asset'))]
+                           'readonly': ['&amp;',('account_analytic_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]]
                            }"/>
                     <field name="production_id" force_save="1"
                            attrs="{
@@ -39,8 +38,7 @@
                     <field name="occasion_code_id"
                            force_save="1"
                            attrs="{
-                           'readonly': ['&amp;',('occasion_code_id', '!=', False), ('custom_state', 'not in', ('draft', 'confirm'))],
-                           'required': [('purchase_type', '=', 'product')]
+                           'readonly': ['&amp;',('occasion_code_id', '!=', False), ('custom_state', 'not in', ('draft', 'confirm'))]]
                            }"/>
                     <field name="is_check_line_material_line" invisible="1"/>
                 </xpath>
