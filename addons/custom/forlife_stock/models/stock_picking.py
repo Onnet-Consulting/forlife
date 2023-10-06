@@ -201,7 +201,9 @@ class StockPicking(models.Model):
         if self._context.get('show_location_name'):
             result = []
             for r in self:
-                name = f"[{r.location_dest_id.code + '-' + r.location_dest_id.name or ''}] {r.name or ''}"
+                location_code = r.location_dest_id.code or ''
+                location_name = r.location_dest_id.location_id.name + '/' + r.location_dest_id.name or ''
+                name = f"[{location_code + '-' + location_name}] {r.name or ''}"
                 result.append((r.id, name))
             return result
         return super().name_get()

@@ -11,7 +11,7 @@ class StockInventory(models.Model):
         for res in result:
             location_code = res.location_id.code or ''
             location_des_code = res.location_id.code or ''
-            declare_code_id = self.env['declare.code']._get_declare_code('024', self.env.company.id)
+            declare_code_id = self.env['declare.code']._get_declare_code('024', res.company_id.id)
             if declare_code_id:
                 res.name = declare_code_id.genarate_code(res.company_id.id,'stock.inventory','name',sequence,location_code,location_des_code)
                 sequence += 1

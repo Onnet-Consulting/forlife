@@ -232,7 +232,7 @@ class StockTransfer(models.Model):
 
     def _create_diff_transfer(self, data, state='draft', type=''):
         transfer_id = super(StockTransfer, self)._create_diff_transfer(data,state,type)
-        if type == 'lack':
+        if type == 'lack' and transfer_id and transfer_id.id != self.id:
             if self.exists_bkav or self.is_general:
                 transfer_id.exists_bkav = True
                 transfer_id.is_general = True

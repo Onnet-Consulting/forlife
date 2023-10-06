@@ -114,16 +114,6 @@ class PosOrder(models.Model):
                     p.product_defective_id.is_already_in_use = True
                     p.product_defective_id.quantity_can_be_sale = p.product_defective_id.quantity_can_be_sale - p.qty
             # update history back order
-            if pos.refund_point > 0 or pos.pay_point > 0:
-                if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
-                    store = pos._get_store_brand_from_program()
-                    history_values = pos._prepare_history_point_back_order_value(store=pos._get_store_brand_from_order(), points_back=pos.pay_point)
-                    HistoryPoint.sudo().create(history_values)
-                    if pos.program_store_point_id and store is not None:
-                        pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
-                                                          store)
-            if pos.pay_point > 0 or pos.refund_point > 0:
-                pos.action_point_refund()
 
         # create voucher
         line_voucher_id = pos.lines.filtered(lambda x: x.product_id.is_voucher_auto)
