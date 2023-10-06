@@ -39,7 +39,7 @@ class StockPickingOtherExport(models.Model):
         product = stock_move.product_id
         picking = stock_move.picking_id
         employee = self.env.user.sudo().employee_id
-        partner = picking.partner_id or employee.partner_id
+        partner = picking.partner_id or self.env.company.partner_id or employee.partner_id
         debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
         debit_line = debit_line[0] if debit_line else debit_line
         debit = debit_line.debit if debit_line else 0
