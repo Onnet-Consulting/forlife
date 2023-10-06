@@ -19,7 +19,7 @@ class SaleOrder(models.Model):
                 declare_code = '012' #DH tra
                 if res.source_record:
                     declare_code = '013' # DH tra tu Nhanh
-            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
+            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, res.company_id.id)
             if declare_code_id:
                 res.name = declare_code_id.genarate_code(res.company_id.id,'sale.order','name',sequence)
                 sequence += 1

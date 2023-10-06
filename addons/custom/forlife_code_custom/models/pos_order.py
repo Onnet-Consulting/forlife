@@ -14,7 +14,7 @@ class PosOrder(models.Model):
                 declare_code = '006' # DH ban
             else:
                 declare_code = '011' # DH doi tra
-            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
+            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, res.company_id.id)
             if declare_code_id:
                 res.name = declare_code_id.genarate_code(res.company_id.id,'pos.order','name',sequence,location_code,location_des_code)
                 sequence += 1

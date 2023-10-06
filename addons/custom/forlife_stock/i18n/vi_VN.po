@@ -195,7 +195,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__create_uid
 #: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Người tạo"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__create_date
