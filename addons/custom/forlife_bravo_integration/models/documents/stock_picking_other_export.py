@@ -46,8 +46,7 @@ class StockPickingOtherExport(models.Model):
         credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
         credit_line = credit_line[0] if credit_line else credit_line
         credit_account_code = credit_line.account_id.code if credit_line else stock_move.product_id.categ_id.with_company(picking.company_id).property_stock_valuation_account_id.code
-        debit_account_code = debit_line.account_id.code if debit_line else self.env['stock.location'].search([
-            ('company_id', '=', picking.company_id.id), ('code', '=', 'X0202'), ('type_other', '!=', False)]).with_company(picking.company_id).x_property_valuation_out_account_id.code
+        debit_account_code = debit_line.account_id.code if debit_line else picking.location_dest_id.x_property_valuation_in_account_id.code
         journal_value = {
             "CompanyCode": picking.company_id.code or None,
             "Stt": picking.id or None,
