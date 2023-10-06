@@ -12,7 +12,7 @@ class TransferStockInventory(models.Model):
             declare_code = '022' # Kiem ke can ton
             if res.x_classify:
                 declare_code = '023'
-            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
+            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, res.company_id.id)
             if declare_code_id:
                 res.code = declare_code_id.genarate_code(res.company_id.id,'transfer.stock.inventory','code',sequence)
                 sequence += 1

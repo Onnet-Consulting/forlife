@@ -20,7 +20,7 @@ class PurchaseOrder(models.Model):
                     declare_code = '005' #DMH lien cong ty
             else:
                 declare_code = '010' #Don tra hang ncc
-            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, self.env.company.id)
+            declare_code_id = self.env['declare.code']._get_declare_code(declare_code, res.company_id.id)
             if declare_code_id:
                 res.name = declare_code_id.genarate_code(res.company_id.id,'purchase.order','name',sequence)
                 sequence += 1
