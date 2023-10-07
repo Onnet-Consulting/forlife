@@ -702,7 +702,7 @@ class StockTransfer(models.Model):
                 msg = f"Phiếu điều chuyển %s không thể xác nhận xuất vì: Trạng thái khác Đã phê duyệt" % (rec.name)
                 raise ValidationError(msg)
             try:
-                rec._out_approve_with_confirm()
+                rec._action_out_approve()
             except Exception as e:
                 msg = f"Phiếu điều chuyển %s không thể xác nhận xuất vì: %s" % (rec.name, e.name)
                 raise ValidationError(msg)
