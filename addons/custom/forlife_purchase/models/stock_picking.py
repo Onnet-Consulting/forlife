@@ -157,7 +157,7 @@ class StockPicking(models.Model):
                     raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm tên là 'Thuế tiêu thụ đặc biệt'")
 
             move_value = {
-                'ref': f"{self.name} - {line.product_id.name}",
+                'ref': f"{self.name}",
                 'purchase_type': po.purchase_type,
                 'move_type': 'entry',
                 'reference': po.name,
