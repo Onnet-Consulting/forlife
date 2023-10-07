@@ -8,7 +8,7 @@ TITLES = [
     'Số PO', 'Ngày tạo PO', 'Ngày nhận hàng dự kiến', 'Ghi chú',
     'Kho', 'Số phiếu kho', 'STT dòng', 'Barcode (*)', 'Số lượng nhu cầu', 'Tên SP',
     'Màu', 'Ánh màu', 'Màu cơ bản', 'Size', 'Đơn vị tính (*)', 'Số lượng xác nhận',
-    'Phần dở dang của', 'Hàng không tính tiền',
+    'Phần dở dang của', 'Hàng không tính tiền', 'Mã vụ việc',
 ]
 
 
@@ -50,7 +50,8 @@ class ReportNum28(models.TransientModel):
                 COALESCE(uu.name->>'vi_VN', uu.name->>'en_US') as dvt,
                 '' as sl_nhan,
                 sp2.name as phan_do_dang,
-                sm.free_good as hang_tang
+                sm.free_good as hang_tang,
+                oc.name as occasion_code
                 
             from purchase_order po 
             join purchase_order_line pol on po.id = pol.order_id 
@@ -84,6 +85,8 @@ class ReportNum28(models.TransientModel):
                 ) as att
                 group by product_id
             ) attr on attr.product_id = pp.id
+            left join occasion_code oc 
+                on pol.occasion_code_id = oc.id
             
             where 1 = 1 and (po.is_return is false or po.is_return is null)
 
@@ -144,4 +147,5 @@ class ReportNum28(models.TransientModel):
             sheet.write(row, 15, value.get('dvt'), formats.get('normal_format'))
             sheet.write(row, 16, value.get('phan_do_dang'), formats.get('normal_format'))
             sheet.write(row, 17, value.get('hang_tang'), formats.get('normal_format'))
+            sheet.write(row, 18, value.get('occasion_code'), formats.get('normal_format'))
             row += 1
