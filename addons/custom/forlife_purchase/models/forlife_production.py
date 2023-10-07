@@ -10,7 +10,7 @@ class ForlifeProduction(models.Model):
     _description = "Forlife Production"
     _rec_name = 'code'
 
-    code = fields.Char("Production Order Code", required=True)
+    code = fields.Char("Production Order Code", required=True, trim=True)
     name = fields.Char("Production Order Name", required=True)
     version = fields.Integer("Version", default=0, copy=False)
     active = fields.Boolean(default=True)

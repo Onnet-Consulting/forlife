@@ -28,18 +28,15 @@
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
                     <field name="account_analytic_id" force_save="1"
                            attrs="{
-                           'readonly': ['&amp;',('account_analytic_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]]
-                           }"/>
+                           'readonly': ['&amp;',('account_analytic_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="production_id" force_save="1"
                            attrs="{
                            'invisible': [('purchase_type', '=', 'asset')],
-                           'readonly': ['&amp;',('production_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]
-                            }"/>
+                           'readonly': ['&amp;',('production_id', '!=', False),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="occasion_code_id"
                            force_save="1"
                            attrs="{
-                           'readonly': ['&amp;',('occasion_code_id', '!=', False), ('custom_state', 'not in', ('draft', 'confirm'))]]
-                           }"/>
+                           'readonly': ['&amp;',('occasion_code_id', '!=', False), ('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="is_check_line_material_line" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='has_contract']" position="attributes">

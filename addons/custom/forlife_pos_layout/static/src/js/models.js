@@ -29,7 +29,7 @@ odoo.define('forlife_pos_layout.models', function (require) {
 
         get_display_price_after_discount() {
             if (this.use_discount_cash) {
-                return this.get_unit_price() - this.get_discount_cash_amount();
+                return (this.get_unit_price() * this.get_quantity()) - this.get_discount_cash_amount();
             }
             return this.get_display_price();
         }
@@ -39,7 +39,7 @@ odoo.define('forlife_pos_layout.models', function (require) {
         }
 
         set_discount_cash_manual(val) {
-            const price = this.get_unit_price();
+            const price = this.get_unit_price() * this.get_quantity();
             const value = parseFloat(val)
             const rounding = this.pos.currency.rounding;
             const discount = round_pr((value / price) * 100, rounding);
@@ -51,7 +51,7 @@ odoo.define('forlife_pos_layout.models', function (require) {
         get_all_prices(qty = this.get_quantity()) {
             var price_unit = this.get_unit_price() * (1.0 - (this.get_discount() / 100.0));
             if (this.use_discount_cash) {
-                price_unit = this.get_unit_price() - this.get_discount_cash_amount();
+                price_unit = this.get_unit_price() - this.get_discount_cash_amount() / qty;
             }
             var taxtotal = 0;
 
@@ -67,7 +67,6 @@ odoo.define('forlife_pos_layout.models', function (require) {
                 taxtotal += tax.amount;
                 taxdetail[tax.id] = tax.amount;
             });
-
             return {
                 "priceWithTax": all_taxes.total_included,
                 "priceWithoutTax": all_taxes.total_excluded,
