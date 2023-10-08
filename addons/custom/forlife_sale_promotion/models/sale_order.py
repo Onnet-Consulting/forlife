@@ -73,7 +73,7 @@ class SaleOrder(models.Model):
             discount_account_id = ln.product_id.categ_id.discount_account_id.id or ln.product_id.categ_id.property_account_expense_categ_id.id
             promotion_account_id = ln.product_id.categ_id.promotion_account_id.id or ln.product_id.categ_id.property_account_expense_categ_id.id
 
-        return gift_account_id, discount_account_id, promotion_account_id
+        return int(gift_account_id), int(discount_account_id), int(promotion_account_id)
 
     def check_sale_promotion(self):
         for rec in self:
@@ -301,7 +301,7 @@ class SaleOrder(models.Model):
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
                                 if ir_property:
-                                    account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                    account_id = int(str(ir_property.value_reference).replace("account.account,", ""))
                                 else:
                                     account_id = None
                             else:
@@ -334,7 +334,7 @@ class SaleOrder(models.Model):
                                     ('company_id', '=', rec.company_id.id)
                                 ], limit=1)
                                 if ir_property:
-                                    account_id = str(ir_property.value_reference).replace("account.account,", "")
+                                    account_id = int(str(ir_property.value_reference).replace("account.account,", ""))
                                 else:
                                     account_id = None
                             else:
