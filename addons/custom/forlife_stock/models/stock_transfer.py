@@ -211,7 +211,7 @@ class StockTransfer(models.Model):
         self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
         if self._context.get('skip_confirm'):
             return self._action_out_approve()
-        if any(line.qty_out == 0 for line in self.stock_transfer_line):
+        if not self.stock_transfer_line.filtered(lambda x: x.qty_out != 0):
             view = self.env.ref('forlife_stock.stock_transfer_popup_out_confirm_view_form')
             return {
                 'name': 'Điều chuyển ngay?',
@@ -226,37 +226,41 @@ class StockTransfer(models.Model):
         return self._action_out_approve()
 
     def _action_out_approve(self):
-        self.ensure_one()
+        # self.ensure_one()
         # self._check_qty_available()
+        if len(self) > 1 and self.filtered(lambda x: x.state not in ['approved', 'in_approve']):
+            raise ValidationError("Vui lòng chọn những phiếu ở trạng thái 'Đã phê duyệt' và 'Xác nhận nhập'")
+
         self._validate_product_quantity()
         self._validate_product_tolerance('out')
-        stock_transfer_line_less = self.stock_transfer_line.filtered(lambda r: r.qty_out < r.qty_plan)
-        if stock_transfer_line_less:
-            self._out_approve_less_quantity(stock_transfer_line_less)
-        self._update_forlife_production()
-        self.write({
-            'state': 'out_approve',
-            'date_transfer': fields.Datetime.now(),
-            'out_confirm_uid': self._uid,
-        })
-        if self.stock_request_id:
-            self.update_quantity_reality_transfer_request()
-        if stock_transfer_line_less:
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'type': 'warning',
-                    'message': 'Có phiếu dở dang đã được tạo cần xác nhận!',
-                    'next': {'type': 'ir.actions.act_window_close'},
-                }
-            }
-        if self.type == 'excess':
-            self.write({
-                'state': 'done',
-                'date_in_approve': fields.Datetime.now(),
-                'done_transfer_uid': self._uid,
+        for record in self:
+            stock_transfer_line_less = record.stock_transfer_line.filtered(lambda r: r.qty_out < r.qty_plan)
+            if stock_transfer_line_less:
+                record._out_approve_less_quantity(stock_transfer_line_less)
+            record._update_forlife_production()
+            record.write({
+                'state': 'out_approve',
+                'date_transfer': fields.Datetime.now(),
+                'out_confirm_uid': record._uid,
             })
+            if record.stock_request_id:
+                record.update_quantity_reality_transfer_request()
+            if stock_transfer_line_less and len(self) == 1:
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'type': 'warning',
+                        'message': 'Có phiếu dở dang đã được tạo cần xác nhận!',
+                        'next': {'type': 'ir.actions.act_window_close'},
+                    }
+                }
+            if record.type == 'excess':
+                record.write({
+                    'state': 'done',
+                    'date_in_approve': fields.Datetime.now(),
+                    'done_transfer_uid': record._uid,
+                })
 
     def update_quantity_reality_transfer_request(self):
         product_str_ids = self.stock_transfer_line.mapped('product_str_id')
@@ -274,16 +278,17 @@ class StockTransfer(models.Model):
                 })
 
     def _validate_product_tolerance(self, type='out'):
-        self.ensure_one()
+        # self.ensure_one()
         for line in self.stock_transfer_line:
             line.validate_product_tolerance(type)
 
     def _validate_product_quantity(self):
-        self.ensure_one()
-        location = self.location_id
+        # self.ensure_one()
+        # location = self.location_id
         validation_error_msg = ''
         for line in self.stock_transfer_line:
-            msg = line.validate_product_quantity(location)
+            location = line.stock_transfer_id.location_id
+            msg = line.validate_product_quantity(location=location, transfer_ids=self.ids)
             if msg:
                 validation_error_msg += msg
         if validation_error_msg or validation_error_msg != '':
@@ -354,7 +359,7 @@ class StockTransfer(models.Model):
 
     def action_in_approve(self):
         self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
-        if any(line.qty_in == 0 for line in self.stock_transfer_line):
+        if not self.stock_transfer_line.filtered(lambda x: x.qty_in != 0):
             view = self.env.ref('forlife_stock.stock_transfer_popup_in_confirm_view_form')
             return {
                 'name': 'Điều chuyển ngay?',
@@ -697,7 +702,7 @@ class StockTransfer(models.Model):
                 msg = f"Phiếu điều chuyển %s không thể xác nhận xuất vì: Trạng thái khác Đã phê duyệt" % (rec.name)
                 raise ValidationError(msg)
             try:
-                rec._out_approve_with_confirm()
+                rec._action_out_approve()
             except Exception as e:
                 msg = f"Phiếu điều chuyển %s không thể xác nhận xuất vì: %s" % (rec.name, e.name)
                 raise ValidationError(msg)
@@ -792,12 +797,13 @@ class StockTransferLine(models.Model):
             else:
                 r.is_readonly_qty = False
 
-    def validate_product_quantity(self, location=False, is_diff_transfer=False):
+    def validate_product_quantity(self, location=False, is_diff_transfer=False, transfer_ids=[]):
         self.ensure_one()
         validation_error_msg = ''
         QuantityProductionOrder = self.env['quantity.production.order']
         product = self.product_id
         stock_transfer_line = self.sudo().search([('id', '!=', self.id), ('product_id', '=', product.id),
+                                                  ('stock_transfer_id', 'in', transfer_ids),
                                                   ('stock_transfer_id.location_id', '=', location.id),
                                                   ('stock_transfer_id.state', 'in', ['out_approve', 'in_approve'])])
         product_quantity = self.qty_out + sum([line.qty_out for line in stock_transfer_line])
@@ -900,7 +906,7 @@ class StockTransferLine(models.Model):
         return validation_error_msg
 
     def validate_product_tolerance(self, type='out'):
-        self.ensure_one()
+        # self.ensure_one()
         product = self.product_id
         tolerance = product.tolerance
         start_transfer = self.env['stock.transfer'].search([('id', '!=', self.stock_transfer_id.id), ('origin', '=', self.stock_transfer_id.origin)])

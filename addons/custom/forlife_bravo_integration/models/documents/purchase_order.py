@@ -308,9 +308,11 @@ class StockPickingPurchaseProduct(models.Model):
         count = 1
         values = []
         for stock_move in self.move_ids:
-            account_move = stock_move.account_move_ids and stock_move.account_move_ids[0]
-            values.append(self.bravo_get_picking_purchase_by_account_move_value(stock_move, account_move, count, employee_code))
-            count += 1
+            account_move = stock_move.account_move_ids.filtered(lambda a: a.journal_id.code == 'ST01')
+            account_move = account_move and account_move[0]
+            if account_move:
+                values.append(self.bravo_get_picking_purchase_by_account_move_value(stock_move, account_move, count, employee_code))
+                count += 1
         return values
 
     def bravo_get_picking_purchase_by_account_move_value(self, stock_move, account_move, line_count, employee_code):

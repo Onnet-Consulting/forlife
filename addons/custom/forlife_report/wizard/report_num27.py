@@ -54,8 +54,7 @@ class ReportNum27(models.TransientModel):
                 , COALESCE(t10.name->>'vi_VN', t10.name->>'en_US') as tt_cp
                 , t8.name as ma_vv
                 , t9.name as lsx
-                , '' as ma_ts
-                
+                , aas.name as ma_ts
                 
             from
                 forlife_other_in_out_request t1
@@ -95,6 +94,7 @@ class ReportNum27(models.TransientModel):
             left join forlife_production t9 on t4.work_production = t9.id
             left join account_analytic_account t10 on t4.account_analytic_id = t10.id
             left join stock_location t11 on t4.reason_id = t11.id
+            left join assets_assets aas on t4.ref_asset = aas.id
             
             where 1 = 1
             

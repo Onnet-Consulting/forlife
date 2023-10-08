@@ -30,6 +30,7 @@
                         <td><t t-esc="line.dvt"/></td>
                         <td><t t-esc="line.phan_do_dang"/></td>
                         <td><t t-esc="line.hang_tang"/></td>
+                        <td><t t-esc="line.occasion_code"/></td>
                     </tr>
                 </t>
             </tbody>

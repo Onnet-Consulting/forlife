@@ -14,7 +14,7 @@ class StockPickingTransferBkav(models.Model):
         for record in self:
             user_id = str(record.user_id.id) or str(self._uid)
             employee = employees.get(user_id) or {}
-            res.extend(record.bravo_get_picking_transfer_bkav_value(employee))
+            res.extend(record.bravo_get_picking_transfer_bkav_value(employee.get('code')))
         return columns, res
 
     @api.model
@@ -38,7 +38,7 @@ class StockPickingTransferBkav(models.Model):
     def bravo_get_picking_transfer_bkav_by_account_move_value(self, stock_move, account_move, line_count, employee_code):
         product = stock_move.product_id
         picking = stock_move.picking_id
-        partner = picking.partner_id or picking.user_id.partner_id
+        partner = picking.partner_id or self.env.company.partner_id or picking.user_id.partner_id
         debit_line = account_move.line_ids.filtered(lambda l: l.debit > 0)
         credit_line = account_move.line_ids.filtered(lambda l: l.credit > 0)
         credit = credit_line[0].credit if credit_line else 0
