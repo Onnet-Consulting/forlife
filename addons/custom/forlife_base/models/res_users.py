@@ -64,5 +64,9 @@ class ResUsers(models.Model):
             store_ids = self.store_ids.with_context(active_test=False).search([]).mapped('id')
         else:
             store_ids = self.store_ids.mapped('id')
-
         return store_ids
+
+    @api.model
+    def get_location(self):
+        location_ids = self.env['stock.location'].search([('warehouse_id', 'in', self.stock_ids.ids)])
+        return location_ids.ids
