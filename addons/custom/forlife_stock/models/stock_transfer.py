@@ -156,7 +156,7 @@ class StockTransfer(models.Model):
     def _check_qty_available(self):
         location_id = self.location_id
         work_from = self.work_from
-        QuantityProductionOrder = self.env['quantity.production.order'].sudo()
+        QuantityProductionOrder = self.env['quantity.production.order']
         for line in self.stock_transfer_line:
             product = line.product_id
             domain = [('location_id', '=', location_id.id), ('product_id', '=', line.product_id.id)]
@@ -461,11 +461,11 @@ class StockTransfer(models.Model):
         stock_picking_from_ho.button_validate()
 
     def _action_in_approve_in_process(self):
-        if 'company_byside' in self._context and self._context.get('company_byside'):
-            company_id = self.env['res.company'].sudo().search([('id', '=', self._context.get('company_byside'))])
-        else:
-            company_id = self.env.company
-        pk_type = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'internal')], limit=1)
+        # if 'company_byside' in self._context and self._context.get('company_byside'):
+        #     company_id = self.env['res.company'].sudo().search([('id', '=', self._context.get('company_byside'))])
+        # else:
+        #     company_id = self.location_id.company_id
+        pk_type = self.location_id.warehouse.id.int_type_id
         origin = self.name
         date_done = self.date_in_approve
         location_id = self.location_id
@@ -802,7 +802,7 @@ class StockTransferLine(models.Model):
         validation_error_msg = ''
         QuantityProductionOrder = self.env['quantity.production.order']
         product = self.product_id
-        stock_transfer_line = self.sudo().search([('id', '!=', self.id), ('product_id', '=', product.id),
+        stock_transfer_line = self.search([('id', '!=', self.id), ('product_id', '=', product.id),
                                                   ('stock_transfer_id', 'in', transfer_ids),
                                                   ('stock_transfer_id.location_id', '=', location.id),
                                                   ('stock_transfer_id.state', 'in', ['out_approve', 'in_approve'])])
