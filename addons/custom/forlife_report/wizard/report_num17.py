@@ -73,19 +73,19 @@ with po_datas as (select po.id                  as po_id,
                                           where config_id in (select id
                                                               from pos_config
                                                               where store_id = any (array {store_ids})))),
-     ma_the_gg_mua as (select po_id, array_agg(code) as codes
+     ma_the_gg_mua as (select po_id, array_to_string(array_agg(code), ', ') as codes
                        from (select DISTINCT pul.order_id as po_id, pro_code.name as code
                              from promotion_usage_line pul
                                       join promotion_code pro_code on pro_code.id = pul.code_id
                              where pul.order_line_id in (select distinct pol_id from po_datas where type > 0)) as xx
                        group by po_id),
-     ma_the_gg_tl as (select po_id, array_agg(code) as codes
+     ma_the_gg_tl as (select po_id, array_to_string(array_agg(code), ', ') as codes
                       from (select DISTINCT pul.order_id as po_id, pro_code.name as code
                             from promotion_usage_line pul
                                      join promotion_code pro_code on pro_code.id = pul.code_id
                             where pul.order_line_id in (select distinct pol_id from po_datas where type < 0)) as xx
                       group by po_id),
-     voucher_mua as (select po_id, array_agg(voucher) as vouchers
+     voucher_mua as (select po_id, array_to_string(array_agg(voucher), ', ') as vouchers
                      from (select DISTINCT pvl.pos_order_id as po_id, vv.name as voucher
                            from pos_voucher_line pvl
                                     join voucher_voucher vv on vv.id = pvl.voucher_id
@@ -204,7 +204,7 @@ with po_datas as (select po.id                  as po_id,
        sl_x.tru_tich_luy                                                                     as tru_tich_luy,
        sl_x.tien_sp_voucher                                                                  as tien_sp_voucher,
        coalesce(sl_x.tien_the_gg, 0)                                                         as tien_the_gg,
-       coalesce(sl_x.cong - sl_x.tien_giam_gia, 0)::float                                    as phai_thu,
+       greatest(po.amount_total, 0)                                                          as phai_thu,
        coalesce((select sum(amount)
                  from pos_payment
                  where pos_order_id = po.id
@@ -260,7 +260,7 @@ with po_datas as (select po.id                  as po_id,
        to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')                     as ngay_lap,
        ''                                                                                    as nguoi_sua,
        ''                                                                                    as ngay_sua,
-       (select array_agg(name)
+       (select array_to_string(array_agg(name), ', ')
         from pos_order
         where id in (select order_id
                      from pos_order_line
@@ -268,7 +268,7 @@ with po_datas as (select po.id                  as po_id,
                                   from pos_order_line
                                   where refunded_orderline_id notnull
                                     and order_id = po.id)))                                  as so_ct_goc,
-       (select array_agg(to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY'))
+       (select array_to_string(array_agg(to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')), ', ')
         from pos_order
         where id in (select order_id
                      from pos_order_line
@@ -276,13 +276,13 @@ with po_datas as (select po.id                  as po_id,
                                   from pos_order_line
                                   where refunded_orderline_id notnull
                                     and order_id = po.id)))                                  as ngay_ct_goc,
-       (select array_agg(name)
+       (select array_to_string(array_agg(name), ', ')
         from (select distinct name
               from hr_employee
               where id in (select employee_id
                            from pos_order_line
                            where order_id = po.id)) as xx)                                   as nhan_vien,
-       (select array_agg(name)
+       (select array_to_string(array_agg(name), ', ')
         from (select distinct name
               from res_partner_retail
               where brand_id = {self.brand_id.id}
@@ -316,7 +316,7 @@ data_final_tl as ("""
               rp.name                                                           as ten_kh,
               po.note                                                           as mo_ta,
               gg_x.codes                                                        as ma_the_gg,
-              array []::char[]                                                  as voucher,
+              ''                                                                as voucher,
               sl_x.sl                                                           as sl,
               sl_x.cong                                                         as cong,
               sl_x.tien_giam_gia                                                as giam_gia,
@@ -329,7 +329,7 @@ data_final_tl as ("""
               0                                                                 as tru_tich_luy,
               0                                                                 as tien_sp_voucher,
               coalesce(sl_x.tien_the_gg, 0)                                     as tien_the_gg,
-              coalesce(sl_x.cong - sl_x.tien_giam_gia, 0)::float                as phai_thu,
+              0                                                                 as phai_thu,
               0                                                                 as tien_mat,
               0                                                                 as tien_the,
               0                                                                 as tien_vnpay,
@@ -340,7 +340,7 @@ data_final_tl as ("""
               to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY') as ngay_lap,
               ''                                                                as nguoi_sua,
               ''                                                                as ngay_sua,
-              (select array_agg(name)
+              (select array_to_string(array_agg(name), ', ')
                from pos_order
                where id in (select order_id
                             from pos_order_line
@@ -348,7 +348,7 @@ data_final_tl as ("""
                                          from pos_order_line
                                          where refunded_orderline_id notnull
                                            and order_id = po.id)))              as so_ct_goc,
-              (select array_agg(to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY'))
+              (select array_to_string(array_agg(to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')), ', ')
                from pos_order
                where id in (select order_id
                             from pos_order_line
@@ -356,13 +356,13 @@ data_final_tl as ("""
                                          from pos_order_line
                                          where refunded_orderline_id notnull
                                            and order_id = po.id)))              as ngay_ct_goc,
-              (select array_agg(name)
+              (select array_to_string(array_agg(name), ', ')
                from (select distinct name
                      from hr_employee
                      where id in (select employee_id
                                   from pos_order_line
                                   where order_id = po.id)) as xx)               as nhan_vien,
-              (select array_agg(name)
+              (select array_to_string(array_agg(name), ', ')
                from (select distinct name
                      from res_partner_retail
                      where brand_id = {self.brand_id.id}
@@ -429,8 +429,8 @@ from (select *
             sheet.write(row, 7, value.get('sdt'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('ten_kh'), formats.get('normal_format'))
             sheet.write(row, 9, value.get('mo_ta'), formats.get('normal_format'))
-            sheet.write(row, 10, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
-            sheet.write(row, 11, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('ma_the_gg'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('voucher'), formats.get('normal_format'))
             sheet.write(row, 12, value.get('sl'), formats.get('normal_format'))
             sheet.write(row, 13, value.get('cong', 0), formats.get('int_number_format'))
             sheet.write(row, 14, value.get('giam_gia', 0), formats.get('int_number_format'))
@@ -454,9 +454,9 @@ from (select *
             sheet.write(row, 32, value.get('ngay_lap'), formats.get('center_format'))
             sheet.write(row, 33, value.get('nguoi_sua'), formats.get('normal_format'))
             sheet.write(row, 34, value.get('ngay_sua'), formats.get('center_format'))
-            sheet.write(row, 35, ', '.join(value.get('so_ct_goc') or []), formats.get('normal_format'))
-            sheet.write(row, 36, ', '.join(value.get('ngay_ct_goc') or []), formats.get('normal_format'))
-            sheet.write(row, 37, ', '.join(value.get('nhan_vien') or []), formats.get('normal_format'))
-            sheet.write(row, 38, ', '.join(value.get('nhom_khach') or []), formats.get('normal_format'))
+            sheet.write(row, 35, value.get('so_ct_goc'), formats.get('normal_format'))
+            sheet.write(row, 36, value.get('ngay_ct_goc'), formats.get('normal_format'))
+            sheet.write(row, 37, value.get('nhan_vien'), formats.get('normal_format'))
+            sheet.write(row, 38, value.get('nhom_khach'), formats.get('normal_format'))
             sheet.write(row, 39, value.get('kenh_ban'), formats.get('normal_format'))
             row += 1

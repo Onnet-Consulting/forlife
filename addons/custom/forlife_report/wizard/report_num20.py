@@ -67,7 +67,7 @@ attribute_data as (
         select 
             pp.id                                                                                   as product_id,
             pa.attrs_code                                                                           as attrs_code,
-            array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US'))    as value
+            array_to_string(array_agg(coalesce(pav.name::json ->> '{user_lang_code}', pav.name::json ->> 'en_US')), ', ')    as value
         from product_template_attribute_line ptal
             left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
             left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
@@ -76,7 +76,14 @@ attribute_data as (
         where pa.attrs_code notnull
         group by pp.id, pa.attrs_code) as att
     group by product_id
-)
+),
+promotion_keys as (select '{{
+                      "point": "Tiêu điểm",
+                      "card": "Chiết khấu hạng thẻ",
+                      "product_defective": "Chiết khấu hàng lỗi",
+                      "handle": "Chiết khấu tay",
+                      "changed_refund": "Duyệt giá đổi trả hàng"
+                    }}'::json as keys)
 select
     row_number() over (order by po.id)                                          as num,
     sto.code                                                                    as ma_cn,
@@ -109,15 +116,22 @@ select
     0                                                                           as giam_tren_hd,
     po.note                                                                     as mo_ta,
     cr.name                                                                     as hang,
-    (select array_agg(name) from (
-        select distinct name from promotion_program where id in (
-            select program_id from promotion_usage_line where order_line_id = pol.id
-            )) as xx)                                                           as ctkm,
-    (select array_agg(name) from (
+    (select array_to_string(array_agg(name), ', ')
+    from (select distinct name
+          from promotion_program
+          where id in (select program_id
+                       from promotion_usage_line
+                       where order_line_id = pol.id)
+          union all
+          select concat((select keys::json ->> s.type from promotion_keys)  , ':', s.recipe)
+          from pos_order_line_discount_details s
+          where s.pos_order_line_id = pol.id
+           and s.type in (select json_object_keys(keys) from promotion_keys)) as xx) as ctkm,
+    (select array_to_string(array_agg(name), ', ') from (
         select distinct name from promotion_code where id in (
             select code_id from promotion_usage_line where order_line_id = pol.id
             )) as xx)                                                           as ma_the_gg,
-    (select array_agg(name) from (
+    (select array_to_string(array_agg(name), ', ') from (
         select distinct name from voucher_voucher where id in (
             select voucher_id from pos_voucher_line where pos_order_id = po.id
             )) as xx)                                                           as voucher,
@@ -195,9 +209,9 @@ order by num
             sheet.write(row, 9, value.get('ma_vach'), formats.get('normal_format'))
             sheet.write(row, 10, value.get('ten_hang'), formats.get('normal_format'))
             sheet.write(row, 11, value.get('nhom_hang'), formats.get('normal_format'))
-            sheet.write(row, 12, ', '.join(value.get('nhan_hieu') or []), formats.get('normal_format'))
-            sheet.write(row, 13, ', '.join(value.get('kich_co') or []), formats.get('normal_format'))
-            sheet.write(row, 14, ', '.join(value.get('mau_sac') or []), formats.get('normal_format'))
+            sheet.write(row, 12, value.get('nhan_hieu'), formats.get('normal_format'))
+            sheet.write(row, 13, value.get('kich_co'), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('mau_sac'), formats.get('normal_format'))
             sheet.write(row, 15, value.get('don_vi'), formats.get('normal_format'))
             sheet.write(row, 16, value.get('dong_hang'), formats.get('normal_format'))
             sheet.write(row, 17, value.get('ket_cau'), formats.get('normal_format'))
@@ -212,8 +226,8 @@ order by num
             sheet.write(row, 26, value.get('mo_ta'), formats.get('normal_format'))
             sheet.write(row, 27, value.get('hang'), formats.get('normal_format'))
             sheet.write(row, 28, ', '.join(value.get('ctkm') or []), formats.get('normal_format'))
-            sheet.write(row, 29, ', '.join(value.get('ma_the_gg') or []), formats.get('normal_format'))
-            sheet.write(row, 30, ', '.join(value.get('voucher') or []), formats.get('normal_format'))
+            sheet.write(row, 29, value.get('ma_the_gg'), formats.get('normal_format'))
+            sheet.write(row, 30, value.get('voucher'), formats.get('normal_format'))
             sheet.write(row, 31, value.get('nhan_vien'), formats.get('normal_format'))
             don_hang_goc = value.get('don_hang_goc') or ['', '']
             sheet.write(row, 32, don_hang_goc[0], formats.get('normal_format'))

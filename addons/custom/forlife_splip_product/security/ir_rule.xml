@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="split_product_rule" model="ir.rule">
+            <field name="name">Split product location</field>
+            <field name="model_id" ref="model_split_product"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">[
+                ('split_product_line_ids.warehouse_out_id', 'in', user.get_location()),
+                ('split_product_line_ids.warehouse_in_id', 'in', user.get_location()),
+            ]</field>
+        </record>
+    </data>
+</odoo>

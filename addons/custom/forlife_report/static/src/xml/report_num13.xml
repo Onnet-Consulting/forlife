@@ -16,6 +16,8 @@
                         <td class="index-report"><t t-esc="line.num"/></td>
                         <td class="column_nowrap"><t t-esc="line.pr_name"/></td>
                         <td><t t-esc="line.pr_date"/></td>
+                        <td><t t-esc="line.nguoi_mua"/></td>
+                        <td><t t-esc="line.ma_vu_viec"/></td>
                         <td class="column_nowrap"><t t-esc="line.po_name"/></td>
                         <td><t t-esc="line.po_date"/></td>
                         <td><t t-esc="line.suppliers_name"/></td>
@@ -25,8 +27,17 @@
                         <td><t t-esc="line.product_name"/></td>
                         <td class="right"><t t-esc="format_decimal(line.product_qty, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.price_unit, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.discount_percent, 3)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.discount_percent, 2)"/>%</td>
                         <td class="right"><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_noi_dia, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thu_noi_dia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_nk, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thue_nk, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_db, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thue_db, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_gtgt, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thue_gtgt, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tong_tien_thue, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty_received, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty_not_received, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty_invoiced, 2)"/></td>
