@@ -16,6 +16,8 @@
                         <td class="index-report"><t t-esc="line.num"/></td>
                         <td class="column_nowrap"><t t-esc="line.pr_name"/></td>
                         <td><t t-esc="line.pr_date"/></td>
+                        <td><t t-esc="line.nguoi_mua"/></td>
+                        <td><t t-esc="line.ma_vu_viec"/></td>
                         <td class="column_nowrap"><t t-esc="line.po_name"/></td>
                         <td><t t-esc="line.po_date"/></td>
                         <td><t t-esc="line.suppliers_name"/></td>

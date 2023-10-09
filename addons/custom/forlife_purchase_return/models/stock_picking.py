@@ -398,7 +398,7 @@ class StockPicking(models.Model):
                 if move.product_id.cost_method == 'average':
                     self.add_cost_product(move.product_id, -credit_cost)
                 entry_cp = self.env['account.move'].create({
-                    'ref': f"{self.name} - Chi phí nhân công thuê ngoài/nội bộ - {target_items}",
+                    'ref': f"{self.name}",
                     'purchase_type': po.purchase_type,
                     'move_type': 'entry',
                     'journal_id': journal_id,
