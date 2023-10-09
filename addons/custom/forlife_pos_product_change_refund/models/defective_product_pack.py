@@ -180,4 +180,5 @@ class ProductDefectivePack(models.Model):
                 'defective_product_ids': [(6, False, [line.id for line in grouped_lines])],
                 'company_id': company_id.id
             })
-        transfers.action_out_approve()
+        if transfers:
+            transfers.action_out_approve()
