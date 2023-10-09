@@ -351,7 +351,7 @@ class PurchaseOrder(models.Model):
                         else:
                             invoice_lines = line_id.invoice_lines.filtered(lambda x: x.parent_state == 'posted')
                             total_invoice_line = sum(invoice_lines.mapped('price_subtotal')) + sum(invoice_lines.mapped('tax_amount'))
-                            if line_id.price_total != total_invoice_line:
+                            if line_id.price_total != total_invoice_line and line_id.price_total > total_invoice_line:
                                 order.invoice_status = 'to invoice'
                                 return True
 
