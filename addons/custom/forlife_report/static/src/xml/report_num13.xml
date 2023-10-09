@@ -27,8 +27,17 @@
                         <td><t t-esc="line.product_name"/></td>
                         <td class="right"><t t-esc="format_decimal(line.product_qty, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.price_unit, 0)"/></td>
-                        <td class="right"><t t-esc="format_decimal(line.discount_percent, 3)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.discount_percent, 2)"/>%</td>
                         <td class="right"><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_noi_dia, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thu_noi_dia, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_nk, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thue_nk, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_db, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thue_db, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.pt_thue_gtgt, 0)"/>%</td>
+                        <td class="right"><t t-esc="format_decimal(line.thue_gtgt, 0)"/></td>
+                        <td class="right"><t t-esc="format_decimal(line.tong_tien_thue, 0)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty_received, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty_not_received, 2)"/></td>
                         <td class="right"><t t-esc="format_decimal(line.qty_invoiced, 2)"/></td>

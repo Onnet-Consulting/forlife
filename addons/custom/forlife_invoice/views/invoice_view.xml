@@ -321,7 +321,7 @@
 
                     <page string="Kê khai hóa đơn GTGT" name="supplier_info" attrs="{'invisible':[('move_type', '=', 'entry')]}">
                         <field name="product_expense_ids" invisible="1"/>
-                        <field name="vendor_back_ids" attrs="{'readonly': [('state', '!=', 'draft')]}" class="width-hh" widget="one2many" mode="tree">
+                        <field name="vendor_back_ids" context="{'default_company_id': company_id}" attrs="{'readonly': [('state', '!=', 'draft')]}" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">
                                 <control>
                                     <create name="add" string="Thêm mới" readonly="1"/>
@@ -333,8 +333,8 @@
                                 <field name="company_id"/>
                                 <field name="currency_id" optional="hide"/>
                                 <field name="invoice_reference"/>
-                                <field name="description" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                                <field name="invoice_description" attrs="{'column_invisible': [('parent.purchase_type', '=', 'product')]}" domain="[('id', 'in', parent.product_expense_ids)]"/>
+                                <field name="description" attrs="{'column_invisible': [('parent.select_type_inv', '!=', 'normal')]}"/>
+                                <field name="invoice_description" attrs="{'column_invisible': [('parent.select_type_inv', '=', 'normal')]}" domain="[('id', 'in', parent.product_expense_ids)]"/>
                                 <field name="price_subtotal_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                 <field name="tax_percent" force_save="1"/>
                                 <field name="tax_back" force_save="1" widget="monetary" options="{'currency_field': 'currency_id'}"/>
