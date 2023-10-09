@@ -18,7 +18,7 @@ class ImportProductionFromExcel(models.TransientModel):
 
     def get_default_template(self):
         for rec in self:
-            path = get_resource_path('forlife_purchase', 'data/xml', 'template_lsx.xlsx')
+            path = get_resource_path('forlife_purchase', 'data/xml', 'template_lsx_v2.xlsx')
             rec.file_template = base64.b64encode(open(path, "rb").read())
 
     def download_template(self):
@@ -27,6 +27,7 @@ class ImportProductionFromExcel(models.TransientModel):
             'name': 'Export fee',
             'url': '/web/content/%s/%s/file_template/template_lsx.xlsx?download=true' % (self._name, self.id),
         }
+        self.file_template = False
         return export
 
     def validate_date(self, date_string):
