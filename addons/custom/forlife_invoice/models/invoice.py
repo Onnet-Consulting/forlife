@@ -742,9 +742,14 @@ class AccountMove(models.Model):
             # Chuyển đổi từ điển thành danh sách bản ghi
         merged_records_list_tnk = [(0, 0, record) for record in merged_records_tnk.values()]
         merged_records_list_db = [(0, 0, record) for record in merged_records_db.values()]
+        # Tìm kiếm sổ nhật ký 'Phiếu kế toán khác' có mã là EX03
+        journal_id = self.env['account.journal'].search([('code', '=', 'EX03'), ('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1)
+        if not journal_id:
+            raise ValidationError("Các bút toán 'Thuế tiêu thụ đặc biệt', 'Thuế nhập khẩu' đang hạch toán vào sổ nhật ký có mã 'EX03'. Hiện tại không thấy trong hệ thống, vui lòng cấu hình thêm trong phân hệ Kế toán!")
         if merged_records_list_db:
             invoice_db = self.create({
                 'e_in_check': self.id,
+                'journal_id': journal_id.id,
                 'is_check_invoice_tnk': True,
                 'invoice_date': self.invoice_date,
                 'invoice_description': f"Thuế tiêu thụ đặc biệt",
@@ -755,6 +760,7 @@ class AccountMove(models.Model):
         if merged_records_list_tnk:
             invoice_tnk = self.create({
                 'e_in_check': self.id,
+                'journal_id': journal_id.id,
                 'is_check_invoice_tnk': True,
                 'invoice_date': self.invoice_date,
                 'invoice_description': "Thuế nhập khẩu",
@@ -808,9 +814,15 @@ class AccountMove(models.Model):
                     }
                 # Chuyển đổi từ điển thành danh sách bản ghi
         merged_records_list_vat = [(0, 0, record) for record in merged_records_vat.values()]
+        # Tìm kiếm sổ nhật ký 'Phiếu kế toán khác' có mã là EX03
+        journal_id = self.env['account.journal'].search([('code', '=', 'EX03'), ('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1)
+        if not journal_id:
+            raise ValidationError(
+                "Các bút toán 'Thuế giá trị gia tăng VAT (Nhập khẩu)' đang hạch toán vào sổ nhật ký có mã 'EX03'. Hiện tại không thấy trong hệ thống, vui lòng cấu hình thêm trong phân hệ Kế toán!")
         if merged_records_list_vat:
             invoice_vat = self.create({
                 'e_in_check': self.id,
+                'journal_id': journal_id.id,
                 'is_check_invoice_tnk': True,
                 'invoice_date': self.invoice_date,
                 'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",

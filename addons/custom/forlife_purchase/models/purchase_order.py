@@ -770,17 +770,17 @@ class PurchaseOrder(models.Model):
                     if line.received != 0 and line.received > line.billed:
                         message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
                         raise ValidationError(message)
-            else:
-                for line_id in rec.order_line:
-                    if not line_id.invoice_lines or 'posted' not in line_id.invoice_lines.mapped('parent_state'):
-                        message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
-                        raise ValidationError(message)
-                    else:
-                        invoice_lines = line_id.invoice_lines.filtered(lambda x: x.parent_state == 'posted')
-                        total_invoice_line = sum(invoice_lines.mapped('price_subtotal')) + sum(invoice_lines.mapped('tax_amount'))
-                        if line_id.price_total != total_invoice_line:
-                            message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
-                            raise ValidationError(message)
+            # else:
+            #     for line_id in rec.order_line:
+            #         if not line_id.invoice_lines or 'posted' not in line_id.invoice_lines.mapped('parent_state'):
+            #             message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
+            #             raise ValidationError(message)
+            #         else:
+            #             invoice_lines = line_id.invoice_lines.filtered(lambda x: x.parent_state == 'posted')
+            #             total_invoice_line = sum(invoice_lines.mapped('price_subtotal')) + sum(invoice_lines.mapped('tax_amount'))
+            #             if line_id.price_total != total_invoice_line:
+            #                 message = 'Đơn mua hàng chưa lên đủ hóa đơn. Vui lòng kiểm tra lại!'
+            #                 raise ValidationError(message)
         self.write({'custom_state': 'close'})
 
     @api.model
