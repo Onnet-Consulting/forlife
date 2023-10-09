@@ -91,7 +91,18 @@
             <field name="name">Phân rã hàng hoá</field>
             <field name="res_model">split.product</field>
             <field name="view_mode">tree,form</field>
+            <field name="context">{'default_business_type': 'split'}</field>
+            <field name="domain">[('business_type', '=', 'split')]</field>
+        </record>
+
+        <record id="inv_product_action" model="ir.actions.act_window">
+            <field name="name">Kiểm kê cân tồn</field>
+            <field name="res_model">split.product</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_business_type': 'inv'}</field>
+            <field name="domain">[('business_type', '=', 'inv')]</field>
         </record>
          <menuitem id="split_product" parent="stock.menu_stock_warehouse_mgmt" action="forlife_splip_product.split_product_action" name="Phân rã hàng hoá" sequence="3"/>
+         <menuitem id="inv_product" parent="forlife_stock_menu.forlife_stock_inventory" action="forlife_splip_product.inv_product_action" name="Kiểm kê cân tồn" sequence="4"/>
     </data>
 </odoo>
