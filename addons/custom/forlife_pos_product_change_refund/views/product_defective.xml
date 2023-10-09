@@ -40,7 +40,6 @@
                     <sheet>
                         <group>
 <!--                            <group>-->
-                                <field name="active" invisible="1"/>
                                 <field name="department_id" invisible="1"/>
                                 <field name="store_id" required="1" attrs="{'readonly': [('state','!=','new')]}"/>
                                 <field name="product_id" required="1" attrs="{'readonly': [('state','in',['approved','refuse'])]}"/>
@@ -134,7 +133,6 @@
                     <field name="pack_id"/>
                     <field name="product_id"/>
                     <separator/>
-                    <filter name="active" string="Đã lưu" domain="[('active', '=', False)]"/>
                 </search>
             </field>
         </record>
