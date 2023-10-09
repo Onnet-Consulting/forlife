@@ -6,10 +6,9 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = [
     'STT', 'Số PR', 'Ngày PR', 'Người mua hàng', 'Mã vụ việc', 'Số PO', 'Ngày PO', 'NCC', 'Loại nhóm sản phẩm', 'Mã SKU', 'Barcode', 'Tên hàng',
-    'SL', 'Đơn giá', 'CK (%)', 'Thành tiền', 'SL nhập kho', 'SL chưa nhập kho', 'SL lên hóa đơn'
+    'SL', 'Đơn giá', 'CK (%)', 'Thành tiền', '% thuế nội địa', 'Tổng tiền thuế nội địa', '% Thuế nhập khẩu', 'Thuế nhập khẩu', '% Thuế tiêu thụ đặc biệt',
+    'Thuế tiêu thụ đặc biệt', '% Thuế GTGT', 'Thuế GTGT', 'Tổng tiền thuế', 'SL nhập kho', 'SL chưa nhập kho', 'SL lên hóa đơn'
 ]
-# '% thuế nội địa', 'Tổng tiền thuế nội địa', '% Thuế nhập khẩu', 'Thuế nhập khẩu', '% Thuế tiêu thụ đặc biệt',
-#     'Thuế tiêu thụ đặc biệt', '% Thuế GTGT', 'Thuế GTGT', 'Tổng tiền thuế',
 
 
 class ReportNum13(models.TransientModel):
@@ -87,7 +86,11 @@ with data_pol as (select pol.id         as pol_id,
                  group by po_id),
      pr_info_final as (select json_object_agg(po_id, pr_name) as pr_names,
                               json_object_agg(po_id, pr_date) as pr_dates
-                       from pr_info)              
+                       from pr_info),
+    tax_info as (select json_object_agg(rel.purchase_order_line_id, at.amount) as tax
+                from account_tax_purchase_order_line_rel rel
+                         join account_tax at on rel.account_tax_id = at.id
+                where rel.purchase_order_line_id in (select distinct pol_id from data_pol))
 select row_number() over (order by po.date_order desc)                      as num,
     (select pr_names::json -> po.id::text from pr_info_final)               as pr_name,
     (select pr_dates::json -> po.id::text from pr_info_final)               as pr_date,
@@ -102,8 +105,17 @@ select row_number() over (order by po.date_order desc)                      as n
     coalesce(pt.name::json ->> '{user_lang_code}', pt.name::json ->> 'en_US') as product_name,
     pol.product_qty,
     pol.price_unit,
-    pol.discount_percent,
-    pol.price_subtotal,
+    coalesce(pol.discount_percent, 0)                                       as discount_percent,
+    coalesce(pol.price_subtotal, 0)                                         as price_subtotal,
+    coalesce((select tax::json ->> pol.id::text from tax_info)::float, 0)   as pt_thue_noi_dia,
+    coalesce(pol.price_tax, 0)                                              as thu_noi_dia,
+    coalesce(pol.import_tax, 0)                                             as pt_thue_nk,
+    coalesce(pol.tax_amount, 0)                                             as thue_nk,
+    coalesce(pol.special_consumption_tax, 0)                                as pt_thue_db,
+    coalesce(pol.special_consumption_tax_amount, 0)                         as thue_db,
+    coalesce(pol.vat_tax, 0)                                                as pt_thue_gtgt,
+    coalesce(pol.vat_tax_amount, 0)                                         as thue_gtgt,
+    coalesce(pol.total_tax_amount, 0)                                       as tong_tien_thue,
     pol.qty_received,
     pol.product_qty - pol.qty_received                                      as qty_not_received,
     pol.qty_invoiced
@@ -145,6 +157,7 @@ order by num
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet('Báo cáo tình hình thực hiện đơn hàng mua')
         sheet.set_row(0, 25)
+        sheet.set_row(4, 30)
         sheet.write(0, 0, 'Báo cáo tình hình thực hiện đơn hàng mua', formats.get('header_format'))
         if self.from_date and self.to_date:
             sheet.write(2, 0, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
@@ -170,9 +183,18 @@ order by num
             sheet.write(row, 11, value.get('product_name'), formats.get('normal_format'))
             sheet.write(row, 12, value.get('product_qty', 0), formats.get('float_number_format'))
             sheet.write(row, 13, value.get('price_unit', 0), formats.get('int_number_format'))
-            sheet.write(row, 14, value.get('discount_percent', 0), formats.get('float_number_format'))
+            sheet.write(row, 14, value.get('discount_percent', 0) / 100, formats.get('percentage_format'))
             sheet.write(row, 15, value.get('price_subtotal', 0), formats.get('int_number_format'))
-            sheet.write(row, 16, value.get('qty_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 17, value.get('qty_not_received', 0), formats.get('float_number_format'))
-            sheet.write(row, 18, value.get('qty_invoiced', 0), formats.get('float_number_format'))
+            sheet.write(row, 16, value.get('pt_thue_noi_dia', 0) / 100, formats.get('percentage_format'))
+            sheet.write(row, 17, value.get('thu_noi_dia', 0), formats.get('int_number_format'))
+            sheet.write(row, 18, value.get('pt_thue_nk', 0) / 100, formats.get('percentage_format'))
+            sheet.write(row, 19, value.get('thue_nk', 0), formats.get('int_number_format'))
+            sheet.write(row, 20, value.get('pt_thue_db', 0) / 100, formats.get('percentage_format'))
+            sheet.write(row, 21, value.get('thue_db', 0), formats.get('int_number_format'))
+            sheet.write(row, 22, value.get('pt_thue_gtgt', 0) / 100, formats.get('percentage_format'))
+            sheet.write(row, 23, value.get('thue_gtgt', 0), formats.get('int_number_format'))
+            sheet.write(row, 24, value.get('tong_tien_thue', 0), formats.get('int_number_format'))
+            sheet.write(row, 25, value.get('qty_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 26, value.get('qty_not_received', 0), formats.get('float_number_format'))
+            sheet.write(row, 27, value.get('qty_invoiced', 0), formats.get('float_number_format'))
             row += 1
