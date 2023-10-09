@@ -20,6 +20,13 @@ class SplitProduct(models.Model):
     split_product_line_sub_ids = fields.One2many('split.product.line.sub', 'split_product_id', string='Sản phẩm phân rã')
     note = fields.Text()
     count_picking = fields.Integer(compute='compute_count_picking', string='Các phiếu nhập xuất')
+    business_type = fields.Selection([('inv', 'Kiểm kê cân tồn'), ('split', 'Phân rã hàng hóa')], string='Loại nghiệp vụ')
+
+    @api.constrains('split_product_line_ids')
+    def contrains_split_product_line_ids(self):
+        for rec in self:
+            if not rec.split_product_line_ids:
+                raise ValidationError('Vui lòng thêm sản phẩm trước khi lưu!')
 
     @api.model
     def get_import_templates(self):
@@ -194,6 +201,9 @@ class SpilitProductLine(models.Model):
     _name = 'split.product.line'
     _description = 'Dòng sản phẩm chính'
 
+    def _domain_location(self):
+        return [('id', 'in', self.env.user.get_location())]
+
     split_product_id = fields.Many2one('split.product')
     state = fields.Selection(
         [('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
@@ -201,11 +211,11 @@ class SpilitProductLine(models.Model):
         string='Trạng thái')
     product_id = fields.Many2one('product.product', 'Sản phẩm chính', required=True)
     product_uom = fields.Many2one('uom.uom', 'Đơn vị tính', related='product_id.uom_id')
-    warehouse_out_id = fields.Many2one('stock.location', 'Kho xuất', required=True)
+    warehouse_out_id = fields.Many2one('stock.location', 'Kho xuất', required=True, domain=_domain_location)
     product_quantity_out = fields.Integer('Số lượng xuất', readonly=True)
     product_quantity_split = fields.Integer('Số lượng phân tách', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', required=True, related='product_id.uom_id')
-    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', required=True)
+    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', required=True, domain=_domain_location)
     unit_price = fields.Float('Đơn giá', readonly=True, related='product_id.standard_price')
     value = fields.Float('Giá trị', readonly=True)
 
@@ -220,6 +230,9 @@ class SpilitProductLineSub(models.Model):
     _name = 'split.product.line.sub'
     _description = 'Dòng sản phẩm phân rã'
 
+    def _domain_location(self):
+        return [('id', 'in', self.env.user.get_location())]
+
     state = fields.Selection(
         [('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
         related='split_product_id.state',
@@ -227,7 +240,7 @@ class SpilitProductLineSub(models.Model):
     split_product_id = fields.Many2one('split.product')
     product_id = fields.Many2one('product.product', 'Sản phẩm chính')
     product_split_id = fields.Many2one('product.product', string='Sản phẩm phân tách')
-    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập')
+    warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', domain=_domain_location)
     quantity = fields.Integer('Số lượng', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', related='product_id.uom_id')
     unit_price = fields.Float('Đơn giá', readonly=True, related='product_split_id.standard_price')
@@ -241,9 +254,7 @@ class SpilitProductLineSub(models.Model):
                 raise ValidationError(_('Không được phép nhập giá trị âm!'))
 
     def validate_product(self, level):
-        if self.product_id.product_type != 'product' or self.product_split_id.product_type != 'product':
-            return True
-
+        is_material = self.product_id.categ_id.category_type_id.code in ('2', '4') and self.product_split_id.categ_id.category_type_id.code in ('2', '4')
         categ_from_id = self.product_id.categ_id.id if self.product_id.categ_id.level == level else False
         if self.product_id.categ_id.level > level:
             categ_from_id = int(self.product_id.categ_id.parent_path.split('/')[level - 1])
@@ -251,6 +262,11 @@ class SpilitProductLineSub(models.Model):
         categ_to_id = self.product_split_id.categ_id.id if self.product_split_id.categ_id.level == level else False
         if self.product_split_id.categ_id.level > level:
             categ_to_id = int(self.product_split_id.categ_id.parent_path.split('/')[level - 1])
+
+        if is_material and categ_from_id != categ_to_id:
+            if level == 4:
+                raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng Kết cấu.' % (
+                self.product_id.name, self.product_split_id.name)))
 
         if categ_from_id != categ_to_id:
             if level == 4:

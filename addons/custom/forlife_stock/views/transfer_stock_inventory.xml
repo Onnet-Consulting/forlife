@@ -129,11 +129,11 @@
             </search>
         </field>
     </record>
-    <record id="transfer_stock_inventory_action" model="ir.actions.act_window">
-        <field name="name">Kiểm kê cân tồn</field>
-        <field name="res_model">transfer.stock.inventory</field>
-        <field name="view_mode">tree,form</field>
-    </record>
+<!--    <record id="transfer_stock_inventory_action" model="ir.actions.act_window">-->
+<!--        <field name="name">Kiểm kê cân tồn</field>-->
+<!--        <field name="res_model">transfer.stock.inventory</field>-->
+<!--        <field name="view_mode">tree,form</field>-->
+<!--    </record>-->
 
 
     <record id="transfer_stock_inventory_classify_action" model="ir.actions.act_window">
