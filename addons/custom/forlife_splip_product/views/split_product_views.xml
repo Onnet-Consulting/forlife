@@ -15,6 +15,7 @@
                     </header>
                     <sheet>
                          <div class="oe_button_box" name="button_box">
+                             <field name="business_type" invisible="1"/>
                             <button name="action_view_picking" string="Các phiếu nhập xuất" type="object" class="oe_stat_button" icon="fa-bars">
                                 <field name="count_picking" string="Các phiếu nhập xuất" widget="statinfo"/>
                             </button>
@@ -45,7 +46,7 @@
                                     <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
                                     <field name="product_uom"/>
                                     <field name="warehouse_out_id" attrs="{'readonly': [('state','in',['canceled','done','in_progress'])]}"/>
-                                    <field name="product_quantity_out"/>
+                                    <field name="product_quantity_out" attrs="{'readonly': [('business_type', '!=', 'inv')]}" force_save="1"/>
                                     <field name="product_quantity_split" attrs="{'readonly': [('state','in',['canceled','in_progress','done'])]}"/>
                                     <field name="product_uom_split"/>
                                     <field name="warehouse_in_id" attrs="{'readonly': [('state','in',['canceled','done','in_progress'])]}"/>
