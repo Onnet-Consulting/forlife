@@ -534,7 +534,7 @@ class AccountMove(models.Model):
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
         for rec in self:
-            if 'vendor_back_ids' in vals and rec.purchase_type != 'product':
+            if 'vendor_back_ids' in vals and rec.select_type_inv != 'normal':
                 rec.line_ids.filtered(lambda x: x.display_type == 'tax').unlink()
                 invoice_description = []
                 for vendor_back_id in rec.vendor_back_ids:
