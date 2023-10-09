@@ -153,7 +153,7 @@ class DeclareCode(models.Model):
         code, len_sequence = self._get_code(field_code, location_code, location_des_code)
         try:
             domain = [(field_code,'like',code),('company_id','=',company_id)]
-            record_id = self.env[model_code].search(domain,order=field_code+' desc',limit=1)
+            record_id = self.env[model_code].sudo().search(domain,order=field_code+' desc',limit=1)
             if not record_id:
                 pre = '1'
                 if sequence != 0:
