@@ -465,7 +465,7 @@ class StockTransfer(models.Model):
         #     company_id = self.env['res.company'].sudo().search([('id', '=', self._context.get('company_byside'))])
         # else:
         #     company_id = self.location_id.company_id
-        pk_type = self.location_id.warehouse.id.int_type_id
+        pk_type = self.location_id.warehouse_id.int_type_id
         origin = self.name
         date_done = self.date_in_approve
         location_id = self.location_id
