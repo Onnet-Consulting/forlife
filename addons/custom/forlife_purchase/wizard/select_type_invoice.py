@@ -12,7 +12,7 @@ class SelectTypeInvoice(models.TransientModel):
             ('labor', 'Hóa đơn chi phí nhân công'),
             ('normal', 'Hóa đơn chi tiết hàng hóa'),
         ], default='normal')
-    partner_id = fields.Many2one('res.partner', string='Đối tác')
+    partner_id = fields.Many2one('res.partner', string='Đối tác', domain=[('group_id.code', 'not in', ['C', False])])
     currency_id = fields.Many2one('res.currency', string='Tiền tệ')
     exchange_rate = fields.Float(string='Tỷ giá', default=1)
 
