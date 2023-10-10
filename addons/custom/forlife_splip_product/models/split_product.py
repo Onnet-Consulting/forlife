@@ -10,7 +10,7 @@ class SplitProduct(models.Model):
     name = fields.Char(default='New')
 
     user_create_id = fields.Many2one('res.users', 'Người tạo', default=lambda self: self.env.user, readonly=True)
-    date_create = fields.Datetime('Ngày tạo', readonly=True, default=lambda self: fields.datetime.now())
+    date_create = fields.Datetime('Ngày tạo', default=lambda self: fields.datetime.now())
     user_approve_id = fields.Many2one('res.users', 'Người xác nhận', readonly=True)
     date_approved = fields.Datetime('Ngày xác nhận', readonly=True)
     state = fields.Selection([('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
@@ -151,7 +151,7 @@ class SplitProduct(models.Model):
                     data.append((0, 0, {
                         'product_id': rec.product_split_id.id,
                         'name': rec.product_split_id.name_get()[0][1],
-                        'date': datetime.now(),
+                        'date': self.date_create,
                         'product_uom': rec.product_uom_split.id,
                         'product_uom_qty': rec.quantity,
                         'quantity_done': rec.quantity,
@@ -181,7 +181,7 @@ class SplitProduct(models.Model):
             data = [(0, 0, {
                 'product_id': record.product_id.id,
                 'name': record.product_id.name_get()[0][1],
-                'date': datetime.now(),
+                'date': self.date_create,
                 'product_uom': record.product_id.uom_id.id,
                 'product_uom_qty': record.product_quantity_out,
                 'quantity_done': record.product_quantity_out,
