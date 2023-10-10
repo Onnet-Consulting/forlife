@@ -58,7 +58,7 @@ class AccountMove(models.Model):
             bravo_table = "B30AccDocCashPayment"
         elif journal_data == "pos_cash_in":
             bravo_table = "B30AccDocCashReceipt"
-        elif journal_data == "journal_entry_payroll":
+        elif journal_data in ("journal_entry_payroll", 'invoice_trade_discount_other'):
             bravo_table = "B30AccDocJournalEntry"
         elif journal_data == "order_exist_bkav":
             bravo_table = "B30AccDocExportSales"
@@ -119,14 +119,12 @@ class AccountMove(models.Model):
             return initial_records
 
         if journal_data == 'invoice_trade_discount':
-            # Đơn mua chỉ có sản phẩm là chiết khấu tổng đơn
-            initial_records = self.filtered(lambda m: m.e_in_check > 0 and m.is_trade_discount_move)
+            # Đơn mua chỉ có sản phẩm là chiết khấu thương mại
+            return self.filtered(lambda m: m.e_in_check > 0 and m.is_trade_discount_move and m.invoice_description == 'Hóa đơn chiết khấu tổng đơn')
 
+        if journal_data == 'invoice_trade_discount_other':
             # Đơn mua bao gồm sản phẩm chiết khấu tổng đơn khác
-            invoice_trade_discount_other = self.filtered(lambda m: m.e_in_check > 0 and not m.is_trade_discount_move)
-            origin_invoice = self.env['account.move'].search([('total_trade_discount', 'in', invoice_trade_discount_other.mapped('e_in_check'))])
-            initial_records |= invoice_trade_discount_other.filtered(lambda m: m.e_in_check in origin_invoice.ids)
-            return initial_records
+            return self.filtered(lambda m: m.e_in_check > 0 and not m.is_trade_discount_move and m.invoice_description in ('Thuế tiêu thụ đặc biệt', 'Thuế giá trị gia tăng VAT (Nhập khẩu)', 'Thuế nhập khẩu'))
 
         if journal_data == "purchase_bill_vendor_back":
             return self.filtered(
@@ -178,6 +176,8 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_asset_service_values(is_reversed=True)
         if journal_data in ('purchase_product', 'invoice_trade_discount'):
             return self.bravo_get_purchase_product_values()
+        if journal_data == 'invoice_trade_discount_other':
+            return self.bravo_get_journal_entry_payroll_values(trade_discount_other=True)
         if journal_data == 'purchase_product_reserved':
             return self.bravo_get_purchase_product_values(is_reversed=True)
         if journal_data == 'purchase_bill_vendor_back':

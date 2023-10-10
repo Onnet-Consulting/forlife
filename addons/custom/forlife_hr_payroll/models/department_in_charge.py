@@ -22,4 +22,4 @@ class ResUsers(models.Model):
     @api.model
     def get_department_in_charge(self):
         departments = self.env['department.in.charge'].search(['|', ('user_ids', 'in', self.ids), ('user_ids', '=', False)]).mapped('department_id')
-        return self.env['hr.department'].search([('id', 'child_of', departments.ids)]).ids
+        return list(set(self.env['hr.department'].search([('id', 'child_of', departments.ids)]).ids + departments.ids))
