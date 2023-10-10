@@ -1748,8 +1748,8 @@ class PurchaseOrder(models.Model):
         vals = []
         for location in location_ids:
             vals.append({
-                # 'picking_type_id': self.picking_type_id.id,
-                'picking_type_id': location.warehouse_id.in_type_id.id,
+                'picking_type_id': self.picking_type_id.id,
+                # 'picking_type_id': location.warehouse_id.in_type_id.id,
                 'partner_id': self.partner_id.id,
                 'user_id': False,
                 'date': self.date_order,
