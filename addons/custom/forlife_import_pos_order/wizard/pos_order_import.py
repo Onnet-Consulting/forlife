@@ -61,6 +61,17 @@ class PosOrderImport(models.TransientModel):
         else:
             raise ValidationError('Khong co chuong trinh DIEM: ' + name)
 
+    def get_card_rank_program_id(self, name):
+        query = '''
+                            SELECT id FROM member_card WHERE name = %(name)s LIMIT 1
+                        '''
+        self.env.cr.execute(query, {'name': name})
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            raise ValidationError('Khong co chuong trinh hang the: ' + name)
+
     def get_store_id(self, name):
         query = '''
                             SELECT id FROM store WHERE name = %(name)s LIMIT 1
@@ -116,8 +127,11 @@ class PosOrderImport(models.TransientModel):
 
         query = '''
                     INSERT INTO pos_order(date_order, store_id, pos_reference, session_id, partner_id, company_id, pricelist_id, name,
-                                          amount_tax, amount_total, amount_paid, amount_return, issue_invoice_type, brand_id, point_order, total_point, program_store_point_id)
-                    VALUES(%(date_order)s, %(store_id)s, %(pos_reference)s, %(session_id)s, %(partner_id)s, %(company_id)s, 1, %(pos_reference)s, 0, %(amount_total)s, %(amount_paid)s, 0, 'vat', %(brand_id)s, %(point_order)s, %(total_point)s, %(program_store_point_id)s )
+                                          amount_tax, amount_total, amount_paid, amount_return, issue_invoice_type,
+                                           brand_id, point_order, total_point, program_store_point_id, card_rank_program_id)
+                    VALUES(%(date_order)s, %(store_id)s, %(pos_reference)s, %(session_id)s, %(partner_id)s,
+                     %(company_id)s, 1, %(pos_reference)s, 0, %(amount_total)s, %(amount_paid)s, 0, 'vat', %(brand_id)s,
+                      %(point_order)s, %(total_point)s, %(program_store_point_id)s, %(card_rank_program_id)s )
                     RETURNING id
                 '''
         self.env.cr.execute(query, data)
@@ -137,9 +151,9 @@ class PosOrderImport(models.TransientModel):
     def create_pos_order_line_discount(self, data):
 
         query = '''
-                    INSERT INTO pos_order_line_discount_details (pos_order_line_id, type, money_reduced) 
-                    VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s) RETURNING id;
-                '''
+INSERT INTO pos_order_line_discount_details (pos_order_line_id, type, money_reduced, recipe, discounted_amount) 
+VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(discounted_amount)s) RETURNING id;
+'''
         self.env.cr.execute(query, data)
         data = self.env.cr.fetchone()
         return data[0]
@@ -186,7 +200,8 @@ class PosOrderImport(models.TransientModel):
                     'with_purchase_condition': draw_order[19],
                     'discount_details_lines': [{
                         'type': draw_order[20],
-                        'money_reduced': draw_order[21],
+                        'money_reduced': float(draw_order[21]),
+                        'discounted_amount': draw_order[21],
                     }] if draw_order[20] and draw_order[21] else [],
                     'promotion_usage_ids': [{
                         'program_id': draw_order[22],
@@ -207,6 +222,7 @@ class PosOrderImport(models.TransientModel):
                     'program_store_point_id': draw_order[4],
                     'point_order': draw_order[5],
                     'total_point': draw_order[6],
+                    'card_rank_program_id': draw_order[7],
                     'lines': [{
                         'product_id': draw_order[8],
                         'qty': draw_order[9],
@@ -220,7 +236,8 @@ class PosOrderImport(models.TransientModel):
                         'with_purchase_condition': draw_order[19],
                         'discount_details_lines': [{
                             'type': draw_order[20],
-                            'money_reduced': draw_order[21],
+                            'money_reduced': float(draw_order[21]),
+                            'discounted_amount': draw_order[21],
                         }] if draw_order[20] and draw_order[21] else [],
                         'promotion_usage_ids': [{
                             'program_id': draw_order[22],
@@ -249,6 +266,11 @@ class PosOrderImport(models.TransientModel):
                     program_store_point_id = self.get_point_program_id(order['program_store_point_id'])
                 data_order['program_store_point_id'] = program_store_point_id
 
+                card_rank_program_id = None
+                if order['card_rank_program_id']:
+                    card_rank_program_id = self.get_card_rank_program_id(order['card_rank_program_id'])
+                data_order['card_rank_program_id'] = card_rank_program_id
+
                 pos_order_id = self.create_pos_order(data_order)
                 for line in order['lines']:
                     data_order_line = {
@@ -266,6 +288,8 @@ class PosOrderImport(models.TransientModel):
 
                     if line['discount_details_lines']:
                         line['discount_details_lines'][0]['pos_order_line_id'] = pos_order_line_id
+                        line['discount_details_lines'][0]['recipe'] = line['discount_details_lines'][0]['money_reduced']/ 1000 \
+                            if line['discount_details_lines'][0]['type'] == 'point' else line['discount_details_lines'][0]['money_reduced']
                         pos_order_line_discount_data = line['discount_details_lines'][0]
                         pos_order_line_discount_id = self.create_pos_order_line_discount(pos_order_line_discount_data)
 
@@ -282,6 +306,7 @@ class PosOrderImport(models.TransientModel):
                     }
                     self.create_account_tax_pos_order_line_rel(create_account_tax_pos_order_line_rel_data)
             except Exception as ex:
+                raise ex
                 mess += '\n '+order_key+' :\n'+ str(ex)
 
         if mess:

@@ -15,4 +15,6 @@ class InheritPointsPromotion(models.Model):
 
     def check_validity_state_registration(self):
         self.ensure_one()
-        return self.is_state_registration and self.state_registration_start <= date.today() <= self.state_registration_end
+        return not (not self.is_state_registration
+                    or self.state_registration_start and self.state_registration_start > date.today()
+                    or self.state_registration_end and self.state_registration_end > date.today())
