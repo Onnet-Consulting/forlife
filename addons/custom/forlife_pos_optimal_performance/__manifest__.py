@@ -7,7 +7,9 @@
     "description": """Forlife POS Optimal Performance""",
     "depends": [
         'point_of_sale',
-        'queue_job'
+        'queue_job',
+        'forlife_pos_point_order',
+        'forlife_voucher'
     ],
     "data": [
         'data/queue_data.xml'
