@@ -56,7 +56,7 @@ class PurchaseReturnWizard(models.TransientModel):
     def onchange_selected_all(self):
         for line in self.purchase_return_lines:
             line.update({
-                'is_selected': True,
+                'is_selected': True if self.location_id.virtual_location_inter_company else self.selected_all,
                 'quantity': line.purchase_remain * line.exchange_quantity
             })
 
