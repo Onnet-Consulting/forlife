@@ -39,6 +39,28 @@ class PosOrderImport(models.TransientModel):
         else:
             raise ValidationError('Khong co product: '+ barcode)
 
+    def get_promotion_program_id(self, name):
+        query = '''
+                            SELECT id FROM promotion_program WHERE name = %(name)s LIMIT 1
+                        '''
+        self.env.cr.execute(query, {'name': name})
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            raise ValidationError('Khong co chuong trinh KM: ' + name)
+
+    def get_point_program_id(self, name):
+        query = '''
+                            SELECT id FROM points_promotion WHERE name = %(name)s LIMIT 1
+                        '''
+        self.env.cr.execute(query, {'name': name})
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            raise ValidationError('Khong co chuong trinh DIEM: ' + name)
+
     def get_store_id(self, name):
         query = '''
                             SELECT id FROM store WHERE name = %(name)s LIMIT 1
@@ -94,8 +116,8 @@ class PosOrderImport(models.TransientModel):
 
         query = '''
                     INSERT INTO pos_order(date_order, store_id, pos_reference, session_id, partner_id, company_id, pricelist_id, name,
-                                          amount_tax, amount_total, amount_paid, amount_return, issue_invoice_type, brand_id)
-                    VALUES(%(date_order)s, %(store_id)s, %(pos_reference)s, %(session_id)s, %(partner_id)s, %(company_id)s, 1, %(pos_reference)s, 0, %(amount_total)s, %(amount_paid)s, 0, 'vat', %(brand_id)s)
+                                          amount_tax, amount_total, amount_paid, amount_return, issue_invoice_type, brand_id, point_order, total_point, program_store_point_id)
+                    VALUES(%(date_order)s, %(store_id)s, %(pos_reference)s, %(session_id)s, %(partner_id)s, %(company_id)s, 1, %(pos_reference)s, 0, %(amount_total)s, %(amount_paid)s, 0, 'vat', %(brand_id)s, %(point_order)s, %(total_point)s, %(program_store_point_id)s )
                     RETURNING id
                 '''
         self.env.cr.execute(query, data)
@@ -115,7 +137,18 @@ class PosOrderImport(models.TransientModel):
     def create_pos_order_line_discount(self, data):
 
         query = '''
-                    INSERT INTO pos_order_line_discount_details (pos_order_line_id, money_reduced) VALUES (%(pos_order_line_id)s, %(money_reduced)s) RETURNING id;
+                    INSERT INTO pos_order_line_discount_details (pos_order_line_id, type, money_reduced) 
+                    VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s) RETURNING id;
+                '''
+        self.env.cr.execute(query, data)
+        data = self.env.cr.fetchone()
+        return data[0]
+
+    def create_promotion_usage_line(self, data):
+
+        query = '''
+                    INSERT INTO promotion_usage_line (order_line_id, program_id, discount_amount, registering_tax) 
+                    VALUES (%(order_line_id)s, %(program_id)s , %(discount_amount)s, %(registering_tax)s) RETURNING id;
                 '''
         self.env.cr.execute(query, data)
         data = self.env.cr.fetchone()
@@ -138,17 +171,28 @@ class PosOrderImport(models.TransientModel):
         mess = ''
         for draw_order in draw_orders:
             if orders.get(draw_order[2], False):
-                orders[draw_order[2]]['amount_paid'] += int(draw_order[8])
-                orders[draw_order[2]]['amount_total'] += int(draw_order[8])
+                orders[draw_order[2]]['amount_paid'] += int(draw_order[12])
+                orders[draw_order[2]]['amount_total'] += int(draw_order[12])
                 orders[draw_order[2]]['lines'].append({
-                    'product_id': draw_order[4],
-                    'qty': draw_order[5],
-                    'original_price': draw_order[6],
-                    'money_is_reduced': draw_order[7],
-                    'subtotal_paid': draw_order[8],
-                    'employee_id': draw_order[9],
-                    'name': draw_order[10],
-                    'tax_id': draw_order[13]
+                    'product_id': draw_order[8],
+                    'qty': draw_order[9],
+                    'original_price': draw_order[10],
+                    'money_is_reduced': draw_order[11],
+                    'subtotal_paid': draw_order[12],
+                    'employee_id': draw_order[13],
+                    'name': draw_order[14],
+                    'tax_id': draw_order[17],
+                    'is_reward_line': draw_order[18],
+                    'with_purchase_condition': draw_order[19],
+                    'discount_details_lines': [{
+                        'type': draw_order[20],
+                        'money_reduced': draw_order[21],
+                    }] if draw_order[20] and draw_order[21] else [],
+                    'promotion_usage_ids': [{
+                        'program_id': draw_order[22],
+                        'discount_amount': draw_order[23],
+                        'registering_tax': draw_order[24]
+                    }] if draw_order[22] and draw_order[23] else [],
                 })
             else:
                 orders[draw_order[2]] = {
@@ -156,19 +200,33 @@ class PosOrderImport(models.TransientModel):
                     'store_id': draw_order[1],
                     'pos_reference': draw_order[2],
                     'partner_id': self.get_partner_id(draw_order[3]),
-                    'amount_paid': int(draw_order[8]),
-                    'amount_total': int(draw_order[8]),
-                    'brand_id': draw_order[11],
-                    'company_id': draw_order[12],
+                    'amount_paid': int(draw_order[12]),
+                    'amount_total': int(draw_order[12]),
+                    'brand_id': draw_order[15],
+                    'company_id': draw_order[16],
+                    'program_store_point_id': draw_order[4],
+                    'point_order': draw_order[5],
+                    'total_point': draw_order[6],
                     'lines': [{
-                        'product_id': draw_order[4],
-                        'qty': draw_order[5],
-                        'original_price': draw_order[6],
-                        'money_is_reduced': draw_order[7],
-                        'subtotal_paid': draw_order[8],
-                        'employee_id': draw_order[9],
-                        'name': draw_order[10],
-                        'tax_id': draw_order[13]
+                        'product_id': draw_order[8],
+                        'qty': draw_order[9],
+                        'original_price': draw_order[10],
+                        'money_is_reduced': draw_order[11],
+                        'subtotal_paid': draw_order[12],
+                        'employee_id': draw_order[13],
+                        'name': draw_order[14],
+                        'tax_id': draw_order[17],
+                        'is_reward_line': draw_order[18],
+                        'with_purchase_condition': draw_order[19],
+                        'discount_details_lines': [{
+                            'type': draw_order[20],
+                            'money_reduced': draw_order[21],
+                        }] if draw_order[20] and draw_order[21] else [],
+                        'promotion_usage_ids': [{
+                            'program_id': draw_order[22],
+                            'discount_amount': draw_order[23],
+                            'registering_tax': draw_order[24]
+                        }] if draw_order[22] and draw_order[23] else [],
                     }]
                 }
 
@@ -184,7 +242,13 @@ class PosOrderImport(models.TransientModel):
                               'pos_reference': order['pos_reference'],
                               'session_id': session_id, 'partner_id': order['partner_id'],
                               'amount_paid': order['amount_paid'], 'amount_total': order['amount_total'],
-                              'brand_id': order['brand_id'], 'company_id': order['company_id']}
+                              'brand_id': order['brand_id'], 'company_id': order['company_id'],
+                              'point_order': order['point_order'], 'total_point': order['total_point']}
+                program_store_point_id = None
+                if order['program_store_point_id']:
+                    program_store_point_id = self.get_point_program_id(order['program_store_point_id'])
+                data_order['program_store_point_id'] = program_store_point_id
+
                 pos_order_id = self.create_pos_order(data_order)
                 for line in order['lines']:
                     data_order_line = {
@@ -199,11 +263,19 @@ class PosOrderImport(models.TransientModel):
                         'employee_id': line['employee_id']
                     }
                     pos_order_line_id = self.create_pos_order_line(data_order_line)
-                    pos_order_line_discount_data = {
-                        'pos_order_line_id': pos_order_line_id,
-                        'money_reduced': line['money_is_reduced'],
-                    }
-                    pos_order_line_discount_id = self.create_pos_order_line_discount(pos_order_line_discount_data)
+
+                    if line['discount_details_lines']:
+                        line['discount_details_lines'][0]['pos_order_line_id'] = pos_order_line_id
+                        pos_order_line_discount_data = line['discount_details_lines'][0]
+                        pos_order_line_discount_id = self.create_pos_order_line_discount(pos_order_line_discount_data)
+
+                    if line['promotion_usage_ids']:
+                        program_id = self.get_promotion_program_id(line['promotion_usage_ids'][0]['program_id'])
+                        line['promotion_usage_ids'][0]['program_id'] = program_id
+                        line['promotion_usage_ids'][0]['order_line_id'] = pos_order_line_id
+                        promotion_usage_line_data = line['promotion_usage_ids'][0]
+                        promotion_usage_line_id = self.create_promotion_usage_line(promotion_usage_line_data)
+
                     create_account_tax_pos_order_line_rel_data = {
                         'pos_order_line_id': pos_order_line_id,
                         'account_tax_id': line['tax_id']

@@ -23,7 +23,7 @@ class StockPickingOtherExport(models.Model):
             "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "BuiltinOrder", "DocumentType", "DebitAccount",
             "ItemCode", "ItemName", "UnitPurCode", "CreditAccount", "Quantity9", "ConvertRate9", "Quantity",
             "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
-            "DocNo_WO", "ProductCode", "DeptCode",
+            "DocNo_WO", "ProductCode", "DeptCode", "AssetCode",
         ]
 
     def bravo_get_picking_other_export_value(self, employee_code):
@@ -49,7 +49,7 @@ class StockPickingOtherExport(models.Model):
         debit_account_code = debit_line.account_id.code if debit_line else picking.location_dest_id.x_property_valuation_in_account_id.code
         journal_value = {
             "CompanyCode": picking.company_id.code or None,
-            "Stt": picking.id or None,
+            "Stt": picking.name or None,
             "DocCode": 'PX',
             "DocNo": picking.name or None,
             "DocDate": picking.date_done or None,
@@ -80,7 +80,9 @@ class StockPickingOtherExport(models.Model):
             "RowId": stock_move.id or None,
             "DebitAccount": debit_account_code or None,
             "CreditAccount": credit_account_code or None,
-            "ExpenseCatgCode": picking.location_dest_id.expense_item_id.code or None,
+            "ExpenseCatgCode": stock_move.reason_id.expense_item_id.code or None,
+            'AssetCode': (stock_move.ref_asset.type in ("CCDC", "TSCD") and stock_move.ref_asset.code) or None,
+            'ProductCode': (stock_move.ref_asset.type == 'XDCB' and stock_move.ref_asset.code) or None,
         }
 
         return journal_value

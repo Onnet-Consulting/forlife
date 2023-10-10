@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class ReasonRefuse(models.TransientModel):
@@ -24,6 +25,8 @@ class ReasonRefuse(models.TransientModel):
         if object_id.exists() and active_model == 'product.defective.pack':
             line_ids = object_id.line_ids.filtered(
                 lambda l: l.selected and l.state not in ('new', 'cancel') and not l.is_transferred)
+            if not line_ids:
+                raise UserError('Không có dòng nào được chọn để Từ chối !')
             line_ids.reason_refuse_product = self.name
             if self.is_transferred:
                 line_ids.write({

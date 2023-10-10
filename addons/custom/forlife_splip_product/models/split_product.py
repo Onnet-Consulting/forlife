@@ -10,7 +10,7 @@ class SplitProduct(models.Model):
     name = fields.Char(default='New')
 
     user_create_id = fields.Many2one('res.users', 'Người tạo', default=lambda self: self.env.user, readonly=True)
-    date_create = fields.Datetime('Ngày tạo', readonly=True, default=lambda self: fields.datetime.now())
+    date_create = fields.Datetime('Ngày tạo', default=lambda self: fields.datetime.now())
     user_approve_id = fields.Many2one('res.users', 'Người xác nhận', readonly=True)
     date_approved = fields.Datetime('Ngày xác nhận', readonly=True)
     state = fields.Selection([('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
@@ -76,13 +76,16 @@ class SplitProduct(models.Model):
         self.env['split.product.line.sub'].create(vals_list)
         self.state = 'in_progress'
 
-
-
     def action_approve(self):
         self.ensure_one()
         Quant = self.env['stock.quant']
         list_line_invalid = []
+
+        amount_total_split = 0
+        amount_total_source = 0
         for rec in self.split_product_line_ids:
+            amount_total_split += rec.split_product_id.list_price * rec.product_quantity_split
+            amount_total_source += rec.product_id.list_price * rec.product_quantity_out
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
                 level = 2 if r.product_id.brand_id.code == 'TKL' else 4
@@ -90,12 +93,15 @@ class SplitProduct(models.Model):
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
                     r.product_split_id.standard_price = rec.product_id.standard_price
                     product_qty_split += r.quantity
-            rec.product_quantity_out = product_qty_split
+            if self.business_type != 'inv':
+                rec.product_quantity_out = product_qty_split
             available_quantity = Quant._get_available_quantity(product_id=rec.product_id, location_id=rec.warehouse_out_id, lot_id=None, package_id=None, owner_id=None, strict=False, allow_negative=False)
             if rec.product_quantity_out > available_quantity:
                 list_line_invalid.append(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}")
         if len(list_line_invalid) > 0:
             raise ValidationError(_('\n'.join(list_line_invalid)))
+        if amount_total_split != amount_total_source:
+            raise ValidationError(_('Giá trị của sản phẩm chính và sản phẩm phân tách không bằng nhau!.'))
         company_id = self.env.company
         pk_type_in = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'),('sequence_code','=','IN_OTHER')], limit=1)
         pk_type_out = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
@@ -145,7 +151,7 @@ class SplitProduct(models.Model):
                     data.append((0, 0, {
                         'product_id': rec.product_split_id.id,
                         'name': rec.product_split_id.name_get()[0][1],
-                        'date': datetime.now(),
+                        'date': self.date_create,
                         'product_uom': rec.product_uom_split.id,
                         'product_uom_qty': rec.quantity,
                         'quantity_done': rec.quantity,
@@ -175,7 +181,7 @@ class SplitProduct(models.Model):
             data = [(0, 0, {
                 'product_id': record.product_id.id,
                 'name': record.product_id.name_get()[0][1],
-                'date': datetime.now(),
+                'date': self.date_create,
                 'product_uom': record.product_id.uom_id.id,
                 'product_uom_qty': record.product_quantity_out,
                 'quantity_done': record.product_quantity_out,
@@ -212,7 +218,7 @@ class SpilitProductLine(models.Model):
     product_id = fields.Many2one('product.product', 'Sản phẩm chính', required=True)
     product_uom = fields.Many2one('uom.uom', 'Đơn vị tính', related='product_id.uom_id')
     warehouse_out_id = fields.Many2one('stock.location', 'Kho xuất', required=True, domain=_domain_location)
-    product_quantity_out = fields.Integer('Số lượng xuất', readonly=True)
+    product_quantity_out = fields.Integer('Số lượng xuất')
     product_quantity_split = fields.Integer('Số lượng phân tách', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', required=True, related='product_id.uom_id')
     warehouse_in_id = fields.Many2one('stock.location', 'Kho nhập', required=True, domain=_domain_location)
@@ -254,6 +260,9 @@ class SpilitProductLineSub(models.Model):
                 raise ValidationError(_('Không được phép nhập giá trị âm!'))
 
     def validate_product(self, level):
+        if self.product_id.brand_id.id != self.product_split_id.brand_id.id:
+            raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng thương hiệu.' % (
+                self.product_id.name, self.product_split_id.name)))
         is_material = self.product_id.categ_id.category_type_id.code in ('2', '4') and self.product_split_id.categ_id.category_type_id.code in ('2', '4')
         categ_from_id = self.product_id.categ_id.id if self.product_id.categ_id.level == level else False
         if self.product_id.categ_id.level > level:
@@ -269,7 +278,7 @@ class SpilitProductLineSub(models.Model):
                 self.product_id.name, self.product_split_id.name)))
 
         if categ_from_id != categ_to_id:
-            if level == 4:
+            if level == 4 and (self.product_id.brand_id.code == self.product_split_id.brand_id.code == 'FMT'):
                 raise ValidationError(_('Sản phẩm "%s" và "%s" không cùng Kết cấu.' % (
                 self.product_id.name, self.product_split_id.name)))
             else:

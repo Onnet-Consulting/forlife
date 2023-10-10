@@ -35,8 +35,8 @@ class ProductDefective(models.Model):
     program_pricelist_item_id = fields.Many2one('promotion.pricelist.item', "Giá (CT giá)")
     from_date = fields.Datetime(readonly=True, string='Hiệu lực', related='program_pricelist_item_id.program_id.campaign_id.from_date')
     to_date = fields.Datetime(readonly=True, related='program_pricelist_item_id.program_id.campaign_id.to_date')
-    reason_refuse_product = fields.Char('Lí do từ chối', readonly=True)
-    active = fields.Boolean(default=True)
+    reason_refuse_product = fields.Char('Lí do từ chối', readonly=True, copy=False)
+    # active = fields.Boolean(default=True)
     quantity_require = fields.Integer('Số lượng yêu cầu')
     company_id = fields.Many2one('res.company', string='Công ty', required=True, default=lambda self: self.env.company)
     approval_uid = fields.Many2one('res.users', 'Người duyệt', readonly=True)
@@ -52,8 +52,9 @@ class ProductDefective(models.Model):
     ], string='Transfer State', compute='_compute_transfer_state')
     transfer_line_ids = fields.One2many(
         'stock.transfer.line', 'defective_product_id')  # compute='_compute_transfer_line_ids')
+    warehouse_id = fields.Many2one('stock.warehouse', related='store_id.warehouse_id')
     from_location_id = fields.Many2one(
-        'stock.location', string='From Location', copy=False)
+        'stock.location', string='From Location', copy=False, domain="[('warehouse_id', '=', warehouse_id)]")
     to_location_id = fields.Many2one('stock.location', string='To Location', copy=False)
     image_1920 = fields.Image("Ảnh",  max_width=1920, max_height=1920)
 
@@ -68,7 +69,7 @@ class ProductDefective(models.Model):
     def _compute_transfer_state(self):
         for record in self:
             record.transfer_state = 'none'
-            if record.is_transferred and not self.transfer_line_ids:
+            if record.is_transferred and not record.transfer_line_ids:
                 record.transfer_state = 'to_transfer'
             elif record.transfer_line_ids:
                 record.transfer_state = 'in_transfer'
@@ -176,6 +177,8 @@ class ProductDefective(models.Model):
 
     def action_approve(self):
         self.ensure_one()
+        if self.quantity_defective_approved <= 0.0:
+            self.quantity_defective_approved = self.quantity_require
         product_defective_exits = self.env['product.defective'].sudo().search([('product_id', '=', self.product_id.id), ('id', '!=', self.id), ('store_id', '=', self.store_id.id), ('state', '=', 'approved')])
         if self.quantity_defective_approved > self.quantity_inventory_store - sum(product_defective_exits.mapped('quantity_can_be_sale')):
             raise ValidationError(_(f'Tồn kho của sản phẩm {self.product_id.name_get()[0][1]} không đủ trong kho {self.store_id.warehouse_id.name_get()[0][1]}'))
@@ -191,8 +194,6 @@ class ProductDefective(models.Model):
                 price = self.price
         if price:
             raise UserError(_('Tổng giảm không được lớn hơn %s' % str(price)))
-        if self.quantity_defective_approved <= 0.0:
-            self.quantity_defective_approved = self.quantity_require
 
         self.write({
             'state': 'approved',
@@ -259,7 +260,7 @@ class ProductDefective(models.Model):
         for line, values in zip(self, data_list):
             values['money_reduce'] = 0
             values['percent_reduce'] = 0
-            values['active'] = True
+            # values['active'] = True
             values['is_transferred'] = False
         return data_list
 
