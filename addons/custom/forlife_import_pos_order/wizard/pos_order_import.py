@@ -141,9 +141,11 @@ class PosOrderImport(models.TransientModel):
     def create_pos_order_line(self, data):
 
         query = '''
-                    INSERT INTO pos_order_line (order_id, product_id, qty, original_price, price_unit, price_subtotal, price_subtotal_incl, name, employee_id)
-                    VALUES (%(order_id)s, %(product_id)s, %(qty)s, %(original_price)s, %(price_unit)s, %(price_subtotal)s, %(price_subtotal_incl)s, %(name)s, %(employee_id)s) RETURNING id;
-                '''
+INSERT INTO pos_order_line (order_id, product_id, qty, original_price, price_unit, price_subtotal, price_subtotal_incl,
+    name, employee_id, is_reward_line, with_purchase_condition, full_product_name)
+VALUES (%(order_id)s, %(product_id)s, %(qty)s, %(original_price)s, %(price_unit)s, %(price_subtotal)s,
+    %(price_subtotal_incl)s, %(name)s, %(employee_id)s, %(is_reward_line)s, %(with_purchase_condition)s, %(full_product_name)s) RETURNING id;
+'''
         self.env.cr.execute(query, data)
         data = self.env.cr.fetchone()
         return data[0]
@@ -188,6 +190,7 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                 orders[draw_order[2]]['amount_paid'] += int(draw_order[12])
                 orders[draw_order[2]]['amount_total'] += int(draw_order[12])
                 orders[draw_order[2]]['lines'].append({
+                    'full_product_name': draw_order[14],
                     'product_id': draw_order[8],
                     'qty': draw_order[9],
                     'original_price': draw_order[10],
@@ -224,6 +227,7 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                     'total_point': draw_order[6],
                     'card_rank_program_id': draw_order[7],
                     'lines': [{
+                        'full_product_name': draw_order[14],
                         'product_id': draw_order[8],
                         'qty': draw_order[9],
                         'original_price': draw_order[10],
@@ -275,6 +279,7 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                 for line in order['lines']:
                     data_order_line = {
                         'order_id': pos_order_id,
+                        'full_product_name': '[' + line['product_id'] + '] ' + line['full_product_name'],
                         'product_id': self.get_product_id(line['product_id']),
                         'qty': line['qty'],
                         'original_price': line['original_price'],
@@ -282,7 +287,9 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                         'price_subtotal': int(line['qty']) * int(line['original_price']),
                         'price_subtotal_incl': int(line['qty']) * int(line['original_price']),
                         'name': line['name'],
-                        'employee_id': line['employee_id']
+                        'employee_id': line['employee_id'],
+                        'is_reward_line': line['is_reward_line'],
+                        'with_purchase_condition': line['with_purchase_condition'],
                     }
                     pos_order_line_id = self.create_pos_order_line(data_order_line)
 
