@@ -7,13 +7,9 @@ class DepartmentInCharge(models.Model):
     _name = 'department.in.charge'
     _description = 'DepartmentInCharge'
 
-    department_id = fields.Many2one('hr.department', string='Department', ondelete="restrict")
+    department_id = fields.Many2one('hr.department', string='Department', company_dependent=True)
     department_code = fields.Char(string='Department Code', related='department_id.code')
     user_ids = fields.Many2many('res.users', string='User in charge')
-
-    _sql_constraints = [
-        ('unique_code', 'UNIQUE(department_id)', 'Department already exists !')
-    ]
 
 
 class ResUsers(models.Model):
