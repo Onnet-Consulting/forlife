@@ -32,18 +32,8 @@ class AccountMovePurchaseAsset(models.Model):
     def bravo_get_purchase_asset_service_value(self, is_reversed, employee_code):
         self.ensure_one()
         values = []
-        journal_lines = self.line_ids
-        invoice_lines = self.invoice_line_ids
         partner = self.partner_id
-        is_partner_group_1 = partner.group_id == \
-                             self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
-        # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
-        tax_line = journal_tax_lines and journal_tax_lines[0]
-        payable_lines = journal_lines - invoice_lines - journal_tax_lines
-        payable_line = payable_lines and payable_lines[0]
-        payable_account_code = payable_line.account_id.code
-        exchange_rate = self.exchange_rate
+        is_partner_group_1 = partner.group_id == self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
 
         journal_value = {
             "CompanyCode": self.company_id.code or None,
@@ -52,7 +42,7 @@ class AccountMovePurchaseAsset(models.Model):
             "DocNo": self.name or None,
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
-            "ExchangeRate": exchange_rate or None,
+            "ExchangeRate": self.exchange_rate or None,
             "CustomerCode": partner.ref or None,
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
@@ -63,64 +53,128 @@ class AccountMovePurchaseAsset(models.Model):
             "TaxRegNo": partner.vat or None,
             "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if self.is_tc else 0,
-            "CreditAccount": payable_account_code or None,
+            "DocNo_PO": self.reference or None,
             "DueDate": self.invoice_date_due or None,
             "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 3,
         }
 
-        for idx, invoice_line in enumerate(invoice_lines, start=1):
-            purchase_order_line = invoice_line.purchase_line_id
-            product = invoice_line.product_id
-            discount_amount = invoice_line.discount
-            quantity = invoice_line.quantity
-            journal_value_line = journal_value.copy()
-            expense_code = (product.barcode or '')[1:]
-            valid_expense_code = self.env['expense.item'].search(
-                [('code', '=', expense_code), ('company_id', '=', self.company_id.id)], limit=1)
-            journal_value_line.update({
-                "BuiltinOrder": idx or None,
-                "ItemCode": product.barcode or None,
-                "ItemName": product.name or None,
-                "UnitPurCode": purchase_order_line.purchase_uom.code or None,
-                "DebitAccount": invoice_line.account_id.code or None,
-                "Quantity9": invoice_line.quantity,
-                "ConvertRate9": 1,
-                "Quantity": invoice_line.quantity,
-                "PriceUnit": invoice_line.price_unit * exchange_rate,
-                "OriginalPriceUnit": invoice_line.price_unit,
-                "Discount": discount_amount / (quantity * exchange_rate) if quantity else 0,
-                "OriginalDiscount": discount_amount / quantity if quantity else 0,
-                "OriginalUnitCost": invoice_line.price_unit - (discount_amount / quantity if quantity else 0),
-                "UnitCost": (invoice_line.price_unit - (discount_amount / quantity if quantity else 0)) * exchange_rate,
-                "OriginalAmount": invoice_line.price_subtotal,
-                "Amount": invoice_line.price_subtotal * exchange_rate,
-                "IsPromotions": 1 if invoice_line.promotions else 0,
-                "DocNo_PO": self.reference or None,
-                "JobCode": invoice_line.occasion_code_id.code or None,
-                "RowId": invoice_line.id or None,
-                "DocNo_WO": invoice_line.work_order.code or None,
-                "DeptCode": invoice_line.analytic_account_id.code or None,
-                "AssetCode": invoice_line.asset_id.code if (
-                        invoice_line.asset_id and invoice_line.asset_id.type in ("CCDC", "TSCD")) else None,
-                "ExpenseCatgCode": expense_code if valid_expense_code else None,
-                "ProductCode": invoice_line.asset_id.code if (
-                        invoice_line.asset_id and invoice_line.asset_id.type == "XDCB") else None,
-                "TaxCode": tax_line.tax_line_id.code or None,
-                "OriginalAmount3": invoice_line.tax_amount,
-                "Amount3": invoice_line.tax_amount * exchange_rate,
-                "DebitAccount3": tax_line.account_id.code,
-                "CreditAccount3": payable_account_code
-            })
-            if is_reversed:
-                reversed_account_values = {
-                    "DebitAccount": journal_value_line.get('CreditAccount'),
-                    "CreditAccount": journal_value_line.get('DebitAccount'),
-                    "DebitAccount3": journal_value_line.get('CreditAccount3'),
-                    "CreditAccount3": journal_value_line.get('DebitAccount3'),
-                }
-                journal_value_line.update(reversed_account_values)
+        if self.select_type_inv in ('expense', 'labor'):
+            job_code = self.invoice_line_ids.filtered(lambda f: f.occasion_code_id)
+            doc_no_wo = self.invoice_line_ids.filtered(lambda f: f.production_order) or self.invoice_line_ids.filtered(lambda f: f.work_order)
+            dept_code = self.invoice_line_ids.filtered(lambda f: f.account_analytic_id) or self.invoice_line_ids.filtered(lambda f: f.analytic_account_id)
+            asset_code = self.invoice_line_ids.filtered(lambda f: f.asset_id) or self.invoice_line_ids.filtered(lambda f: f.asset_code)
+            asset_code = asset_code and asset_code[0]
+            credit_acc = job_code or doc_no_wo or dept_code or asset_code or self.invoice_line_ids
+            credit_acc = credit_acc and credit_acc[0]
 
-            values.append(journal_value_line)
+            for idx, line in enumerate(self.vendor_back_ids, start=1):
+                journal_value_line = journal_value.copy()
+                expense_code = (line.invoice_description.barcode or '')[1:]
+                valid_expense_code = self.env['expense.item'].search(
+                    [('code', '=', expense_code), ('company_id', '=', self.company_id.id)], limit=1)
+                journal_value_line.update({
+                    "BuiltinOrder": idx,
+                    "ItemCode": line.invoice_description.barcode or None,
+                    "ItemName": line.invoice_description.name or None,
+                    "UnitPurCode": line.invoice_description.uom_id.code or None,
+                    "DebitAccount": line.invoice_description.categ_id.property_account_expense_categ_id.code or None,
+                    "Quantity9": 1,
+                    "ConvertRate9": 1,
+                    "Quantity": 1,
+                    "PriceUnit": line.price_subtotal_back,
+                    "OriginalPriceUnit": line.price_subtotal_back * self.exchange_rate,
+                    "Discount": 0,
+                    "OriginalDiscount": 0,
+                    "OriginalUnitCost": line.price_subtotal_back,
+                    "UnitCost": line.price_subtotal_back * self.exchange_rate,
+                    "OriginalAmount": line.price_subtotal_back,
+                    "Amount": line.price_subtotal_back * self.exchange_rate,
+                    "IsPromotions": 0,
+                    "JobCode": (job_code and job_code[0].occasion_code_id.code) or None,
+                    "RowId": line.id,
+                    "DocNo_WO": (doc_no_wo and (doc_no_wo[0].production_order.code or doc_no_wo[0].work_order.code)) or None,
+                    "DeptCode": (dept_code and (dept_code[0].account_analytic_id.code or dept_code[0].analytic_account_id.code)) or None,
+                    "AssetCode": (asset_code.asset_id.type in ("CCDC", "TSCD") and asset_code.asset_id.code) or (asset_code.asset_code.type in ("CCDC", "TSCD") and asset_code.asset_code.code) or None,
+                    "ExpenseCatgCode": expense_code if valid_expense_code else None,
+                    "ProductCode": (asset_code.asset_id.type == 'XDCB' and asset_code.asset_id.code) or (asset_code.asset_code.type == 'XDCB' and asset_code.asset_code.code) or None,
+                    "TaxCode": line.tax_percent.code or None,
+                    "OriginalAmount3": line.tax_back,
+                    "Amount3": line.tax_back * self.exchange_rate,
+                    "DebitAccount3": line.tax_percent.code or '1331000001',
+                    "CreditAccount3": credit_acc.account_id.code or None,
+                    "CreditAccount": credit_acc.account_id.code or None,
+                })
+                if is_reversed:
+                    reversed_account_values = {
+                        "DebitAccount": journal_value_line.get('CreditAccount'),
+                        "CreditAccount": journal_value_line.get('DebitAccount'),
+                        "DebitAccount3": journal_value_line.get('CreditAccount3'),
+                        "CreditAccount3": journal_value_line.get('DebitAccount3'),
+                    }
+                    journal_value_line.update(reversed_account_values)
+
+                values.append(journal_value_line)
+        else:
+            journal_lines = self.line_ids
+            invoice_lines = self.invoice_line_ids
+            # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
+            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
+            tax_line = journal_tax_lines and journal_tax_lines[0]
+            payable_lines = journal_lines - invoice_lines - journal_tax_lines
+            payable_line = payable_lines and payable_lines[0]
+            payable_account_code = payable_line.account_id.code
+            exchange_rate = self.exchange_rate
+            for idx, invoice_line in enumerate(invoice_lines, start=1):
+                purchase_order_line = invoice_line.purchase_line_id
+                product = invoice_line.product_id
+                discount_amount = invoice_line.discount
+                quantity = invoice_line.quantity
+                journal_value_line = journal_value.copy()
+                expense_code = (product.barcode or '')[1:]
+                valid_expense_code = self.env['expense.item'].search(
+                    [('code', '=', expense_code), ('company_id', '=', self.company_id.id)], limit=1)
+                journal_value_line.update({
+                    "BuiltinOrder": idx or None,
+                    "ItemCode": product.barcode or None,
+                    "ItemName": product.name or None,
+                    "UnitPurCode": purchase_order_line.purchase_uom.code or None,
+                    "DebitAccount": invoice_line.account_id.code or None,
+                    "Quantity9": invoice_line.quantity,
+                    "ConvertRate9": 1,
+                    "Quantity": invoice_line.quantity,
+                    "PriceUnit": invoice_line.price_unit * exchange_rate,
+                    "OriginalPriceUnit": invoice_line.price_unit,
+                    "Discount": discount_amount / (quantity * exchange_rate) if quantity else 0,
+                    "OriginalDiscount": discount_amount / quantity if quantity else 0,
+                    "OriginalUnitCost": invoice_line.price_unit - (discount_amount / quantity if quantity else 0),
+                    "UnitCost": (invoice_line.price_unit - (discount_amount / quantity if quantity else 0)) * exchange_rate,
+                    "OriginalAmount": invoice_line.price_subtotal,
+                    "Amount": invoice_line.price_subtotal * exchange_rate,
+                    "IsPromotions": 1 if invoice_line.promotions else 0,
+                    "JobCode": invoice_line.occasion_code_id.code or None,
+                    "RowId": invoice_line.id or None,
+                    "DocNo_WO": invoice_line.production_order.code or invoice_line.work_order.code or None,
+                    "DeptCode": invoice_line.account_analytic_id.code or invoice_line.analytic_account_id.code or None,
+                    "AssetCode": (invoice_line.asset_id.type in ("CCDC", "TSCD") and invoice_line.asset_id.code) or (invoice_line.asset_code.type in ("CCDC", "TSCD") and invoice_line.asset_code.code) or None,
+                    "ExpenseCatgCode": expense_code if valid_expense_code else None,
+                    "ProductCode": (invoice_line.asset_id.type == 'XDCB' and invoice_line.asset_id.code) or (invoice_line.asset_code.type == 'XDCB' and invoice_line.asset_code.code) or None,
+                    "TaxCode": tax_line.tax_line_id.code or None,
+                    "OriginalAmount3": invoice_line.tax_amount,
+                    "Amount3": invoice_line.tax_amount * exchange_rate,
+                    "DebitAccount3": tax_line.account_id.code,
+                    "CreditAccount3": payable_account_code,
+                    "CreditAccount": payable_account_code or None,
+                })
+                if is_reversed:
+                    reversed_account_values = {
+                        "DebitAccount": journal_value_line.get('CreditAccount'),
+                        "CreditAccount": journal_value_line.get('DebitAccount'),
+                        "DebitAccount3": journal_value_line.get('CreditAccount3'),
+                        "CreditAccount3": journal_value_line.get('DebitAccount3'),
+                    }
+                    journal_value_line.update(reversed_account_values)
+
+                values.append(journal_value_line)
 
         return values
 
@@ -253,14 +307,14 @@ class AccountMoveVendorBack(models.Model):
             "CustomerName": self.partner_id.name or None,
             "Address": self.partner_id.contact_address_complete or None,
             "Description": self.invoice_description or None,
+            "CompanyCode": self.company_id.code or None,
         }
 
         for record in vendor_back_ids:
             line_value = value.copy()
             debit_accounts = record.tax_percent.invoice_repartition_line_ids.filtered(lambda l: bool(l.account_id))
-            debit_account_code = debit_accounts[0].account_id.code if debit_accounts else None
+            debit_account_code = debit_accounts[0].account_id.code if debit_accounts else '1331000001'
             line_value.update({
-                "CompanyCode": record.company_id.code or None,
                 "Stt": record.id,
                 "AtchDocNo": record.invoice_reference or None,
                 "TaxRegName": record.vendor or None,
@@ -432,6 +486,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
         if not is_reversed:
             credit_lines = lines.filtered(lambda l: l.credit > 0)
             debit_lines = lines - credit_lines
+            debit_lines = debit_lines if credit_lines else debit_lines.filtered(lambda f: f.debit > 0)
             credit_account_code = credit_lines[0].account_id.code if credit_lines else None
             for idx, line in enumerate(debit_lines, start=1):
                 line_value = journal_value.copy()
@@ -453,6 +508,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
         else:
             debit_lines = lines.filtered(lambda l: l.debit > 0)
             credit_lines = lines - debit_lines
+            credit_lines = credit_lines if debit_lines else credit_lines.filtered(lambda f: f.credit > 0)
             debit_account_code = debit_lines[0].account_id.code if debit_lines else None
             for idx, line in enumerate(credit_lines, start=1):
                 line_value = journal_value.copy()
