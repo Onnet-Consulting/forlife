@@ -59,8 +59,11 @@
                                 </div>
                                 <field name="total_reduce" required="1"/>
                                 <field name="is_transferred" invisible="1"/>
-                                <field name="from_location_id" attrs="{'invisible': [('is_transferred', '=', False)]}"/>
-                                <field name="to_location_id" attrs="{'invisible': [('is_transferred', '=', False)]}"/>
+                                <field name="warehouse_id" invisible="1"/>
+                                <field name="transfer_state" invisible="1"/>
+                                <field name="from_location_id"
+                                       attrs="{'invisible': [('is_transferred', '=', False)], 'readonly': ['|', ('transfer_state','=', 'in_transfer'), ('is_transferred', '=', False)]}"/>
+                                <field name="to_location_id" attrs="{'invisible': [('is_transferred', '=', False)], 'readonly': ['|', ('transfer_state','=', 'in_transfer'), ('is_transferred', '=', False)]}"/>
                                 <field name="defective_type_id" required="1" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="detail_defective" attrs="{'readonly': [('state','in',['refuse','approved','waiting approve'])]}"/>
                                 <field name="reason_refuse_product" states="refuse" readonly="True"/>
