@@ -2355,8 +2355,9 @@ class PurchaseOrderLine(models.Model):
                     'readonly_discount_percent': False,
                     'readonly_discount': False,
                 })
+                rec._onchange_discount_percent()
 
-    @api.onchange("discount_percent", 'vendor_price')
+    @api.onchange("discount_percent", 'vendor_price', 'price_unit', 'product_qty')
     def _onchange_discount_percent(self):
         if not self.readonly_discount_percent:
             if self.discount_percent:
@@ -2368,7 +2369,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 self.readonly_discount = False
 
-    @api.onchange("discount", 'vendor_price')
+    @api.onchange("discount", 'vendor_price', 'price_unit', 'product_qty')
     def _onchange_discount(self):
         if not self.readonly_discount:
             if self.discount and self.price_unit > 0 and self.product_qty > 0:
