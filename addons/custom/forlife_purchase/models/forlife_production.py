@@ -2,6 +2,9 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.tools import float_round
+import xlsxwriter
+import base64
+import tempfile
 
 
 class ForlifeProduction(models.Model):
@@ -17,9 +20,13 @@ class ForlifeProduction(models.Model):
     user_id = fields.Many2one('res.users', string="User Created", default=lambda self: self.env.user, required=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     created_date = fields.Date(string="Create Date", default=lambda self: fields.datetime.now(), required=True)
-    forlife_production_finished_product_ids = fields.One2many('forlife.production.finished.product', 'forlife_production_id', string='Finished Products', copy=True)
-    forlife_production_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')
-    forlife_production_service_cost_ids = fields.One2many('forlife.production.service.cost', 'forlife_production_id', string='Service costs')
+    forlife_production_finished_product_ids = fields.One2many('forlife.production.finished.product',
+                                                              'forlife_production_id', string='Finished Products',
+                                                              copy=True)
+    forlife_production_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id',
+                                                      string='Materials')
+    forlife_production_service_cost_ids = fields.One2many('forlife.production.service.cost', 'forlife_production_id',
+                                                          string='Service costs')
     implementation_id = fields.Many2one('account.analytic.account', string='Bộ phận thực hiện')
     management_id = fields.Many2one('account.analytic.account', string='Bộ phận quản lý')
     production_department = fields.Selection([
@@ -27,7 +34,8 @@ class ForlifeProduction(models.Model):
         ('tp', 'Gia công TP'),
         ('npl', 'Gia công NPL')
     ], default='tu_san_xuat', string='Production Department')
-    produced_from_date = fields.Date(string="Produced From Date", default=lambda self: fields.datetime.now(), required=True)
+    produced_from_date = fields.Date(string="Produced From Date", default=lambda self: fields.datetime.now(),
+                                     required=True)
     to_date = fields.Date(string="To Date", required=True)
     brand_id = fields.Many2one('res.brand', string="Nhãn hàng")
     state = fields.Selection([
@@ -44,6 +52,152 @@ class ForlifeProduction(models.Model):
     machining_id = fields.Many2one('res.partner', string='Đối tượng gia công')
     leader_id = fields.Many2one('hr.employee', string='Quản lý đơn hàng')
     production_price = fields.Float(string='Đơn giá nhân công')
+    data_export = fields.Binary(string='Export', compute='_get_data_export')
+
+    def render_sheet(self, worksheet, data, format):
+        row = 0
+        for line in data:
+            col = 0
+            for item in line:
+                if row == 0:
+                    worksheet.write(row, col, item, format)
+                else:
+                    worksheet.write(row, col, item)
+                col += 1
+            row += 1
+        return worksheet
+
+    def _get_data_export(self):
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        # Lấy đường dẫn của file tạm
+        temp_file_path = temp_file.name
+        workbook = xlsxwriter.Workbook(temp_file_path)
+        worksheet = workbook.add_worksheet(u'Sản phẩm hoàn thành')
+        header_format = workbook.add_format({
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': '11',
+            'text_wrap': True,
+            'italic': False,
+            'border': 1,
+        })
+        header = [
+            'Mã lệnh sản xuất',
+            'Tên lệnh sản xuất',
+            'Bộ phận thực hiện',
+            'Bộ phận quản lý',
+            'Phân loại sản xuất',
+            'Dự kiến sản xuất từ',
+            'Đến ngày',
+            'Đơn giá nhân công',
+            'Nhãn hàng',
+            'Quản lý đơn hàng',
+            'Đối tượng gia công',
+            'Finished Products/Mã sản phẩm',
+            'Finished Products/Số lượng sản xuất',
+        ]
+        lines = [header]
+        data = [
+            self.code,
+            self.name,
+            self.implementation_id.name or '',
+            self.management_id.name or '',
+            self.production_department,
+            self.produced_from_date.strftime('%d/%m/%Y'),
+            self.to_date.strftime('%d/%m/%Y'),
+            self.production_price,
+            self.brand_id.name or '',
+            self.leader_id.name or '',
+            self.machining_id.name or '',
+            self.forlife_production_finished_product_ids[0].product_id.barcode,
+            self.forlife_production_finished_product_ids[0].produce_qty
+        ]
+        lines.append(data)
+        for producf in self.forlife_production_finished_product_ids[1:]:
+            lines.append(['', '', '', '', '', '', '', '', '', '', '', producf.product_id.barcode, producf.produce_qty])
+        worksheet = self.render_sheet(worksheet=worksheet, data=lines, format=header_format)
+        worksheet2 = workbook.add_worksheet(u'BOM')
+        header2 = [
+            'Lệnh sản xuất',
+            'Mã vật tư(Mã vạch/Mã kĩ thuật)',
+            'Mã thành phẩm',
+            'NPL thay thế(Mã vạch/Mã kĩ thuật)',
+            'Size',
+            'Màu',
+            'Đvt Lệnh sản xuất',
+            'HSQĐ',
+            'ĐM',
+            'Hao Hụt',
+            'Số lượng sản xuất',
+        ]
+        line2 = [header2]
+        index = 0
+        for material in self.material_import_ids:
+            if index == 0:
+                code = [self.code]
+            else:
+                code = ['']
+            try:
+                code.extend([
+                    material.product_id.barcode or '',
+                    material.product_finish_id.barcode or '',
+                    material.product_backup_id.barcode or '',
+                    material.size,
+                    material.color,
+                    material.production_uom_id.name or '',
+                    material.conversion_coefficient,
+                    material.rated_level,
+                    material.loss,
+                    material.qty,
+                ])
+                line2.append(code)
+            except:
+                pass
+            index += 1
+        worksheet2 = self.render_sheet(worksheet=worksheet2, data=line2, format=header_format)
+        worksheet3 = workbook.add_worksheet(u'Chi phí')
+        header3 = [
+            'Lệnh sản xuất',
+            'Mã phí',
+            'Số lượng sản xất',
+            'Định mức (VND)',
+            'Tổng nhu cầu (VND)',
+            'Mã thành phẩm',
+        ]
+        line3 = [header3]
+        index = 0
+        for expense in self.expense_import_ids:
+            if index == 0:
+                code = [self.code]
+            else:
+                code = ['']
+            code.extend([
+                expense.product_id.barcode or '',
+                expense.quantity,
+                expense.cost_norms,
+                expense.total_cost_norms,
+                expense.product_finish_id.barcode or '',
+            ])
+            line3.append(code)
+            index += 1
+        worksheet3 = self.render_sheet(worksheet=worksheet3, data=line3, format=header_format)
+        worksheet.set_column(0, len(header), 20)
+        worksheet2.set_column(0, len(header2), 20)
+        worksheet3.set_column(0, len(header3), 20)
+        worksheet.set_row(0, 30)
+        workbook.close()
+        temp_file.close()
+        self.data_export = base64.b64encode(open(temp_file_path, "rb").read())
+
+    def action_export_production(self):
+        export = {
+            'type': 'ir.actions.act_url',
+            'name': 'Export fee',
+            'url': '/web/content/%s/%s/data_export/lenh_san_xuat.xlsx?download=true' % (
+                self._name, self.id),
+        }
+        self.data_export = False
+        return export
 
     def action_print(self):
         return self.env.ref('forlife_purchase.print_print_production_action').report_action(self)
@@ -55,7 +209,7 @@ class ForlifeProduction(models.Model):
     def action_wait_confirm(self):
         for record in self:
             record.write({'state': 'wait_confirm'})
-    
+
     def _get_vals_production(self, production):
         master = {
             'code': production.code,
@@ -69,21 +223,21 @@ class ForlifeProduction(models.Model):
             'production_department': production.production_department,
             'produced_from_date': production.produced_from_date,
             'to_date': production.to_date,
-            'production_price':production.production_price,
+            'production_price': production.production_price,
         }
-        forlife_production_finished_product_ids = [(5,0,0)]
+        forlife_production_finished_product_ids = [(5, 0, 0)]
         for line in production.forlife_production_finished_product_ids:
-            forlife_production_finished_product_ids.append((0,0,{
-                'product_id':line.product_id.id,
-                'produce_qty':line.produce_qty,
+            forlife_production_finished_product_ids.append((0, 0, {
+                'product_id': line.product_id.id,
+                'produce_qty': line.produce_qty,
             }))
         if forlife_production_finished_product_ids:
             master.update({
                 'forlife_production_finished_product_ids': forlife_production_finished_product_ids
             })
-        material_import_ids = [(5,0,0)]
+        material_import_ids = [(5, 0, 0)]
         for line in production.material_import_ids:
-            material_import_ids.append((0,0,{
+            material_import_ids.append((0, 0, {
                 'product_id': line.product_id.id,
                 'product_finish_id': line.product_finish_id.id if line.product_finish_id else False,
                 'product_backup_id': line.product_backup_id.id if line.product_backup_id else False,
@@ -99,9 +253,9 @@ class ForlifeProduction(models.Model):
             master.update({
                 'material_import_ids': material_import_ids
             })
-        expense_import_ids = [(5,0,0)]
+        expense_import_ids = [(5, 0, 0)]
         for line in production.expense_import_ids:
-            expense_import_ids.append((0,0,{
+            expense_import_ids.append((0, 0, {
                 'product_id': line.product_id.id if line.product_id else False,
                 'quantity': line.quantity,
                 'cost_norms': line.cost_norms,
@@ -116,14 +270,16 @@ class ForlifeProduction(models.Model):
 
     def action_approved(self):
         for record in self:
-            old_record= self.env['forlife.production'].with_context(active_test=False).search([('id', '!=', record.id), ('code', '=', record.code),('active','=', True),('state','=','approved')])
+            old_record = self.env['forlife.production'].with_context(active_test=False).search(
+                [('id', '!=', record.id), ('code', '=', record.code), ('active', '=', True),
+                 ('state', '=', 'approved')])
             if old_record:
                 old_record_val = self._get_vals_production(old_record)
                 record_val = self._get_vals_production(record)
                 record_val.update({
                     'active': True,
                     'version': old_record.version + 1,
-                })              
+                })
                 old_record.write(record_val)
                 old_record.update_bom()
 
@@ -147,7 +303,6 @@ class ForlifeProduction(models.Model):
                     'state': 'approved',
                 })
                 record.update_bom()
-            
 
     def action_done(self):
         for record in self:
@@ -156,11 +311,13 @@ class ForlifeProduction(models.Model):
                 'status': 'done'
             })
 
-    @api.depends('forlife_production_finished_product_ids', 'forlife_production_finished_product_ids.remaining_qty', 'forlife_production_finished_product_ids.stock_qty')
+    @api.depends('forlife_production_finished_product_ids', 'forlife_production_finished_product_ids.remaining_qty',
+                 'forlife_production_finished_product_ids.stock_qty')
     def compute_check_status(self):
         for rec in self:
             if not rec.check_status:
-                if rec.forlife_production_finished_product_ids and any(x != 0 for x in rec.forlife_production_finished_product_ids.mapped('produce_qty')):
+                if rec.forlife_production_finished_product_ids and any(
+                        x != 0 for x in rec.forlife_production_finished_product_ids.mapped('produce_qty')):
                     if all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('remaining_qty')):
                         rec.status = 'done'
                     elif all(x == 0 for x in rec.forlife_production_finished_product_ids.mapped('stock_qty')):
@@ -191,7 +348,8 @@ class ForlifeProduction(models.Model):
         for rec in self:
             if rec.forlife_production_finished_product_ids:
                 self.selected_product_ids = [
-                    (6, 0, [item.product_id.id for item in rec.forlife_production_finished_product_ids if item.product_id])]
+                    (6, 0,
+                     [item.product_id.id for item in rec.forlife_production_finished_product_ids if item.product_id])]
             else:
                 self.selected_product_ids = False
 
@@ -204,7 +362,9 @@ class ForlifeProduction(models.Model):
     @api.constrains('code')
     def constrains_code(self):
         for record in self:
-            old_record = self.env['forlife.production'].search([('id', '!=', record.id), ('code', '=', record.code), ('active', '=', True), ('state', '=', 'approved')], limit=1)
+            old_record = self.env['forlife.production'].search(
+                [('id', '!=', record.id), ('code', '=', record.code), ('active', '=', True),
+                 ('state', '=', 'approved')], limit=1)
             if old_record.status == 'done':
                 raise ValidationError(_("Lệnh sản xuất đã tồn tại. Bạn nên tạo một lệnh sản xuất mới!"))
 
@@ -235,7 +395,8 @@ class ForlifeProductionFinishedProduct(models.Model):
     implementation_id = fields.Many2one('account.analytic.account', related='forlife_production_id.implementation_id')
     management_id = fields.Many2one('account.analytic.account', related='forlife_production_id.management_id')
     production_department = fields.Selection(related='forlife_production_id.production_department')
-    forlife_bom_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')
+    forlife_bom_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id',
+                                               string='Materials')
     forlife_bom_service_cost_ids = fields.One2many('forlife.bom.service.cost', 'forlife_bom_id', string='Service costs')
     is_check = fields.Boolean(default=False)
     color = fields.Many2one('product.attribute.value', string='Màu', compute='compute_attribute_value')
@@ -246,9 +407,12 @@ class ForlifeProductionFinishedProduct(models.Model):
     def compute_attribute_value(self):
         attrs = self.env['res.utility'].get_attribute_code_config()
         for rec in self:
-            rec.color = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('mau_sac')).value_ids.id
-            rec.size = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('size')).value_ids.id
-            rec.quality = rec.product_id.attribute_line_ids.filtered(lambda x: x.attribute_id.attrs_code == attrs.get('chat_luong')).value_ids.id
+            rec.color = rec.product_id.attribute_line_ids.filtered(
+                lambda x: x.attribute_id.attrs_code == attrs.get('mau_sac')).value_ids.id
+            rec.size = rec.product_id.attribute_line_ids.filtered(
+                lambda x: x.attribute_id.attrs_code == attrs.get('size')).value_ids.id
+            rec.quality = rec.product_id.attribute_line_ids.filtered(
+                lambda x: x.attribute_id.attrs_code == attrs.get('chat_luong')).value_ids.id
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
@@ -275,7 +439,8 @@ class ForlifeProductionFinishedProduct(models.Model):
     def update_price(self):
         for record in self:
             record.write({'write_date': fields.Datetime.now(),
-                          'unit_price': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids)
+                          'unit_price': sum(
+                              rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids)
                                         + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids)})
         return {
             'name': ('BOM'),
@@ -286,7 +451,6 @@ class ForlifeProductionFinishedProduct(models.Model):
             'target': 'new',
             'res_id': self.id,
         }
-
 
     @api.model_create_multi
     def create(self, vals_list):

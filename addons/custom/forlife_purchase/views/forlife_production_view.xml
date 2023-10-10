@@ -35,6 +35,7 @@
                     <button string="Phê duyệt" name="action_approved" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'wait_confirm')]}"/>
                     <button string="In lệnh" name="action_print" type="object"/>
+                    <button string="Xuất lệnh" name="action_export_production" type="object"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <header attrs="{'invisible':[ ('active', '=', False)]}">
