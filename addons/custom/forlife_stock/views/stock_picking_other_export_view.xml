@@ -175,7 +175,7 @@
             </field>
         </record>
 
-        <record id="forlife_stock_picking_form_view" model="ir.ui.view">
+        <record id="forlife_stock_picking_form_view_inherit" model="ir.ui.view">
             <field name="name">forlife.stock.picking.form.view</field>
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="forlife_purchase.forlife_stock_stock_picking_po_form_view"/>
