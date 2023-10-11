@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 
@@ -98,14 +98,14 @@ class StockPicking(models.Model):
                 if po.type_po_cost == 'tax':
                     # tạo bút toán định giá tồn kho với thuế nhập khẩu và thuế đặc biệt
                     if po and po.exchange_rate_line_ids:
-                        move_import_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'import') # thuế nhập khẩu
-                        move_special_tax_values = self.prepare_move_svl_value_with_tax_po(po, 'special') # thuế tiêu thụ đặc biệt
+                        move_import_tax_values = record.prepare_move_svl_value_with_tax_po(po, 'import') # thuế nhập khẩu
+                        move_special_tax_values = record.prepare_move_svl_value_with_tax_po(po, 'special') # thuế tiêu thụ đặc biệt
                         move_values = move_import_tax_values + move_special_tax_values
                         moves = self.env['account.move'].create(move_values)
                         if moves:
                             moves._post()
                 if po.cost_line:
-                    self.create_expense_entries(po)
+                    record.create_expense_entries(po)
                 # Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order and not po.is_inter_company:
                     npl = self.create_invoice_npl(po, record)
@@ -164,7 +164,7 @@ class StockPicking(models.Model):
                 'stock_move_id': move.id,
                 'journal_id': journal_id,
                 'exchange_rate': po.exchange_rate,
-                'date': datetime.now(),
+                'date': (self.date_done + timedelta(hours=7)).date(),
                 'invoice_payment_term_id': po.payment_term_id.id,
                 'invoice_date_due': po.date_planned,
                 'restrict_mode_hash_table': False,
@@ -254,7 +254,7 @@ class StockPicking(models.Model):
                     'x_entry_types': 'entry_cost',
                     'reference': po.name,
                     'exchange_rate': po.exchange_rate,
-                    'date': datetime.utcnow(),
+                    'date': (self.date_done + timedelta(hours=7)).date(),
                     'invoice_payment_term_id': po.payment_term_id.id,
                     'invoice_date_due': po.date_planned,
                     'restrict_mode_hash_table': False,
