@@ -181,7 +181,7 @@
             <field name="inherit_id" ref="forlife_purchase.forlife_stock_stock_picking_po_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='move_line_ids_without_package']//tree//field[@name='work_production']" position="after">
-                    <field name="work_to"/>
+                    <field name="work_to" string="Lệnh sản xuất tới"/>
                 </xpath>
             </field>
         </record>
