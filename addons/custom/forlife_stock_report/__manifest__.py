@@ -20,5 +20,8 @@
         'views/stock_quant_period.xml',
         'views/product_product.xml',
         'views/product_template.xml',
+        'views/product_inventory.xml',
+        'views/accounting_difference.xml',
+        'views/calculate_final_value.xml',
     ]
 }

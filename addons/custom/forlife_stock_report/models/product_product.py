@@ -7,6 +7,8 @@ from odoo import api, fields, models, _
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
+    is_source = fields.Boolean(string='Sản phẩm nguồn', default=True)
+
     def action_open_quant_period(self):
         self.with_context(product_tmpl_ids=self.product_tmpl_id.ids)
         action = {
