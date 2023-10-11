@@ -107,6 +107,7 @@
                     <field name="is_production_order" invisible="1"/>
                     <field name="is_amount_total" invisible="1"/>
                     <field name="work_production" attrs="{'required': [('is_production_order', '=', True)]}"/>
+                    <field name="work_to"/>
                     <field name="name" required="0" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="date" required="0" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="amount_total" force_save="1" string="Tổng tiền" attrs="{'column_invisible': [('parent.other_import', '!=', True)], 'readonly': [('is_amount_total', '!=', True)]}"/>

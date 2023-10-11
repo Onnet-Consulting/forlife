@@ -486,7 +486,7 @@ class StockTransfer(models.Model):
                 'product_uom': line.uom_id.id,
                 'product_uom_qty': product_quantity,
                 'quantity_done': product_quantity,
-                'work_from': line.work_from.id or False,
+                'work_production': line.work_from.id or False,
                 'work_to': line.work_to.id or False,
             }))
             if line.qty_in > line.qty_out:
