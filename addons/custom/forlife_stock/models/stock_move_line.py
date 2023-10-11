@@ -10,6 +10,7 @@ class StockMoveLine(models.Model):
     ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất', domain=[('state', '=', 'approved'), ('status', '!=', 'done')], ondelete='restrict')
+    work_to = fields.Many2one('forlife.production', string="Lệnh sản xuất tới", ondelete='restrict')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     sequence = fields.Integer(string="STT dòng")
 
