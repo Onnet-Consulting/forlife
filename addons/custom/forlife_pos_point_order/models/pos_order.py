@@ -20,6 +20,8 @@ class PosOrder(models.Model):
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point', store=True)
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
+    point_pay_move_ids = fields.Many2many(
+        'account.move', 'pos_order_account_move_point_pay', string='Point Pay Move', readonly=True)
     point_usage_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_usage', string='Point Usage Move', readonly=True)
     point_refund_move_ids = fields.Many2many(

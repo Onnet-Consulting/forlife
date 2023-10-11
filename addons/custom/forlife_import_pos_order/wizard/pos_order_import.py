@@ -39,6 +39,24 @@ class PosOrderImport(models.TransientModel):
         else:
             raise ValidationError('Khong co product: '+ barcode)
 
+    def get_product_tax(self, product_id, company_id):
+        query = '''
+select rel.tax_id from product_taxes_rel rel
+left join product_template pt on pt.id = rel.prod_id
+left join product_product pp on pp.product_tmpl_id = pt.id
+left join account_tax tax on tax.id = rel.tax_id
+where tax.company_id = %(company_id)s and pp.id = %(product_id)s;
+'''
+        self.env.cr.execute(query, {
+            'company_id': company_id,
+            'product_id': product_id
+        })
+        data = self.env.cr.fetchone()
+        if data:
+            return data[0]
+        else:
+            return False
+
     def get_promotion_program_id(self, name):
         query = '''
                             SELECT id FROM promotion_program WHERE name = %(name)s LIMIT 1
@@ -199,8 +217,8 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                     'employee_id': draw_order[13],
                     'name': draw_order[14],
                     'tax_id': draw_order[17],
-                    'is_reward_line': draw_order[18],
-                    'with_purchase_condition': draw_order[19],
+                    'is_reward_line': bool(draw_order[18]),
+                    'with_purchase_condition': bool(draw_order[19]),
                     'discount_details_lines': [{
                         'type': draw_order[20],
                         'money_reduced': float(draw_order[21]),
@@ -209,7 +227,7 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                     'promotion_usage_ids': [{
                         'program_id': draw_order[22],
                         'discount_amount': draw_order[23],
-                        'registering_tax': draw_order[24]
+                        'registering_tax': bool(draw_order[24])
                     }] if draw_order[22] and draw_order[23] else [],
                 })
             else:
@@ -223,8 +241,8 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                     'brand_id': draw_order[15],
                     'company_id': draw_order[16],
                     'program_store_point_id': draw_order[4],
-                    'point_order': draw_order[5],
-                    'total_point': draw_order[6],
+                    'point_order': draw_order[5] or 0,
+                    'total_point': draw_order[6] or 0,
                     'card_rank_program_id': draw_order[7],
                     'lines': [{
                         'full_product_name': draw_order[14],
@@ -236,8 +254,8 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                         'employee_id': draw_order[13],
                         'name': draw_order[14],
                         'tax_id': draw_order[17],
-                        'is_reward_line': draw_order[18],
-                        'with_purchase_condition': draw_order[19],
+                        'is_reward_line': bool(draw_order[18]),
+                        'with_purchase_condition': bool(draw_order[19]),
                         'discount_details_lines': [{
                             'type': draw_order[20],
                             'money_reduced': float(draw_order[21]),
@@ -246,7 +264,7 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                         'promotion_usage_ids': [{
                             'program_id': draw_order[22],
                             'discount_amount': draw_order[23],
-                            'registering_tax': draw_order[24]
+                            'registering_tax': bool(draw_order[24])
                         }] if draw_order[22] and draw_order[23] else [],
                     }]
                 }
@@ -307,14 +325,15 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                         promotion_usage_line_data = line['promotion_usage_ids'][0]
                         promotion_usage_line_id = self.create_promotion_usage_line(promotion_usage_line_data)
 
-                    create_account_tax_pos_order_line_rel_data = {
-                        'pos_order_line_id': pos_order_line_id,
-                        'account_tax_id': line['tax_id']
-                    }
-                    self.create_account_tax_pos_order_line_rel(create_account_tax_pos_order_line_rel_data)
+                    tax_id = self.get_product_tax(product_id=data_order_line['product_id'], company_id=data_order['company_id'])
+                    if tax_id:
+                        create_account_tax_pos_order_line_rel_data = {
+                            'pos_order_line_id': pos_order_line_id,
+                            'account_tax_id': tax_id
+                        }
+                        self.create_account_tax_pos_order_line_rel(create_account_tax_pos_order_line_rel_data)
             except Exception as ex:
-                raise ex
-                mess += '\n '+order_key+' :\n'+ str(ex)
+                mess += '\n '+order_key+' :\n' + str(ex)
 
         if mess:
             raise ValidationError(mess)
