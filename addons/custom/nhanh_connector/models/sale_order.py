@@ -717,19 +717,18 @@ class SaleOrderNhanh(models.Model):
 
     def create_picking_return(self, nhanh_status=None):
         so_id = self
-        pick_picking_ids = so_id.picking_ids.filtered(
-            lambda p: p.state == 'done' and p.picking_type_id.sequence_code == 'PICK')
-        pick_picking_not_done_ids = so_id.picking_ids.filtered(
-            lambda p: p.state != 'done' and p.picking_type_id.sequence_code == 'PICK')
-        out_picking_ids = so_id.picking_ids.filtered(lambda p: p.picking_type_id.sequence_code != 'PICK')
-
+        pick_picking_done_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done' and p.picking_type_id.sequence_code in ('PICK', 'OUT'))
+        pick_picking_not_done_ids = so_id.picking_ids.filtered(lambda p: p.state != 'done')
+        if len(pick_picking_done_ids) >= 2:
+            location_id = pick_picking_done_ids[0].location_id
+            pick_picking_done_ids = pick_picking_done_ids[-1]
+        else:
+            location_id = pick_picking_done_ids.location_id
         for opicking in pick_picking_not_done_ids:
-            opicking.action_cancel()
-        for opicking in out_picking_ids:
             opicking.action_cancel()
 
         if nhanh_status and nhanh_status == 'Returned':
-            for picking_id in pick_picking_ids:
+            for picking_id in pick_picking_done_ids:
                 ctx = {
                     'active_id': picking_id.id,
                     'active_ids': picking_id.ids,
@@ -738,12 +737,14 @@ class SaleOrderNhanh(models.Model):
                     'so_return': self.id,
                     'allowed_company_ids': [picking_id.company_id.id],
                     'validate_analytic': True,
-                    'x_return': True
+                    'x_return': True,
+                    'location_id': location_id.id,
+                    'default_location_id': location_id.id
                 }
 
                 stock_return_picking_form = Form(self.env['stock.return.picking'].with_context(ctx))
                 return_wiz = stock_return_picking_form.save()
-                return_wiz.location_id = picking_id.location_id
+                # return_wiz.location_id = location_id
                 stock_return_picking_action = return_wiz.with_context(ctx)._create_returns()
                 picking_return_created = self.env['stock.picking'].browse(stock_return_picking_action[0])
                 picking_return_created.with_context(super=True).confirm_from_so(True)
