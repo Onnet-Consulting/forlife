@@ -285,7 +285,8 @@ class PurchaseOrder(models.Model):
             ('id', '!=', self.sudo().source_location_id.company_id.id)
         ]):
             self.source_location_id = None
-
+        for line in self.order_line:
+            line._onchange_discount_percent()
         # Do something with res
         return res
 
@@ -2359,7 +2360,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange("discount_percent", 'vendor_price', 'price_unit', 'product_qty')
     def _onchange_discount_percent(self):
-        if not self.readonly_discount_percent:
+        if not self.readonly_discount_percent or not self.free_good:
             if self.discount_percent:
                 self.discount = self.discount_percent * self.price_unit * self.product_qty * 0.01
                 self.readonly_discount = True
