@@ -2370,7 +2370,7 @@ class PurchaseOrderLine(models.Model):
             else:
                 self.readonly_discount = False
 
-    @api.onchange("discount", 'vendor_price', 'price_unit', 'product_qty')
+    @api.onchange("discount")
     def _onchange_discount(self):
         if not self.readonly_discount:
             if self.discount and self.price_unit > 0 and self.product_qty > 0:
