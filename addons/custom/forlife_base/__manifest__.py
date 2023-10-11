@@ -17,6 +17,7 @@
         'forlife_product',
         'forlife_point_of_sale',
         'base_external_dbsource',
+        'web',
     ],
     'installable': True,
     'auto_install': True,
