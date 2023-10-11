@@ -352,7 +352,7 @@ class PosOrder(models.Model):
                 ]
             }
             move = self.env['account.move'].create(return_point_move_val)._post()
-            self.point_refund_move_ids |= move
+            self.point_pay_move_ids |= move
         if self.refund_point > 0:
             return_point_move_val = {
                 **defaul_val,
@@ -373,6 +373,6 @@ class PosOrder(models.Model):
                 ]
             }
             move = self.env['account.move'].create(return_point_move_val)._post()
-            self.point_addition_move_ids |= move
+            self.point_refund_move_ids |= move
 
         return True
