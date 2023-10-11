@@ -48,6 +48,10 @@ class PosOrder(models.Model):
             'is_tipped': order.is_tipped,
             'tip_amount': order.tip_amount,
             'access_token': order.access_token,
+            'source_store_id': order.config_id.store_id.id,
+            'total_order_line_point_used': order.total_order_line_point_used,
+            'total_order_line_redisual': order.total_order_line_redisual,
+            'allow_for_point': order.allow_for_point
         }
 
     @api.model

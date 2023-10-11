@@ -127,6 +127,7 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                                     body: self.env._t('Bạn đang thực hiện trả đơn hàng phát sinh từ 1 cửa hàng khác.' +
                                         ' Thao tác thanh toán chỉ được hoàn thành nếu lý do trả hàng là loại trả hàng hoàn điểm'),
                                 });
+                                return;
                             }
                 })
                     }

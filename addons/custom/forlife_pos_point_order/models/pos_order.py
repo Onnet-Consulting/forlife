@@ -461,13 +461,3 @@ class PosOrder(models.Model):
             move = self.env['account.move'].create(usage_point_move_val)._post()
             self.point_usage_move_ids |= move
         return True
-
-    def _export_for_ui(self, order):
-        result = super(PosOrder, self)._export_for_ui(order)
-        result.update({
-            'source_store_id': order.config_id.store_id.id,
-            'total_order_line_point_used': order.total_order_line_point_used,
-            'total_order_line_redisual': order.total_order_line_redisual,
-            'allow_for_point': order.allow_for_point
-        })
-        return result
