@@ -72,6 +72,7 @@ BEGIN
             left join product_product pp on pp.id = aml.product_id
             where 1=1
             --and aml.debit > 0
+            and aml.quantity > 0
             and am.state = 'posted'
             and am.date >= _date_from::date and am.date <= _date_to::date
             and am.company_id = _company_id
@@ -94,6 +95,7 @@ BEGIN
             left join product_product pp on pp.id = aml.product_id
             where 1=1
             --and aml.credit > 0
+            and aml.quantity < 0
             and am.state = 'posted'
             and am.date >= _date_from::date and am.date <= _date_to::date
             and am.company_id = _company_id
