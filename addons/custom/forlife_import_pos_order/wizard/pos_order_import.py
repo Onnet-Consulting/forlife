@@ -141,6 +141,20 @@ where tax.company_id = %(company_id)s and pp.id = %(product_id)s;
         data = self.env.cr.fetchone()
         return data[0]
 
+    def _check_existed_order_reference(self, name):
+        query = """
+            SELECT id FROM pos_order WHERE name = %(name)s
+        """
+        self.env.cr.execute(query, {'name': name})
+        order_id = self.env.cr.fetchone()
+        if order_id:
+            query = f"""
+                UPDATE pos_order 
+                SET name = '(SAI) '||substring(name, 1), pos_reference = '(SAI) '||substring(pos_reference, 1)
+                WHERE id = {order_id[0]}
+            """
+            self.env.cr.execute(query)
+
     def create_pos_order(self, data):
 
         query = '''
@@ -277,6 +291,8 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                 session_id = self.get_pos_session_id(config_id)
                 if not session_id:
                     session_id = self.create_pos_session(config_id)
+                self._check_existed_order_reference(order['pos_reference'])
+
                 data_order = {'date_order': order['date_order'], 'store_id': store_id,
                               'pos_reference': order['pos_reference'],
                               'session_id': session_id, 'partner_id': order['partner_id'],
@@ -333,7 +349,7 @@ VALUES (%(pos_order_line_id)s, %(type)s , %(money_reduced)s, %(recipe)s, %(disco
                         }
                         self.create_account_tax_pos_order_line_rel(create_account_tax_pos_order_line_rel_data)
             except Exception as ex:
-                mess += '\n '+order_key+' :\n' + str(ex)
+                mess += '\n '+order_key+' :' + str(ex)
 
         if mess:
             raise ValidationError(mess)
