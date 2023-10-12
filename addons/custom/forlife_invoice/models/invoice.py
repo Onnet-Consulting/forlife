@@ -1018,7 +1018,7 @@ class AccountMoveLine(models.Model):
     @api.onchange('price_subtotal')
     def onchange_price_subtotal_validate_price_subtotal(self):
         # Validate hóa đơn dịch vụ
-        if self.move_id.purchase_type == 'service':
+        if self.move_id.purchase_type == 'service' and not self.move_id.invoice_type:
             price_subtotal = self.purchase_line_id.price_subtotal
             total_invoice = self.price_subtotal
             for line_id in self.purchase_line_id.invoice_lines.filtered(lambda x: x.parent_state != 'cancel' and x.id not in [self.id, self._origin.id, self.id.origin]):
@@ -1033,7 +1033,7 @@ class AccountMoveLine(models.Model):
         else:
             self.discount_value = 0
 
-        if self.move_id.purchase_type == 'service':
+        if self.move_id.purchase_type == 'service' and not self.move_id.invoice_type:
             price_subtotal = self.purchase_line_id.price_subtotal
             total_invoice = self.price_unit * self.quantity
             for line_id in self.purchase_line_id.invoice_lines.filtered(lambda x: x.parent_state != 'cancel' and x.id not in [self.id, self._origin.id, self.id.origin]):
