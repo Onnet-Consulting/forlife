@@ -12,15 +12,24 @@
                     </div>
                     <group>
                         <field name="to_date" class="oe_inline" required="1"/>
-                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num40,product.product'}"/>
+                        <separator string="Tài sản công cụ dụng cụ"/>
                         <field name="asset_ids" widget="many2many_tags" options="{'no_create': True}"/>
-                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id.parent_id', '=', False), ('parent_id', '!=', False)]"
+                        <field name="location_ids" widget="many2many_tags" options="{'no_create': True}" context="{'show_code': 1}"/>
+
+                        <separator string="Tồn kho"/>
+                        <field name="product_ids" widget="many2many_tags" options="{'no_create': True}" context="{'report_ctx': 'report.num40,product.product'}"/>
+                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" context="{'show_code_name': True, 'report_ctx': 'report.num40,stock.warehouse'}"/>
+
+                        <separator/>
+                        <field name="category_type_id" options="{'no_create': True}" context="{'report_ctx': 'report.num40,product.category.type'}"/>
+                        <field name="product_brand_id" domain="[('category_type_id', '=', category_type_id), ('category_type_id', '!=', False), ('parent_id', '=', False)]"
+                               context="{'report_ctx': 'report.num40,product.category,product_brand_id'}" options="{'no_create': True}"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]"
                                context="{'report_ctx': 'report.num40,product.category,product_group_ids'}" options="{'no_create': True}"/>
                         <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', '=', product_group_ids), ('parent_id', '!=', False)]"
                                context="{'report_ctx': 'report.num40,product.category,product_line_ids'}" options="{'no_create': True}"/>
                         <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]"
                                context="{'report_ctx': 'report.num40,product.category,texture_ids'}" options="{'no_create': True}"/>
-                        <field name="warehouse_ids" widget="many2many_tags" options="{'no_create': True}" context="{'show_code_name': True, 'report_ctx': 'report.num40,stock.warehouse'}"/>
                     </group>
                 </sheet>
             </form>
@@ -32,6 +41,7 @@
         <field name="res_model">report.num40</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
+        <field name="context">{'show_code': 1}</field>
     </record>
 
     <menuitem id="report_num40_menu"

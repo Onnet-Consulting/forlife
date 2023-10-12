@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-02 11:59+0000\n"
-"PO-Revision-Date: 2023-10-02 11:59+0000\n"
+"POT-Creation-Date: 2023-10-12 02:25+0000\n"
+"PO-Revision-Date: 2023-10-12 02:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -929,6 +929,11 @@ msgid "Cửa hàng"
 msgstr ""
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num37__categ_id
+msgid "Danh mục sản phẩm"
+msgstr ""
+
+#. module: forlife_report
 #: model:ir.actions.act_window,name:forlife_report.report_num34_window_action
 #: model:ir.model,name:forlife_report.model_report_num34
 #: model:ir.ui.menu,name:forlife_report.report_num34_menu
@@ -1740,6 +1745,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_report.field_report_num37__product_brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num39__product_brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_brand_id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num40__product_brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num4__product_brand_id
 msgid "Level 1"
 msgstr "Danh mục cấp 1"
@@ -1788,7 +1794,7 @@ msgstr "Danh mục cấp 4"
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__location_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num4__location_ids
 msgid "Location"
-msgstr "Địa điểm"
+msgstr "Địa điểm tài sản"
 
 #. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num21__location_province_ids
@@ -2202,6 +2208,13 @@ msgstr "Số CT"
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__number_of_days
 msgid "Number of days"
 msgstr "Số ngày"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num13_form
+msgid ""
+"Nếu đã nhập thông tin Số PO thì không bắt buộc nhập ngày, sản phẩm và danh "
+"mục sản phẩm"
+msgstr ""
 
 #. module: forlife_report
 #. odoo-python
@@ -3269,6 +3282,7 @@ msgstr "Khoản mục"
 #: model:ir.model.fields,field_description:forlife_report.field_report_num37__category_type_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num39__category_type_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num3__category_type_id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num40__category_type_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num4__category_type_id
 msgid "Type of Product Category"
 msgstr "Loại nhóm sản phẩm"
@@ -3574,11 +3588,15 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_report.field_report_num35__warehouse_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num39__warehouse_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num3__warehouse_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num40__warehouse_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num4__warehouse_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num6__warehouse_ids
 msgid "Warehouse"
 msgstr "Kho"
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num40__warehouse_ids
+msgid "Kho tính tồn"
+msgstr ""
 
 #. module: forlife_report
 #: model:res.groups,name:forlife_report.warehouse_print_stock_group
@@ -4016,6 +4034,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_report.print_purchase_request_template
 #, python-format
 msgid "Địa chỉ:"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num40__location_ids
+msgid "Địa điểm"
 msgstr ""
 
 #. module: forlife_report

@@ -9,16 +9,22 @@ TITLES = [
 
 class ReportNum40(models.TransientModel):
     _name = 'report.num40'
-    _inherit = 'report.base'
+    _inherit = ['report.base', 'report.category.type']
     _description = 'Báo cáo tài sản công cụ dụng cụ'
 
     to_date = fields.Date(string='To date', required=True)
     product_ids = fields.Many2many('product.product', 'report_num40_product_rel', string='Products')
+    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num40_warehouse_rel', string='Kho tính tồn')
     asset_ids = fields.Many2many('assets.assets', 'report_num40_asset_rel', string='Assets')
-    warehouse_ids = fields.Many2many('stock.warehouse', 'report_num40_warehouse_rel', string='Warehouse')
+    location_ids = fields.Many2many('asset.location', 'report_num40_asset_location_rel', string='Địa điểm tài sản')
+    category_type_id = fields.Many2one('product.category.type', default=lambda f: f.env.ref('forlife_base.product_category_type_03', raise_if_not_found=False))
     product_group_ids = fields.Many2many('product.category', 'report_num40_group_rel', string='Level 2')
     product_line_ids = fields.Many2many('product.category', 'report_num40_line_rel', string='Level 3')
     texture_ids = fields.Many2many('product.category', 'report_num40_texture_rel', string='Level 4')
+
+    @api.onchange('product_brand_id')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id.id in self.product_brand_id.ids)
 
     @api.onchange('product_group_ids')
     def onchange_product_group(self):
@@ -53,19 +59,18 @@ with asset_data as (
                  ''                                    as nhom_hang,
                  ''                                    as dong_hang,
                  ''                                    as ket_cau,
-                 coalesce(aaa.name->>'{user_lang_code}', aaa.name->>'en_US') as tttp,
-                 wh.name                               as kho,
+                 concat(aaa.code, ' - ', coalesce(aaa.name->>'{user_lang_code}', aaa.name->>'en_US')) as tttp,
+                 al.name                               as kho,
                  he.name                               as nhan_vien,
                  aa.quantity                           as sl_ton
           from hr_asset_transfer_line hatl
                    join hr_asset_transfer hat on hatl.hr_asset_transfer_id = hat.id
                    join assets_assets aa on hatl.asset_code = aa.id
                    left join asset_location al on aa.location = al.id
-                   left join stock_warehouse wh on wh.id = al.warehouse_id
                    left join hr_employee he on he.id = aa.employee
                    left join account_analytic_account aaa on aaa.id = aa.dept_code
           where (hat.validate_date + interval '{tz_offset} h')::date <= '{self.to_date}' and hat.state = 'done'
-            {f'and al.warehouse_id = any(array{warehouse_ids})' if warehouse_ids else ''}
+            {f'and al.id = any(array{self.location_ids.ids})' if self.location_ids else ''}
             {f'and aa.id = any(array{self.asset_ids.ids})' if self.asset_ids else ''}) as x
     where stt = 1
 ),
@@ -127,7 +132,7 @@ order by stt
         Product = self.env['product.product'].with_context(report_ctx='report.num40,product.product')
         Warehouse = self.env['stock.warehouse'].with_context(report_ctx='report.num40,stock.warehouse')
         Utility = self.env['res.utility']
-        categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids
+        categ_ids = self.texture_ids or self.product_line_ids or self.product_group_ids or self.product_brand_id
         if self.product_ids:
             product_ids = self.product_ids.ids
         elif categ_ids:
