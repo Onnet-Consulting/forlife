@@ -13,3 +13,11 @@ class AssetLocation(models.Model):
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code)', 'Code must be unique!')
     ]
+
+    def name_get(self):
+        if self._context.get('show_code'):
+            result = []
+            for l in self:
+                result.append((l.id, f"[{l.code}] {l.name}" if l.code else l.name))
+            return result
+        return super().name_get()
