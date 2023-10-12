@@ -252,21 +252,6 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    $(this).val(index+1)
                 }
             });
-//            for(let i = 0; i < data.length; i ++){
-//                if(codes[i].value != false && data[i].value != false){
-//                    if(data[i].value.price_change == 0){
-//                        data[i].value.price_change = data[i].value.price_residual
-//                    }
-//                }
-//            }
-//            var obj_count_program = data.reduce((acc, item) => {
-//                  const key = item.bookName
-//                  if (!acc.hasOwnProperty(key)) {
-//                    acc[key] = 0
-//                  }
-//                  acc[key] += 1
-//                  return acc
-//                }, {})
             var arr = []
             data.forEach(function(item){
                 if(item.value){
@@ -386,7 +371,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    let to_pay_condition = 0;
                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
                         let has_discount = (item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0 || item.money_reduce_from_product_defective >0 || item.discount > 0);
-                        if(data[i].value.has_condition == false){
+                        if(!data[i].value.has_condition && !(has_discount && data[i].value.is_full_price_applies)){
                             self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
                             data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
                         }
