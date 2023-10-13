@@ -31,8 +31,9 @@ class ReportNum11(models.TransientModel):
         tz_offset = self.tz_offset
         rank_condition = f" and current_rank_id = any (array{self.from_rank_ids.ids})\n" if self.from_rank_ids else ''
         pcr_condition = f"and x_pcr.customer_id = any (array{self.customer_ids.ids})\n" if self.customer_ids else ''
-        pcr_condition += '' if not self.store_ids else f"""and x_pcr.customer_id in (select customer_id from store_first_order
-                 where store_id = any (array{self.store_ids.ids}) and brand_id = {self.brand_id.id})\n"""
+        pcr_condition += f"""and x_pcr.customer_id in (select customer_id from store_first_order
+                 where store_id = any (array{self.store_ids.ids if self.store_ids else (
+                self.env['store'].with_context(report_ctx='report.num11,store').search([('brand_id', '=', self.brand_id.id)]).ids or [-1])}) and brand_id = {self.brand_id.id})\n"""
         query = f"""
 with program_cr as (
     with program_cr_temp1 as (
