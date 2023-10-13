@@ -320,6 +320,7 @@
                     </page>
 
                     <page string="Kê khai hóa đơn GTGT" name="supplier_info" attrs="{'invisible':[('move_type', '=', 'entry')]}">
+                        <button name="%(forlife_invoice.action_import_vendor_back)d" type="action" string="Nhập từ excel" class="oe_highlight" states="draft" context="{'invoice_id': id}"/>
                         <field name="product_expense_ids" invisible="1"/>
                         <field name="vendor_back_ids" context="{'default_company_id': company_id}" attrs="{'readonly': [('state', '!=', 'draft')]}" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">

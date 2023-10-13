@@ -12,3 +12,4 @@ access_summary_expense_labor_account,summary.expense.labor.account,model_summary
 access_account_expense_labor_detail,account.expense.labor.detail,model_account_expense_labor_detail,,1,1,1,1
 access_wizard_increase_decrease_invoice,wizard increase decrease invoice,model_wizard_increase_decrease_invoice,base.group_user,1,1,1,1
 access_wizard_increase_decrease_invoice_line,wizard increase decrease invoice line,model_wizard_increase_decrease_invoice_line,base.group_user,1,1,1,1
+access_import_vendor_back,import_vendor_back,model_import_vendor_back,base.group_user,1,1,1,1

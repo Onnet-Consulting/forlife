@@ -300,14 +300,14 @@ class StockPicking(models.Model):
         'stock.location', "Source Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
         check_company=True, required=False,
-        # domain=_domain_location_id,
+        domain="[('usage', '=', 'internal')]",
         states={'done': [('readonly', True)]})
 
     location_dest_id = fields.Many2one(
         'stock.location', "Destination Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
         check_company=True, required=False,
-        # domain=_domain_location_dest_id,
+        domain="[('usage', '=', 'internal')]",
         states={'done': [('readonly', True)]})
 
     date_done = fields.Datetime('Date of Transfer', copy=False, readonly=False, default=fields.Datetime.now,

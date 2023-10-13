@@ -289,4 +289,32 @@
             ).mass_export_confirmation()
         </field>
     </record>
+
+    <record model="ir.actions.server" id="action_multi_approval">
+        <field name="name">Phê duyệt</field>
+        <field name="model_id" ref="model_stock_transfer"/>
+        <field name="binding_model_id" ref="model_stock_transfer"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+  for rec in records:
+    res = rec.action_approve()
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_multi_in_approval">
+        <field name="name">Xác nhận nhập</field>
+        <field name="model_id" ref="model_stock_transfer"/>
+        <field name="binding_model_id" ref="model_stock_transfer"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+  for rec in records.filtered(lambda f: f.state == 'out_approve'):
+    res = rec.action_in_approve()
+    if isinstance(res, dict):
+      action = res
+        </field>
+    </record>
 </odoo>
