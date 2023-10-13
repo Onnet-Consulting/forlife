@@ -371,9 +371,12 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    let to_pay_condition = 0;
                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
                         let has_discount = (item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0 || item.money_reduce_from_product_defective >0 || item.discount > 0);
-                        if(!data[i].value.has_condition && !(has_discount && data[i].value.is_full_price_applies)){
-                            self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
-                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
+                        if(!data[i].value.has_condition
+                            && !(has_discount && data[i].value.is_full_price_applies)
+                            && !item.refunded_orderline_id) {
+//                            self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
+//                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
+                            to_pay_condition += self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
                         }
                         else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id))
                                 && !(has_discount && data[i].value.is_full_price_applies)
@@ -395,7 +398,14 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                             };
                                             return tmp;
                                         }, 0);
-
+                        /*
+                        // Trường hợp đơn đổi trả:
+                        - Trả sản phẩm A: Giá trị - 190K
+                        - Đổi sản phẩm B: Giá trị + 290K
+                        - Tổng đơn:               + 100K
+                        - to_pay_condition        + 290K
+                        >> Kiểm tra số tiền to_pay_condition > (Tổng đơn: - đã trả bằng voucher khác) -> điều chỉnh to_pay_condition = 100K
+                        */
                         if (refund_amount && (order.get_due() - paid_voucher_amount) < to_pay_condition) {
                             to_pay_condition = order.get_due() - paid_voucher_amount
                         };
