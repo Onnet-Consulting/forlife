@@ -40,6 +40,7 @@ class ReportNum22(models.TransientModel):
             'expenditure': 'and absl1.amount < 0',
         }
         nhom_theo, khoa = ['', 's.code'] if self.group_by == 'store' else [', phien_bh, pos', 'ps2.id']
+        store = self.store_ids.ids if self.store_ids else (self.env['store'].with_context(report_ctx='report.num22,store').search([('brand_id', '=', self.brand_id.id)]).ids or [-1])
 
         query = f"""
 with data_filtered as (
@@ -55,7 +56,7 @@ with data_filtered as (
         left join pos_config pc on ps.config_id = pc.id
         left join store on pc.store_id = store.id
     where am.date between '{self.from_date}' and '{self.to_date}'
-    and {('store.id = any(array%s)' % self.store_ids.ids) if self.store_ids else ('store.brand_id = %s' % self.brand_id.id)}
+    and store.id = any(array{store})
     {type_x.get(self.type) or ''}
     {f"and am.name ilike '%%{self.so_ct}%%'" if self.so_ct else ''}
 ),
