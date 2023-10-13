@@ -405,14 +405,14 @@ class StockPicking(models.Model):
     def action_cancel(self):
         for rec in self:
             if rec.other_import or rec.other_export:
-                rec.state = 'cancel'
-                for line in rec.move_line_ids_without_package:
-                    line.qty_done = 0
-                    line.reserved_uom_qty = 0
-                    line.qty_done = 0
-                for line in rec.move_ids_without_package:
-                    line.forecast_availability = 0
-                    line.quantity_done = 0
+                # rec.state = 'cancel'
+                # for line in rec.move_line_ids_without_package:
+                #     line.qty_done = 0
+                #     line.reserved_uom_qty = 0
+                #     line.qty_done = 0
+                # for line in rec.move_ids_without_package:
+                #     line.forecast_availability = 0
+                #     line.quantity_done = 0
                 layers = rec.env['stock.valuation.layer'].search([('stock_move_id.picking_id', '=', rec.id)])
                 for layer in layers:
                     layer.quantity = 0
@@ -435,10 +435,10 @@ class StockPicking(models.Model):
                             'stock_move_id': layer.stock_move_id.id
                         })
                         new_mov.action_post()
-            else:
-                rec.move_ids._action_cancel()
-                rec.write({'is_locked': True})
-        return True
+            # else:
+            #     rec.move_ids._action_cancel()
+            #     rec.write({'is_locked': True})
+        return super(StockPicking, self).action_cancel()
 
     @api.model_create_multi
     def create(self, vals):

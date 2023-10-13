@@ -53,6 +53,9 @@
         </record>
         <record id="product_discount_tax" model="product.product">
             <field name="name">Chiết khấu tổng đơn</field>
+            <field name="default_code">CKTD</field>
+            <field name="barcode">CKTD</field>
+            <field name="detailed_type">service</field>
             <field name="categ_id" ref="forlife_purchase.category_product_discount_tax"/>
         </record>
         <record id="product_vat_discount_tax_default" model="product.product">
