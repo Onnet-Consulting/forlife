@@ -61,7 +61,7 @@ class PurchaseRequest(models.Model):
     attention = fields.Char('Attention')
     use_department_id = fields.Many2one('hr.department', string='Use Department')
     total_qty = fields.Float(string='Tổng số lượng', compute='compute_total_qty')
-    location_id = fields.Many2one('stock.location', string='Kho nhận', domain="[('company_id', '=', company_id)]")
+    location_id = fields.Many2one('stock.location', string='Kho nhận', domain="[('company_id', '=', company_id), ('usage', '=', 'internal')]")
 
     @api.depends('order_lines.purchase_quantity')
     def compute_total_qty(self):

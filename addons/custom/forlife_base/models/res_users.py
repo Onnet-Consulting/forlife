@@ -69,7 +69,7 @@ class ResUsers(models.Model):
     @api.model
     def get_location(self):
         if not self.store_ids:
-            location_ids = self.stock_ids.with_context(active_test=False).search([]).mapped('id')
+            location_ids = self.stock_ids.with_context(active_test=False).search([])
         else :
             location_ids = self.env['stock.location'].search([('warehouse_id', 'in', self.stock_ids.ids)])
         return location_ids.ids
