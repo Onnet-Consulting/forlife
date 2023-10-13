@@ -43,7 +43,7 @@
                             type="object" attrs="{'invisible':[('status', '!=', 'draft')]}"/>
                     <button string="Phê duyệt" name="action_approve" type="object"
                             attrs="{'invisible':[ ('status', '!=', 'wait_approve')]}"/>
-                    <button string="Hoàn thành" name="action_done" type="object"
+                    <button string="Hoàn thành" name="action_done" type="object" invisible="1"
                             attrs="{'invisible':[ ('status', '!=', 'approved')]}" confirm="Bạn có chắc chắn muốn hoàn thành phiếu yêu cầu nhập khác/xuất khác không?"/>
                     <button string="Từ chối" name="%(forlife_stock.reject_in_out_request_wizard)d"
                             type="action" attrs="{'invisible':[('status', '!=', 'wait_approve')]}"/>
