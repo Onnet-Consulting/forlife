@@ -565,3 +565,13 @@ msgstr "Kỳ"
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
 msgid "to"
 msgstr "đến"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__product_ids
+msgid "Products"
+msgstr "Sản phẩm"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__category_ids
+msgid "Product Categories"
+msgstr "Nhóm sản phẩm"

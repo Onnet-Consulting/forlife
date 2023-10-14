@@ -31,6 +31,24 @@ class StockValueReport(models.TransientModel):
     detail_ids = fields.One2many('stock.value.report.detail', 'report_id', 'Detail')
     account_id = fields.Many2one('account.account', 'Account')
     based_on_account = fields.Boolean('Based on Account', default=True)
+    product_ids = fields.Many2many('product.product', string='Products')
+    category_ids = fields.Many2many('product.category', string='Product Categories')
+
+    @api.onchange('category_ids')
+    def onchange_product_category(self):
+        self.product_ids = False
+        if self.category_ids:
+            return {
+                'domain': {
+                    'product_ids': [('categ_id', 'in', self.category_ids.ids)]
+                }
+            }
+        else:
+            return {
+                'domain': {
+                    'product_ids': [(1, '=', 1)]
+                }
+            }
 
     @api.onchange('date_from', 'date_to')
     def _onchange_date(self):
@@ -325,6 +343,18 @@ class StockValueReport(models.TransientModel):
                   self.env.company.id)
         if self.account_id:
             sql += f""" WHERE account_id = {self.account_id.id}"""
+        product_ids = []
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        if self.category_ids:
+            product_ids += self.env['product.product'].search([('categ_id', 'in', self.category_ids.ids)]).mapped('id')
+        if product_ids != []:
+            if len(product_ids) == 1:
+                product_ids.append(0)
+            if not self.account_id:
+                sql += f""" WHERE product_id in {tuple(product_ids)}"""
+            else:
+                sql += f""" AND product_id in {tuple(product_ids)}"""
         self._cr.execute(sql, params)
 
     def action_export_stock_incoming_outgoing_report(self):
