@@ -394,7 +394,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         let paid_voucher_amount = data.filter(el=>el.value.voucher_id !== data[i].value.voucher_id)
                                         .reduce((tmp, el) => {
                                             if (el.value) {
-                                                let tmp = tmp + el.value.original_price_residual - el.value.price_residual;
+                                                tmp = tmp + el.value.original_price_residual - el.value.price_residual;
                                             };
                                             return tmp;
                                         }, 0);
