@@ -1,6 +1,6 @@
 from odoo import api, fields, models
 from odoo.addons.stock_account.models.stock_valuation_layer import StockValuationLayer as InheritStockValuationLayerCore
-
+from odoo.exceptions import ValidationError
 
 def _validate_accounting_entries(self):
     am_vals = []
@@ -38,7 +38,21 @@ def _validate_accounting_entries(self):
         move = svl.stock_move_id
         if not move:
             move = svl.stock_valuation_layer_id.stock_move_id
-        am_vals += move.with_company(svl.company_id)._account_entry_move(svl.quantity, svl.description, svl.id, svl.value)
+
+        move_vals = move.with_company(svl.company_id)._account_entry_move(svl.quantity, svl.description, svl.id, svl.value)
+
+        # Update sổ nhật ký khi tạo bút toán Chênh lệch giá trị Nhập kho và Lên hóa đơn
+        if svl.price_diff_value and svl.account_move_id.move_type == 'in_invoice' and move_vals:
+            domain = [('type', '=', 'general'), ('company_id', '=', company_id)]
+            if svl.price_diff_value > 0:
+                domain.append(('code', '=', 'GL02'))
+            else:
+                domain.append(('code', '=', 'GL01'))
+            journal_id = self.env['account.journal'].search(domain, limit=1)
+            if not journal_id:
+                raise ValidationError("Các bút toán 'Chênh lệch giá trị nhập kho và lên hóa đơn' đang hạch toán vào sổ nhật ký có mã 'GL01' và 'GL02'. Hiện tại không thấy trong hệ thống, vui lòng cấu hình thêm trong phân hệ Kế toán!")
+            move_vals[0]['journal_id'] = journal_id.id
+        am_vals += move_vals
     if am_vals:
         account_moves = self.env['account.move'].sudo().create(am_vals)
         account_moves._post()
