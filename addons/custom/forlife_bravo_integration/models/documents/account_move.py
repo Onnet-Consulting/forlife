@@ -132,7 +132,7 @@ class AccountMove(models.Model):
         if journal_data == "purchase_product_cost_picking":
             initial_records = self.env['account.move']
             for move in self:
-                if not re.match('^972', move.name) or move.journal_id.code != 'EX02':
+                if not re.match('^972', move.name) or move.journal_id.code != 'EX02' or not (any(move.line_ids.mapped('debit')) or any(move.line_ids.mapped('credit'))):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
                 if not stock_picking or stock_picking.x_is_check_return:
@@ -143,7 +143,7 @@ class AccountMove(models.Model):
         if journal_data == "purchase_product_cost_picking_reversed":
             initial_records = self.env['account.move']
             for move in self:
-                if not re.match('^972', move.name):
+                if not re.match('^972', move.name) or move.journal_id.code != 'EX02' or not (any(move.line_ids.mapped('debit')) or any(move.line_ids.mapped('credit'))):
                     continue
                 stock_picking = self.env['stock.picking'].sudo().search([('name', '=', move.ref)], limit=1)
                 if not stock_picking or not stock_picking.x_is_check_return:

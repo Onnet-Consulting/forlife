@@ -11,7 +11,7 @@ class OrderExistBkav(models.Model):
         columns = self.bravo_get_order_exist_bkav_columns()
         employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            user_id = str(record.user_id.id) or str(self._uid)
+            user_id = str(record.user_id.id or self._uid)
             employee = employees.get(user_id) or {}
             res.extend(record.bravo_get_order_exist_bkav_value(employee.get('code')))
         return columns, res
