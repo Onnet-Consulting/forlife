@@ -382,6 +382,18 @@ class StockValueReport(models.TransientModel):
             params = (utc_datetime_from, utc_datetime_to, self.env.company.id)
             if self.account_id:
                 sql += f""" WHERE report.account_id = {self.account_id.id}"""
+            product_ids = []
+            if self.product_ids:
+                product_ids = self.product_ids.ids
+            if self.category_ids:
+                product_ids += self.env['product.product'].search([('categ_id', 'in', self.category_ids.ids)]).mapped('id')
+            if product_ids != []:
+                if len(product_ids) == 1:
+                    product_ids.append(0)
+                if not self.account_id:
+                    sql += f""" WHERE product_id in {tuple(product_ids)}"""
+                else:
+                    sql += f""" AND product_id in {tuple(product_ids)}"""
             self._cr.execute(sql, params)
             return self._cr.dictfetchall()
 
