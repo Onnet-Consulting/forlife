@@ -28,7 +28,6 @@ class ReportNum12(models.TransientModel):
     def _get_query(self):
         self.ensure_one()
         tz_offset = self.tz_offset
-        store_condition = f'where xx.store_id = any (array{self.store_ids.ids})' if self.store_ids else ''
         query = f"""        
 with tong_dt_ms_tb as (
     select partner_card_rank_id,
@@ -83,7 +82,7 @@ part_card_rank_data2 as (
         left join store sto on sto.id = xx.store_id
         left join card_rank cr on cr.id = xx.card_rank_id
         left join res_partner rp on rp.id = xx.customer_id
-    {store_condition} 
+    where xx.store_id = any (array{self.store_ids.ids if self.store_ids else (self.env['store'].with_context(report_ctx='report.num12,store').search([('brand_id', '=', self.brand_id.id)]).ids or [-1])}) 
 ),
 count_data_by_store_and_card_rank as (
     select key_data,

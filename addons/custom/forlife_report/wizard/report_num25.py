@@ -49,7 +49,8 @@ class ReportNum25(models.TransientModel):
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         employee_conditions = '' if not self.employee_id else f'and employee_id = {self.employee_id.id}'
-        store_conditions = f'and pc.store_id = any(array{self.store_ids.ids})' if self.store_ids else ''
+        store_conditions = f'''and pc.store_id = any(array{self.store_ids.ids if self.store_ids else (
+                self.env['store'].with_context(report_ctx='report.num11,store').search([('brand_id', '=', self.brand_id.id)]).ids or [-1])})'''
         sale_province_conditions = f"where rsp.id = {self.sale_province_id.id}" if self.sale_province_id else ''
 
         sql = f"""

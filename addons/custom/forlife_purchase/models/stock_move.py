@@ -123,6 +123,7 @@ class StockMove(models.Model):
             'quantity_purchase_done': self.quantity_purchase_done,
             'occasion_code_id': self.occasion_code_id.id or False,
             'work_production': self.work_production.id or False,
+            'work_to': self.work_to.id or False,
             'account_analytic_id': self.account_analytic_id.id or False,
         })
         return vals

@@ -73,7 +73,7 @@ class StockMove(models.Model):
     previous_qty = fields.Float(compute='compute_previous_qty', store=1)
 
     # Lệnh sản xuất, xử lý khi tạo điều chuyển cho LSX A sang LSX B
-    work_from = fields.Many2one('forlife.production', string="LSX From", ondelete='restrict')
+    # work_from = fields.Many2one('forlife.production', string="LSX From", ondelete='restrict')
     work_to = fields.Many2one('forlife.production', string="LSX To", ondelete='restrict')
 
     @api.depends('reason_id')

@@ -20,6 +20,8 @@ class PosOrder(models.Model):
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point', store=True)
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
+    point_pay_move_ids = fields.Many2many(
+        'account.move', 'pos_order_account_move_point_pay', string='Point Pay Move', readonly=True)
     point_usage_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_usage', string='Point Usage Move', readonly=True)
     point_refund_move_ids = fields.Many2many(
@@ -459,13 +461,3 @@ class PosOrder(models.Model):
             move = self.env['account.move'].create(usage_point_move_val)._post()
             self.point_usage_move_ids |= move
         return True
-
-    def _export_for_ui(self, order):
-        result = super(PosOrder, self)._export_for_ui(order)
-        result.update({
-            'source_store_id': order.config_id.store_id.id,
-            'total_order_line_point_used': order.total_order_line_point_used,
-            'total_order_line_redisual': order.total_order_line_redisual,
-            'allow_for_point': order.allow_for_point
-        })
-        return result

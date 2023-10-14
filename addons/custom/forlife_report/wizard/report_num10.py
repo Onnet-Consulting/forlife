@@ -40,15 +40,16 @@ class ReportNum10(models.TransientModel):
         conditions += f"and pcrl.old_card_rank_id = {self.from_rank_id.id}\n" if self.from_rank_id else ''
         conditions += f"and pcrl.new_card_rank_id = {self.to_rank_id.id}\n" if self.to_rank_id else ''
         conditions += f"and pcr.customer_id = any (array{self.customer_ids.ids})\n" if self.customer_ids else ''
-        conditions += '' if not self.store_ids else f"""
-and (select coalesce(name, '')
-     from store where id = (
-        select store_id from store_first_order
-         where customer_id = rp.id and brand_id = {self.brand_id.id}
-         limit 1
-        )
-    ) = any (array{self.store_ids.mapped('name')})
-"""
+        conditions += f"""
+            and (select coalesce(name, '')
+                 from store where id = (
+                    select store_id from store_first_order
+                     where customer_id = rp.id and brand_id = {self.brand_id.id}
+                     limit 1
+                    )
+                ) = any (array{self.store_ids.mapped('name') if self.store_ids else (
+                self.env['store'].with_context(report_ctx='report.num10,store').search([('brand_id', '=', self.brand_id.id)]).mapped('name') or ['.'])})
+            """
         query = f"""
 select
     row_number() over (order by pcrl.order_date desc)                                  as num,

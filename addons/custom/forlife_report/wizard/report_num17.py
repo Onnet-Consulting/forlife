@@ -161,7 +161,9 @@ with po_datas as (select po.id                  as po_id,
                                sum(tien_sp_voucher)::float              as tien_sp_voucher
                         from chi_tiet_mua
                         group by po_id),
-     so_luong_x_tl as (select po_id                                    as po_id,
+     so_luong_x_tl as ("""
+
+        query += f"""select po_id                                    as po_id,
                               sum(sl)::float                           as sl,
                               sum(sl * gia_ban)::float                 as cong,
                               sum(tien_giam_gia)::float                as tien_giam_gia,
@@ -170,6 +172,29 @@ with po_datas as (select po.id                  as po_id,
                               sum(tien_sp_voucher)::float              as tien_sp_voucher
                        from chi_tiet_tl
                        group by po_id),
+     thanh_toan as (select po.id,
+                           aj.type,
+                           aj.code,
+                           coalesce(ppm.is_voucher, false) as is_voucher,
+                           pp.amount
+                    from pos_payment pp
+                             join pos_order po on pp.pos_order_id = po.id
+                             join pos_payment_method ppm on pp.payment_method_id = ppm.id
+                             left join account_journal aj on ppm.journal_id = aj.id
+                    where po.id in (select distinct po_id from po_datas)),
+     phan_loai as (select id,
+                          case
+                              when is_voucher = false and type = 'cash' then 'tien_mat'
+                              when is_voucher = false and type = 'bank' and code = 'VTI01' then 'tien_the'
+                              when is_voucher = false and type = 'bank' and code = 'NE01' then 'tien_nextpay'
+                              when is_voucher = false and type = 'bank' and code in ('VN01', 'VN02') then 'tien_vnpay'
+                              when is_voucher = true then 'tien_voucher'
+                              else ''
+                              end as loai,
+                          amount
+                   from thanh_toan),
+     thanh_toan_x as (select json_object_agg(concat(xx.id, xx.loai), xx.amount) as value
+                      from (select id, loai, sum(amount) as amount from phan_loai group by id, loai) as xx),
      data_final_mua as (
 """
         query += f"""
@@ -205,56 +230,11 @@ with po_datas as (select po.id                  as po_id,
        sl_x.tien_sp_voucher                                                                  as tien_sp_voucher,
        coalesce(sl_x.tien_the_gg, 0)                                                         as tien_the_gg,
        greatest(po.amount_total, 0)                                                          as phai_thu,
-       coalesce((select sum(amount)
-                 from pos_payment
-                 where pos_order_id = po.id
-                   and payment_method_id in (select id
-                                             from pos_payment_method
-                                             where (is_voucher = false or is_voucher is null)
-                                               and company_id = any (array {allowed_company})
-                                               and journal_id in (select id
-                                                                  from account_journal
-                                                                  where type = 'cash'))), 0) as tien_mat,
-       coalesce((select sum(amount)
-                 from pos_payment
-                 where pos_order_id = po.id
-                   and payment_method_id in (select id
-                                             from pos_payment_method
-                                             where (is_voucher = false or is_voucher is null)
-                                               and company_id = any (array {allowed_company})
-                                               and journal_id in (select id
-                                                                  from account_journal
-                                                                  where type = 'bank'
-                                                                  and code = 'VTI01'))), 0)   as tien_the,
-       coalesce((select sum(amount)
-                 from pos_payment
-                 where pos_order_id = po.id
-                   and payment_method_id in (select id
-                                             from pos_payment_method
-                                             where (is_voucher = false or is_voucher is null)
-                                               and company_id = any (array {allowed_company})
-                                               and journal_id in (select id
-                                                                  from account_journal
-                                                                  where type = 'bank'
-                                                                  and code in ('VN01','VN02')))), 0) as tien_vnpay,
-       coalesce((select sum(amount)
-                 from pos_payment
-                 where pos_order_id = po.id
-                   and payment_method_id in (select id
-                                             from pos_payment_method
-                                             where (is_voucher = false or is_voucher is null)
-                                               and company_id = any (array {allowed_company})
-                                               and journal_id in (select id
-                                                                  from account_journal
-                                                                  where type = 'bank'
-                                                                  and code = 'NE01'))), 0)  as tien_nextpay,
-       coalesce((select sum(amount)
-                 from pos_payment
-                 where pos_order_id = po.id
-                   and payment_method_id in (select id
-                                             from pos_payment_method
-                                             where is_voucher = true
-                                               and company_id = any (array {allowed_company}))), 0) as tien_voucher,
+       (select greatest(coalesce((value::json ->> concat(po.id, 'tien_mat'))::int, 0), 0) from thanh_toan_x) as tien_mat,
+       (select greatest(coalesce((value::json ->> concat(po.id, 'tien_the'))::int, 0), 0) from thanh_toan_x) as tien_the,
+       (select greatest(coalesce((value::json ->> concat(po.id, 'tien_vnpay'))::int, 0), 0) from thanh_toan_x) as tien_vnpay,
+       (select greatest(coalesce((value::json ->> concat(po.id, 'tien_nextpay'))::int, 0), 0) from thanh_toan_x) as tien_nextpay,
+       (select greatest(coalesce((value::json ->> concat(po.id, 'tien_voucher'))::int, 0), 0) from thanh_toan_x) as tien_voucher,
        1                                                                                     as hs_dt,
        nl.name                                                                               as nguoi_lap,
        to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')                     as ngay_lap,
@@ -330,11 +310,11 @@ data_final_tl as ("""
               0                                                                 as tien_sp_voucher,
               coalesce(sl_x.tien_the_gg, 0)                                     as tien_the_gg,
               0                                                                 as phai_thu,
-              0                                                                 as tien_mat,
-              0                                                                 as tien_the,
-              0                                                                 as tien_vnpay,
-              0                                                                 as tien_nextpay,
-              0                                                                 as tien_voucher,
+              (select least(coalesce((value::json ->> concat(po.id, 'tien_mat'))::int, 0), 0) from thanh_toan_x) as tien_mat,
+              (select least(coalesce((value::json ->> concat(po.id, 'tien_the'))::int, 0), 0) from thanh_toan_x) as tien_the,
+              (select least(coalesce((value::json ->> concat(po.id, 'tien_vnpay'))::int, 0), 0) from thanh_toan_x) as tien_vnpay,
+              (select least(coalesce((value::json ->> concat(po.id, 'tien_nextpay'))::int, 0), 0) from thanh_toan_x) as tien_nextpay,
+              (select least(coalesce((value::json ->> concat(po.id, 'tien_voucher'))::int, 0), 0) from thanh_toan_x) as tien_voucher,
               0                                                                 as hs_dt,
               nl.name                                                           as nguoi_lap,
               to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY') as ngay_lap,

@@ -48,6 +48,10 @@ class PosOrder(models.Model):
             'is_tipped': order.is_tipped,
             'tip_amount': order.tip_amount,
             'access_token': order.access_token,
+            'source_store_id': order.config_id.store_id.id,
+            'total_order_line_point_used': order.total_order_line_point_used,
+            'total_order_line_redisual': order.total_order_line_redisual,
+            'allow_for_point': order.allow_for_point
         }
 
     @api.model
@@ -352,7 +356,7 @@ class PosOrder(models.Model):
                 ]
             }
             move = self.env['account.move'].create(return_point_move_val)._post()
-            self.point_refund_move_ids |= move
+            self.point_pay_move_ids |= move
         if self.refund_point > 0:
             return_point_move_val = {
                 **defaul_val,
@@ -373,6 +377,6 @@ class PosOrder(models.Model):
                 ]
             }
             move = self.env['account.move'].create(return_point_move_val)._post()
-            self.point_addition_move_ids |= move
+            self.point_refund_move_ids |= move
 
         return True
