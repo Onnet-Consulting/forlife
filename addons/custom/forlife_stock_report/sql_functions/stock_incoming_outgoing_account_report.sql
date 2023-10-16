@@ -70,9 +70,7 @@ BEGIN
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
-            where 1=1
-            --and aml.debit > 0
-            and aml.quantity > 0
+            where aml.quantity > 0
             and am.state = 'posted'
             and am.date >= _date_from::date and am.date <= _date_to::date
             and am.company_id = _company_id
@@ -93,9 +91,7 @@ BEGIN
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
-            where 1=1
-            --and aml.credit > 0
-            and aml.quantity < 0
+            where aml.quantity < 0
             and am.state = 'posted'
             and am.date >= _date_from::date and am.date <= _date_to::date
             and am.company_id = _company_id
@@ -115,8 +111,8 @@ BEGIN
                 end) as real_outgoing_value,
                 (data.opening_quantity + data.incoming_quantity - data.odoo_outgoing_quantity) as closing_quantity,
                 (data.opening_value + data.incoming_value - (case when data.opening_quantity + data.incoming_quantity = 0 then 0
-                                                                        else (data.opening_value + data.incoming_value) / (data.opening_quantity + data.incoming_quantity) * data.odoo_outgoing_quantity
-                                                                        end)
+                                                                  else (data.opening_value + data.incoming_value) / (data.opening_quantity + data.incoming_quantity) * data.odoo_outgoing_quantity
+                                                             end)
                 ) as closing_value
         FROM
             (SELECT pp.id as product_id,

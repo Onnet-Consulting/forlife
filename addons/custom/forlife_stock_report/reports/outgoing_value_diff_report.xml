@@ -29,10 +29,13 @@
                         <page id="detail_report" string="Detail">
                             <button name="action_get_outgoing_value_diff_report" string="Get Report" type="object"
                                     class="btn-primary"/>
+                            <div style="display: inline-block; margin: 5px;"></div>
                             <button name="action_export_outgoing_value_diff_report" string="Export Report" type="object"
                                     class="btn-primary"/>
+                            <div style="display: inline-block; margin: 5px;"></div>
                             <button name="action_export_outgoing_value_diff_item_report"
                                     string="Export Report based on Item" type="object" class="btn-primary"/>
+                            <div style="display: inline-block; margin: 5px;"></div>
                             <button name="action_create_invoice" string="Create Invoice" type="object" class="btn-primary"/>
                             <field name="detail_ids" readonly="1">
                                 <tree limit="1000">

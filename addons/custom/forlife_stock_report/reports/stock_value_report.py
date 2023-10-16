@@ -61,20 +61,16 @@ class StockValueReport(models.TransientModel):
     # file sql
     def init(self):
         outgoing_value_diff_report = read_sql_file('./forlife_stock_report/sql_functions/outgoing_value_diff_report.sql')
-        outgoing_value_diff_account_report = read_sql_file(
-            './forlife_stock_report/sql_functions/outgoing_value_diff_account_report.sql')
-        stock_incoming_outgoing_account_report = read_sql_file(
-            './forlife_stock_report/sql_functions/stock_incoming_outgoing_account_report.sql')
-        outgoing_value_diff_account_report_picking_type = read_sql_file(
-            './forlife_stock_report/sql_functions/outgoing_value_diff_account_report_picking_type.sql')
+        outgoing_value_diff_account_report = read_sql_file('./forlife_stock_report/sql_functions/outgoing_value_diff_account_report.sql')
+        stock_incoming_outgoing_account_report = read_sql_file('./forlife_stock_report/sql_functions/stock_incoming_outgoing_account_report.sql')
+        outgoing_value_diff_account_report_picking_type = read_sql_file('./forlife_stock_report/sql_functions/outgoing_value_diff_account_report_picking_type.sql')
         self.env.cr.execute(outgoing_value_diff_report)
         self.env.cr.execute(outgoing_value_diff_account_report)
         self.env.cr.execute(stock_incoming_outgoing_account_report)
         self.env.cr.execute(outgoing_value_diff_account_report_picking_type)
 
     def get_name_with_lang(self, name_dict):
-        return name_dict.get(self.env.context.get('lang')) if name_dict.get(
-            self.env.context.get('lang')) else name_dict.get('en_US')
+        return name_dict.get(self.env.context.get('lang')) if name_dict.get(self.env.context.get('lang')) else name_dict.get('en_US')
 
     def action_download_excel(self, data, name):
         vals = {
@@ -99,43 +95,24 @@ class StockValueReport(models.TransientModel):
         current_tz = pytz.timezone(self.env.context.get('tz'))
         utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
         utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
-        self._cr.execute(f"""
+        user_id = self.env.user.id
+        sql = f"""
             DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
-            INSERT INTO stock_value_report_detail (
-                                        report_id,
-                                        currency_id,
-                                        product_id,
-                                        opening_quantity,
-                                        opening_value,
-                                        incoming_quantity,
-                                        incoming_value,
-                                        odoo_outgoing_quantity,
-                                        odoo_outgoing_value,
-                                        real_outgoing_price_unit,
-                                        real_outgoing_value,
-                                        create_date,
-                                        write_date,
-                                        create_uid,
-                                        write_uid)
-            SELECT %s,
-                    %s,
-                    product_id,
-                    opening_quantity,
-                    opening_value,
-                    incoming_quantity,
-                    incoming_value,
-                    odoo_outgoing_quantity,
-                    odoo_outgoing_value,
-                    real_outgoing_price_unit,
-                    real_outgoing_value,
-                    %s,
-                    %s,
-                    %s,
-                    %s
-            FROM {"outgoing_value_diff_report" if not self.based_on_account else "outgoing_value_diff_account_report"}(%s, %s, %s)
-        """, (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
-              self.env.user.id,
-              self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id))
+            INSERT INTO stock_value_report_detail (report_id, currency_id, product_id, opening_quantity, opening_value,
+                incoming_quantity, incoming_value, odoo_outgoing_quantity, odoo_outgoing_value, real_outgoing_price_unit,
+                real_outgoing_value, create_date, write_date, create_uid, write_uid)
+                
+            SELECT %s, %s, product_id, opening_quantity, opening_value,
+                incoming_quantity, incoming_value, odoo_outgoing_quantity, odoo_outgoing_value, real_outgoing_price_unit,
+                real_outgoing_value, %s, %s, %s, %s
+            FROM { "outgoing_value_diff_report" if not self.based_on_account else "outgoing_value_diff_account_report" }(%s, %s, %s)
+        """
+        params = (
+            user_id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
+            user_id, user_id, utc_datetime_from, utc_datetime_to, self.env.company.id
+        )
+        sql = self.add_filter_product(sql)
+        self._cr.execute(sql, params)
 
     def action_export_outgoing_value_diff_report(self):
         # define function
@@ -144,21 +121,39 @@ class StockValueReport(models.TransientModel):
             current_tz = pytz.timezone(self.env.context.get('tz'))
             utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
             utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
-            self._cr.execute(f"""
-                        SELECT pp.default_code,
-                                pt.name,
-                                report.opening_quantity,
-                                report.opening_value,
-                                report.incoming_quantity,
-                                report.incoming_value,
-                                report.odoo_outgoing_quantity,
-                                report.odoo_outgoing_value,
-                                report.real_outgoing_price_unit,
-                                report.real_outgoing_value
-                        FROM {"outgoing_value_diff_report" if not self.based_on_account else "outgoing_value_diff_account_report"}(%s, %s, %s) as report
-                        LEFT JOIN product_product pp ON pp.id = report.product_id
-                        LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""",
-                             (utc_datetime_from, utc_datetime_to, self.env.company.id))
+            sql = f"""
+                SELECT pp.default_code,
+                    pt.name,
+                    report.opening_quantity,
+                    report.opening_value,
+                    report.incoming_quantity,
+                    report.incoming_value,
+                    report.odoo_outgoing_quantity,
+                    report.odoo_outgoing_value,
+                    report.real_outgoing_price_unit,
+                    report.real_outgoing_value
+                FROM {"outgoing_value_diff_report" if not self.based_on_account else "outgoing_value_diff_account_report"}(%s, %s, %s) as report
+                LEFT JOIN product_product pp ON pp.id = report.product_id
+                LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+            """
+            params = (utc_datetime_from, utc_datetime_to, self.env.company.id)
+            sql = self.add_filter_product(sql)
+            self._cr.execute(sql, params)
+
+            # self._cr.execute(f"""
+            #     SELECT pp.default_code,
+            #         pt.name,
+            #         report.opening_quantity,
+            #         report.opening_value,
+            #         report.incoming_quantity,
+            #         report.incoming_value,
+            #         report.odoo_outgoing_quantity,
+            #         report.odoo_outgoing_value,
+            #         report.real_outgoing_price_unit,
+            #         report.real_outgoing_value
+            #     FROM {"outgoing_value_diff_report" if not self.based_on_account else "outgoing_value_diff_account_report"}(%s, %s, %s) as report
+            #     LEFT JOIN product_product pp ON pp.id = report.product_id
+            #     LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""", (utc_datetime_from, utc_datetime_to, self.env.company.id))
             return self._cr.dictfetchall()
 
         def write_header(wssheet):
@@ -302,59 +297,48 @@ class StockValueReport(models.TransientModel):
         utc_datetime_from = str(self.date_from)
         utc_datetime_to = str(self.date_to)
         sql = f"""
-                DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
-                INSERT INTO stock_value_report_detail (
-                                            report_id,
-                                            currency_id,
-                                            product_id,
-                                            account_id,
-                                            opening_quantity,
-                                            opening_value,
-                                            incoming_quantity,
-                                            incoming_value,
-                                            odoo_outgoing_quantity,
-                                            real_outgoing_value,
-                                            closing_quantity,
-                                            closing_value,
-                                            create_date,
-                                            write_date,
-                                            create_uid,
-                                            write_uid)
-                SELECT %s,
-                        %s,
-                        product_id,
-                        account_id,
-                        opening_quantity,
-                        opening_value,
-                        incoming_quantity,
-                        incoming_value,
-                        odoo_outgoing_quantity,
-                        real_outgoing_value,
-                        closing_quantity,
-                        closing_value,
-                        %s,
-                        %s,
-                        %s,
-                        %s
-                FROM stock_incoming_outgoing_report_account(%s, %s, %s)
-                """
+            DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
+            INSERT INTO stock_value_report_detail (
+                report_id,
+                currency_id,
+                product_id,
+                account_id,
+                opening_quantity,
+                opening_value,
+                incoming_quantity,
+                incoming_value,
+                odoo_outgoing_quantity,
+                real_outgoing_value,
+                closing_quantity,
+                closing_value,
+                create_date,
+                write_date,
+                create_uid,
+                write_uid)
+            SELECT %s,
+                %s,
+                product_id,
+                account_id,
+                opening_quantity,
+                opening_value,
+                incoming_quantity,
+                incoming_value,
+                odoo_outgoing_quantity,
+                real_outgoing_value,
+                closing_quantity,
+                closing_value,
+                %s,
+                %s,
+                %s,
+                %s
+            FROM stock_incoming_outgoing_report_account(%s, %s, %s)
+        """
         params = (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(),
                   datetime.utcnow(), self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to,
                   self.env.company.id)
         if self.account_id:
             sql += f""" WHERE account_id = {self.account_id.id}"""
-        product_ids = []
-        if self.product_ids:
-            product_ids = self.product_ids.ids
-        if self.category_ids:
-            product_ids += self.env['product.product'].search([('categ_id', 'in', self.category_ids.ids)]).mapped('id')
-        if product_ids != []:
-            if len(product_ids) == 1:
-                product_ids.append(0)
-            if not self.account_id:
-                sql += f""" WHERE product_id in {tuple(product_ids)}"""
-            else:
-                sql += f""" AND product_id in {tuple(product_ids)}"""
+        sql = self.add_filter_product(sql)
         self._cr.execute(sql, params)
 
     def action_export_stock_incoming_outgoing_report(self):
@@ -646,15 +630,15 @@ class StockValueReport(models.TransientModel):
         if self.date_from > self.date_to:
             raise ValidationError(_('To date must be greater than From date'))
         self._cr.execute(f"""
-                        SELECT report.product_id,
-                                report.picking_type_id,
-                                cast(report.total_diff as int) total_diff,
-                                report.qty_percent,
-                                cast(report.value_diff as int) value_diff
-                        FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report
-                        WHERE abs(cast(report.value_diff as int)) > 1
-                        """,
-                         (str(self.date_from), str(self.date_to), self.env.company.id))
+            SELECT 
+                report.product_id,
+                report.picking_type_id,
+                cast(report.total_diff as NUMERIC) total_diff,
+                report.qty_percent,
+                cast(report.value_diff as NUMERIC) value_diff
+            FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report
+            WHERE abs(cast(report.value_diff as NUMERIC)) > 1
+            """, (str(self.date_from), str(self.date_to), self.env.company.id))
         result = self._cr.dictfetchall()
         if not result:
             raise ValidationError(_('There is not different of outgoing value!'))
@@ -697,6 +681,7 @@ class StockValueReport(models.TransientModel):
                 'company_id': self.env.company.id,
                 'line_ids': move_lines,
                 'journal_id': journal_id,
+                'invoice_description': f"Bút toán Chênh lệch giá trị xuất",
             }
             self.env['account.move'].create(move_vals)
 
@@ -714,32 +699,30 @@ class StockValueReport(models.TransientModel):
         self._cr.execute(sql, params)
         sql = f"""
             INSERT INTO stock_quant_period (
-                                        period_end_date,
-                                        product_id,
-                                        account_id,
-                                        currency_id,
-                                        closing_quantity,
-                                        price_unit,
-                                        closing_value,
-                                        create_uid,
-                                        create_date,
-                                        write_uid,
-                                        write_date,
-                                        company_id)
+                period_end_date,
+                product_id,
+                account_id,
+                currency_id,
+                closing_quantity,
+                price_unit,
+                closing_value,
+                create_uid,
+                create_date,
+                write_uid,
+                write_date,
+                company_id)
             SELECT %s,
-                    product_id,
-                    account_id,
-                    %s,
-                    closing_quantity,
-                    (case when closing_quantity = 0 then 0
-                            else closing_value / closing_quantity
-                    end) price_unit,
-                    closing_value,
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s
+                product_id,
+                account_id,
+                %s,
+                closing_quantity,
+                (case when closing_quantity = 0 then 0 else closing_value / closing_quantity end) price_unit,
+                closing_value,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s
             FROM stock_incoming_outgoing_report_account(%s, %s, %s)
             """
         params = (str(self.date_to), self.env.company.currency_id.id, self.env.user.id,
@@ -748,6 +731,21 @@ class StockValueReport(models.TransientModel):
         if self.account_id:
             sql += f""" WHERE account_id = {self.account_id.id}"""
         self._cr.execute(sql, params)
+
+    def add_filter_product(self, sql):
+        product_ids = []
+        if self.product_ids:
+            product_ids = self.product_ids.ids
+        if self.category_ids:
+            product_ids += self.env['product.product'].search([('categ_id', 'in', self.category_ids.ids)]).mapped('id')
+        if product_ids != []:
+            if len(product_ids) == 1:
+                product_ids.append(0)
+            if not self.account_id:
+                sql += f""" WHERE product_id in {tuple(product_ids)}"""
+            else:
+                sql += f""" AND product_id in {tuple(product_ids)}"""
+        return sql
 
     def validate_report_create_quant(self):
         # check period check report
