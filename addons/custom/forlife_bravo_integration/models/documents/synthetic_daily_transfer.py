@@ -32,6 +32,7 @@ class SyntheticDailyTransfer(models.Model):
             ('transfer_id.exists_bkav', '=', False),
             ('other_export', '=', False),
             ('other_import', '=', False),
+            ('is_bravo_pushed', '=', False),
             ('date_done', '>=', begin_date),
             ('date_done', '<', end_date),
         ]
@@ -59,6 +60,8 @@ class SyntheticDailyTransfer(models.Model):
             }])
             if self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
                 result.action_sync_by_queue()
+        if pickings:
+            self._cr.execute(f"update stock_picking set is_bravo_pushed = true where id = any (array{pickings.ids})")
 
     def action_sync_by_queue(self):
         self.ensure_one()
