@@ -21,7 +21,7 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
 
         get_default_employee() {
             let employees = this.env.pos.assignable_employees;
-            return employees && employees[0].id;
+            return !_.isEmpty(employees) && employees[0].id;
         }
 
         get employees() {
