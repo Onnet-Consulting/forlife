@@ -629,7 +629,7 @@ class StockValueReport(models.TransientModel):
     def action_create_invoice(self):
         if self.date_from > self.date_to:
             raise ValidationError(_('To date must be greater than From date'))
-        self._cr.execute(f"""
+        sql = f"""
             SELECT 
                 report.product_id,
                 report.picking_type_id,
@@ -638,52 +638,122 @@ class StockValueReport(models.TransientModel):
                 cast(report.value_diff as NUMERIC) value_diff
             FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report
             WHERE abs(cast(report.value_diff as NUMERIC)) > 1
-            """, (str(self.date_from), str(self.date_to), self.env.company.id))
+        """
+        sql = self.add_filter_product(sql=sql, have_where=True)
+        params = (str(self.date_from), str(self.date_to), self.env.company.id)
+        self._cr.execute(sql, params)
         result = self._cr.dictfetchall()
         if not result:
             raise ValidationError(_('There is not different of outgoing value!'))
-        move_lines = []
-        product_list = []
-        journal_id = None
+        # move_lines = []
+        debit_move_lines = []
+        credit_move_lines = []
+        # product_list = []
+        # journal_id = None
         for item in result:
-            if not item.get('product_id', 0) or not item.get('picking_type_id', 0):
+            if not item.get('product_id', 0) or not item.get('picking_type_id', 0) or item.get('total_diff', 0) == 0:
                 continue
             product_id = self.env['product.product'].browse(item.get('product_id', 0))
             picking_type_id = self.env['stock.picking.type'].browse(item.get('picking_type_id', 0))
             accounts_data = product_id.product_tmpl_id.get_product_accounts()
-            journal_id = accounts_data['stock_journal'].id
-            if product_id not in product_list:
-                product_list.append(product_id)
-                # 156x
-                move_lines.append((0, 0, {
-                    'name': f"{product_id.name}",
+            # journal_id = accounts_data['stock_journal'].id
+            # if product_id not in product_list:
+            #     product_list.append(product_id)
+            # 156x
+            if item.get('total_diff', 0) > 0:
+                debit_move_lines.append((0, 0, {
+                    'name': f"{product_id.name} - {picking_type_id.name}",
                     'product_id': product_id.id,
                     'product_uom_id': product_id.uom_id.id,
                     'quantity': 0,
                     'account_id': accounts_data['stock_valuation'].id,
-                    'credit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) < 0 else 0,
-                    'debit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) > 0 else 0,
+                    'credit': 0,
+                    'debit': abs(item.get('total_diff', 0)),
                 }))
-            # đối ứng
-            move_lines.append((0, 0, {
-                'name': f"{product_id.name} - {picking_type_id.name}",
-                'product_id': product_id.id,
-                'product_uom_id': product_id.uom_id.id,
-                'quantity': 0,
-                'account_id': accounts_data['expense'].id,
-                'credit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) > 0 else 0,
-                'debit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) < 0 else 0,
-            }))
-        if move_lines:
+                # đối ứng
+                debit_move_lines.append((0, 0, {
+                    'name': f"{product_id.name} - {picking_type_id.name}",
+                    'product_id': product_id.id,
+                    'product_uom_id': product_id.uom_id.id,
+                    'quantity': 0,
+                    'account_id': accounts_data['expense'].id,
+                    'credit': item.get('value_diff', 0),
+                    'debit': 0,
+                }))
+            else:
+                credit_move_lines.append((0, 0, {
+                    'name': f"{product_id.name} - {picking_type_id.name}",
+                    'product_id': product_id.id,
+                    'product_uom_id': product_id.uom_id.id,
+                    'quantity': 0,
+                    'account_id': accounts_data['stock_valuation'].id,
+                    'credit': abs(item.get('total_diff', 0)),
+                    'debit': 0,
+                }))
+                # đối ứng
+                credit_move_lines.append((0, 0, {
+                    'name': f"{product_id.name} - {picking_type_id.name}",
+                    'product_id': product_id.id,
+                    'product_uom_id': product_id.uom_id.id,
+                    'quantity': 0,
+                    'account_id': accounts_data['expense'].id,
+                    'credit': 0,
+                    'debit': abs(item.get('value_diff', 0)),
+                }))
+
+            # move_lines.append((0, 0, {
+            #     'name': f"{product_id.name} - {picking_type_id.name}",
+            #     'product_id': product_id.id,
+            #     'product_uom_id': product_id.uom_id.id,
+            #     'quantity': 0,
+            #     'account_id': accounts_data['stock_valuation'].id,
+            #     'credit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) < 0 else 0,
+            #     'debit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) > 0 else 0,
+            # }))
+            # # đối ứng
+            # move_lines.append((0, 0, {
+            #     'name': f"{product_id.name} - {picking_type_id.name}",
+            #     'product_id': product_id.id,
+            #     'product_uom_id': product_id.uom_id.id,
+            #     'quantity': 0,
+            #     'account_id': accounts_data['expense'].id,
+            #     'credit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) > 0 else 0,
+            #     'debit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) < 0 else 0,
+            # }))
+        ref = f"Bút toán Chênh lệch giá trị xuất " + self.date_from.strftime('%d/%m/%Y') + ' - ' + self.date_to.strftime('%d/%m/%Y')
+        if debit_move_lines:
+            domain = [('type', '=', 'general'), ('company_id', '=', self.env.company.id), ('code', '=', 'GL01')]
+            journal_id = self.env['account.journal'].search(domain, limit=1)
+            if not journal_id:
+                raise ValidationError("Hiện tại không thấy Sổ nhật ký có mã 'GL01' trong hệ thống, vui lòng cấu hình thêm trong phân hệ Kế toán!")
+
             move_vals = {
                 'state': 'draft',
                 'date': self.date_to,
                 'company_id': self.env.company.id,
-                'line_ids': move_lines,
+                'line_ids': debit_move_lines,
                 'journal_id': journal_id,
-                'invoice_description': f"Bút toán Chênh lệch giá trị xuất",
+                'ref': ref,
             }
-            self.env['account.move'].create(move_vals)
+            move_id = self.env['account.move'].create(move_vals)
+            move_id.action_post()
+
+        if credit_move_lines:
+            domain = [('type', '=', 'general'), ('company_id', '=', self.env.company.id), ('code', '=', 'GL02')]
+            journal_id = self.env['account.journal'].search(domain, limit=1)
+            if not journal_id:
+                raise ValidationError("Hiện tại không thấy Sổ nhật ký có mã 'GL02' trong hệ thống, vui lòng cấu hình thêm trong phân hệ Kế toán!")
+
+            move_vals = {
+                'state': 'draft',
+                'date': self.date_to,
+                'company_id': self.env.company.id,
+                'line_ids': credit_move_lines,
+                'journal_id': journal_id,
+                'ref': ref,
+            }
+            move_id = self.env['account.move'].create(move_vals)
+            move_id.action_post()
 
     def action_create_quant_period(self):
         # validate report
@@ -732,7 +802,7 @@ class StockValueReport(models.TransientModel):
             sql += f""" WHERE account_id = {self.account_id.id}"""
         self._cr.execute(sql, params)
 
-    def add_filter_product(self, sql):
+    def add_filter_product(self, sql, have_where=False):
         product_ids = []
         if self.product_ids:
             product_ids = self.product_ids.ids
@@ -741,7 +811,7 @@ class StockValueReport(models.TransientModel):
         if product_ids != []:
             if len(product_ids) == 1:
                 product_ids.append(0)
-            if not self.account_id:
+            if not self.account_id and not have_where:
                 sql += f""" WHERE product_id in {tuple(product_ids)}"""
             else:
                 sql += f""" AND product_id in {tuple(product_ids)}"""

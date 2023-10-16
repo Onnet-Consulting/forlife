@@ -15,9 +15,7 @@ $BODY$
 BEGIN
     RETURN Query (
         WITH outgoing as (
-            select sm.product_id,
-                sm.picking_type_id,
-                sum(-aml.quantity) as quantity
+            select sm.product_id, sm.picking_type_id, sum(-aml.quantity) as quantity
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
@@ -47,9 +45,7 @@ BEGIN
         FROM outgoing o
         LEFT JOIN
             (SELECT ovd.product_id, ovd.odoo_outgoing_quantity,
-                (case when ovd.real_outgoing_value != 0 then (ovd.odoo_outgoing_value - ovd.real_outgoing_value)
-                    else 0
-                 end) as total_diff
+                (case when ovd.real_outgoing_value != 0 then (ovd.odoo_outgoing_value - ovd.real_outgoing_value) else 0 end) as total_diff
             FROM outgoing_value_diff_account_report(_date_from, _date_to, _company_id) ovd
             ) as data on data.product_id = o.product_id
         where data.total_diff != 0

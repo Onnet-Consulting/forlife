@@ -27,10 +27,7 @@ BEGIN
             group by sqp.product_id, sqp.account_id
         ), opening as (
             -- đầu kỳ
-            SELECT dataa.product_id,
-                    dataa.account_id,
-                    sum(dataa.quantity) as quantity,
-                    sum(dataa.total_value) as total_value
+            SELECT dataa.product_id, dataa.account_id, sum(dataa.quantity) as quantity, sum(dataa.total_value) as total_value
             FROM (
                 SELECT sqp.product_id, sqp.account_id,
                     sqp.closing_quantity as quantity,
@@ -40,17 +37,13 @@ BEGIN
 
                 union all
 
-                select aml.product_id, aml.account_id,
-                        aml.quantity as quantity,
-                        aml.debit - aml.credit as total_value
+                select aml.product_id, aml.account_id, aml.quantity as quantity, aml.debit - aml.credit as total_value
                 from account_move_line aml
                 left join account_move am on am.id = aml.move_id
                 left join product_product pp on pp.id = aml.product_id
-                where 1=1
-                and am.state = 'posted'
+                where am.state = 'posted'
                 and am.date < _date_from::date
-                and (case when exists (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id and ed.account_id = aml.account_id order by ed.max_period_end_date desc limit 1) then am.date > (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1)
-                    else 1 = 1 end)
+                and (case when exists (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id and ed.account_id = aml.account_id order by ed.max_period_end_date desc limit 1) then am.date > (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1) else 1 = 1 end)
                 and am.company_id = _company_id
                 and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                     from ir_property
@@ -64,9 +57,7 @@ BEGIN
         ),
         incoming as (
             -- nhập trong kỳ
-            select aml.product_id, aml.account_id,
-                    sum(aml.quantity) as quantity,
-                    sum(aml.debit) as total_value
+            select aml.product_id, aml.account_id, sum(aml.quantity) as quantity, sum(aml.debit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
@@ -85,9 +76,7 @@ BEGIN
         ),
         outgoing as (
             -- xuất trong kỳ
-            select aml.product_id, aml.account_id,
-                    sum(-aml.quantity) as quantity,
-                    sum(aml.credit) as total_value
+            select aml.product_id, aml.account_id, sum(-aml.quantity) as quantity, sum(aml.credit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id

@@ -20,9 +20,7 @@ BEGIN
     RETURN Query (
         WITH opening as (
             -- đầu kỳ
-            select aml.product_id,
-                sum(aml.quantity) as quantity,
-                sum(aml.debit - aml.credit) as total_value
+            select aml.product_id, sum(aml.quantity) as quantity, sum(aml.debit - aml.credit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
@@ -40,9 +38,7 @@ BEGIN
         ),
         incoming as (
             -- nhập trong kỳ
-            select aml.product_id,
-                sum(aml.quantity) as quantity,
-                sum(aml.debit) as total_value
+            select aml.product_id, sum(aml.quantity) as quantity, sum(aml.debit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
@@ -61,9 +57,7 @@ BEGIN
         ),
         outgoing as (
             -- xuất trong kỳ
-            select aml.product_id,
-                sum(-aml.quantity) as quantity,
-                sum(aml.credit) as total_value
+            select aml.product_id, sum(-aml.quantity) as quantity, sum(aml.credit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
