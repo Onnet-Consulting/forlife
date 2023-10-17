@@ -16,8 +16,8 @@ class AccountMove(models.Model):
 
     @api.model
     def sync_bravo_account_move_daily(self, **kwargs):
-        # if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
-        #     return False
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return False
         domain = [('state', '=', 'posted'), ('is_bravo_pushed', '=', False)]
         companies = self.env['res.company'].search([('code', '!=', False)])
         ids = []
