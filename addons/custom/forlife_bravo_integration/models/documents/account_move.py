@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
 CONTEXT_JOURNAL_ACTION = 'bravo_journal_data'
@@ -15,15 +15,26 @@ class AccountMove(models.Model):
     is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
 
     @api.model
-    def sync_bravo_account_move_daily(self):
+    def sync_bravo_account_move_daily(self, **kwargs):
         if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
             return False
         domain = [('state', '=', 'posted'), ('is_bravo_pushed', '=', False)]
         companies = self.env['res.company'].search([('code', '!=', False)])
+        ids = []
+        date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y').date()) or (fields.Date.today() + timedelta(days=-1))
         for company in companies:
-            moves = self.with_company(company).search(domain + [('company_id', '=', company.id)])
+            moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', '!=', 'PI01')])
             if moves:
                 moves.with_company(company).action_sync_account_move()
+                ids.extend(moves.ids)
+
+            # bút toán tại sổ tiêu điểm/tích điểm journal_code = PI01 phải gom theo ngày và từng tài khoản
+            moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', '=', 'PI01'), ('date', '=', date)])
+            if moves:
+                self.env['synthetic_move_journal_po01'].with_company(company).action_sync_data(moves, date)
+                ids.extend(moves.ids)
+        if ids:
+            self._cr.execute(f"update account_move set is_bravo_pushed = true where id = any (array{ids})")
 
     def action_sync_account_move(self):
         if not self:
@@ -33,7 +44,6 @@ class AccountMove(models.Model):
             if insert_queries:
                 self.env[self._name].sudo().with_delay(
                     description=f'Bravo: sync account_move {move.name or move.id}', channel="root.Bravo").bravo_execute_query(insert_queries)
-        self._cr.execute(f"update account_move set is_bravo_pushed = true where id = any (array{self.ids})")
         return True
 
     @api.model
@@ -58,7 +68,7 @@ class AccountMove(models.Model):
             bravo_table = "B30AccDocCashPayment"
         elif journal_data == "pos_cash_in":
             bravo_table = "B30AccDocCashReceipt"
-        elif journal_data in ("journal_entry_payroll", 'invoice_trade_discount_other'):
+        elif journal_data in ("journal_entry_payroll", 'journal_entry_tax', 'journal_entry_other'):
             bravo_table = "B30AccDocJournalEntry"
         elif journal_data == "order_exist_bkav":
             bravo_table = "B30AccDocExportSales"
@@ -120,11 +130,10 @@ class AccountMove(models.Model):
 
         if journal_data == 'invoice_trade_discount':
             # Đơn mua chỉ có sản phẩm là chiết khấu thương mại
-            return self.filtered(lambda m: m.e_in_check > 0 and m.is_trade_discount_move and m.invoice_description == 'Hóa đơn chiết khấu tổng đơn')
+            return self.filtered(lambda m: m.e_in_check > 0 and any([barcode == 'CKTD' for barcode in m.line_ids.product_id.mapped('barcode')]))
 
-        if journal_data == 'invoice_trade_discount_other':
-            # Đơn mua bao gồm sản phẩm chiết khấu tổng đơn khác
-            return self.filtered(lambda m: m.e_in_check > 0 and not m.is_trade_discount_move and m.invoice_description in ('Thuế tiêu thụ đặc biệt', 'Thuế giá trị gia tăng VAT (Nhập khẩu)', 'Thuế nhập khẩu'))
+        if journal_data == 'journal_entry_tax':
+            return self.filtered(lambda m: m.e_in_check > 0 and m.journal_id.code == 'EX03')
 
         if journal_data == "purchase_bill_vendor_back":
             return self.filtered(
@@ -159,8 +168,8 @@ class AccountMove(models.Model):
             return self.filtered(lambda m: m.journal_id.code == 'CA02'
                                            and bool(
                 m.line_ids.filtered(lambda l: re.match("^111", l.account_id.code) and l.debit > 0)))
-        if journal_data == "journal_entry_payroll":
-            return self.filtered(lambda am: am.journal_id.code == 'EX01')
+        if journal_data in ("journal_entry_payroll", 'journal_entry_other'):
+            return self.filtered(lambda am: am.journal_id.code in ('EX01', 'NE01', 'VN01', 'VN02', 'VTI01', 'VC01'))
         if journal_data == "order_exist_bkav":
             return self.filtered(lambda am: am.exists_bkav and am.stock_move_id and am.stock_move_id.picking_id and
                                             ((am.stock_move_id.picking_id.sale_id and not am.stock_move_id.picking_id.sale_id.x_is_return) or
@@ -176,8 +185,8 @@ class AccountMove(models.Model):
             return self.bravo_get_purchase_asset_service_values(is_reversed=True)
         if journal_data in ('purchase_product', 'invoice_trade_discount'):
             return self.bravo_get_purchase_product_values()
-        if journal_data == 'invoice_trade_discount_other':
-            return self.bravo_get_journal_entry_payroll_values(trade_discount_other=True)
+        if journal_data == 'journal_entry_tax':
+            return self.bravo_get_journal_entry_values(journal_entry_tax=True)
         if journal_data == 'purchase_product_reserved':
             return self.bravo_get_purchase_product_values(is_reversed=True)
         if journal_data == 'purchase_bill_vendor_back':
@@ -190,8 +199,8 @@ class AccountMove(models.Model):
             return self.bravo_get_cash_out_move_values()
         if journal_data == "pos_cash_in":
             return self.bravo_get_cash_in_move_values()
-        if journal_data == "journal_entry_payroll":
-            return self.bravo_get_journal_entry_payroll_values()
+        if journal_data in ("journal_entry_payroll", 'journal_entry_other'):
+            return self.bravo_get_journal_entry_values()
         if journal_data == "order_exist_bkav":
             return self.bravo_get_order_exist_bkav_values()
         if update_move_data:
@@ -231,9 +240,9 @@ class AccountMove(models.Model):
         # invoice have trade discount
         current_context = {CONTEXT_JOURNAL_ACTION: 'invoice_trade_discount'}
         records = self.bravo_filter_record_by_context(**current_context)
-        purchase_product_reversed_queries = records.bravo_get_insert_sql(**current_context)
-        if purchase_product_reversed_queries:
-            queries.extend(purchase_product_reversed_queries)
+        invoice_trade_discount_queries = records.bravo_get_insert_sql(**current_context)
+        if invoice_trade_discount_queries:
+            queries.extend(invoice_trade_discount_queries)
 
         # Vendor Back in Purchase Bill
         current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_bill_vendor_back'}
@@ -283,6 +292,18 @@ class AccountMove(models.Model):
         order_exist_bkav_queries = records.bravo_get_insert_sql(**current_context)
         if order_exist_bkav_queries:
             queries.extend(order_exist_bkav_queries)
+
+        current_context = {CONTEXT_JOURNAL_ACTION: 'journal_entry_tax'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        journal_entry_tax_queries = records.bravo_get_insert_sql(**current_context)
+        if journal_entry_tax_queries:
+            queries.extend(journal_entry_tax_queries)
+
+        current_context = {CONTEXT_JOURNAL_ACTION: 'journal_entry_other'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        journal_entry_other_queries = records.bravo_get_insert_sql(**current_context)
+        if journal_entry_other_queries:
+            queries.extend(journal_entry_other_queries)
 
         return queries
 
