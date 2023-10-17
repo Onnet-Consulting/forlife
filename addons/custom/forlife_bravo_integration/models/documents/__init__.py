@@ -9,3 +9,4 @@ from . import journal_entry
 from . import order_exist_bkav
 from . import stock_picking_transfer_bkav
 from . import synthetic_daily_transfer
+from . import synthetic_move_journal_po01

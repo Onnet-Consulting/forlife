@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 
 CONTEXT_JOURNAL_ACTION = 'bravo_journal_data'
@@ -15,15 +15,26 @@ class AccountMove(models.Model):
     is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
 
     @api.model
-    def sync_bravo_account_move_daily(self):
-        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
-            return False
-        domain = [('state', '=', 'posted'), ('is_bravo_pushed', '=', False), ('journal_id.code', '!=', 'PI01')]
+    def sync_bravo_account_move_daily(self, **kwargs):
+        # if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+        #     return False
+        domain = [('state', '=', 'posted'), ('is_bravo_pushed', '=', False)]
         companies = self.env['res.company'].search([('code', '!=', False)])
+        ids = []
+        date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y').date()) or (fields.Date.today() + timedelta(days=-1))
         for company in companies:
-            moves = self.with_company(company).search(domain + [('company_id', '=', company.id)])
+            moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', '!=', 'PI01')])
             if moves:
                 moves.with_company(company).action_sync_account_move()
+                ids.extend(moves.ids)
+
+            # bút toán tại sổ tiêu điểm/tích điểm journal_code = PI01 phải gom theo ngày và từng tài khoản
+            moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', '=', 'PI01'), ('date', '=', date)])
+            if moves:
+                self.env['synthetic_move_journal_po01'].with_company(company).action_sync_data(moves, date)
+                ids.extend(moves.ids)
+        if ids:
+            self._cr.execute(f"update account_move set is_bravo_pushed = true where id = any (array{ids})")
 
     def action_sync_account_move(self):
         if not self:
@@ -33,7 +44,6 @@ class AccountMove(models.Model):
             if insert_queries:
                 self.env[self._name].sudo().with_delay(
                     description=f'Bravo: sync account_move {move.name or move.id}', channel="root.Bravo").bravo_execute_query(insert_queries)
-        self._cr.execute(f"update account_move set is_bravo_pushed = true where id = any (array{self.ids})")
         return True
 
     @api.model
