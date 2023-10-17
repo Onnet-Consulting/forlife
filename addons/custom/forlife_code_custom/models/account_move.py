@@ -18,10 +18,13 @@ class AccountMove(models.Model):
         sequence = 0
         for move in self:
             store_code = '0000'
+            pos_code = '0'
             if move.pos_order_ids:
                 store_code = move.pos_order_ids[0].config_id.picking_type_id.warehouse_id.code
+                pos_code = str(move.pos_order_ids[0].config_id.pos_id)
             if move.pos_order_id:
                 store_code = move.pos_order_id.config_id.picking_type_id.warehouse_id.code
+                pos_code = str(move.pos_order_id.config_id.pos_id)
             if move.stock_valuation_layer_ids and move.stock_valuation_layer_ids[0].stock_move_id.picking_id and \
                     move.stock_valuation_layer_ids[0].stock_move_id.picking_id.picking_type_id.warehouse_id:
                 store_code = move.stock_valuation_layer_ids[
@@ -36,7 +39,7 @@ class AccountMove(models.Model):
                 if not declare_code_id or check_origin_entry:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code)
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
                     sequence += 1
             elif move.quick_edit_mode and not move.posted_before:
                 # We always suggest the next sequence as the default name of the new move
@@ -44,7 +47,7 @@ class AccountMove(models.Model):
                 if not declare_code_id or check_origin_entry:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code)
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
                     sequence += 1
             elif (move.name and move.name != '/') or move.state != 'posted':
                 try:
@@ -56,7 +59,7 @@ class AccountMove(models.Model):
                     if not declare_code_id or check_origin_entry:
                         move._set_next_sequence()
                     else:
-                        move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code)
+                        move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
                         sequence += 1
             else:
                 # The name is not set yet and it is posted
@@ -64,7 +67,7 @@ class AccountMove(models.Model):
                 if not declare_code_id or check_origin_entry:
                     move._set_next_sequence()
                 else:
-                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code)
+                    move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
                     sequence += 1
 
         self.filtered(lambda m: not m.name).name = '/'

@@ -28,28 +28,32 @@ class DeclareCode(models.Model):
     select_prefix_2 = fields.Selection([('domain', 'Miền'),
                                         ('sequence', 'Số tự tăng'),
                                         ('location_src', 'Mã kho nguồn'),
-                                        ('location_des', 'Mã kho đích')],string='(2) - Lựa chọn tiền tố', default='sequence', tracking=True)
+                                        ('location_des', 'Mã kho đích'),
+                                        ('pos_code', 'Mã POS')],string='(2) - Lựa chọn tiền tố', default='sequence', tracking=True)
     prefix_2 = fields.Char('(2) - Mã, Miền',tracking=True)
     prefix_sequence_2 = fields.Integer('(2) - Độ dài',tracking=True)
     #33333333333
     select_prefix_3 = fields.Selection([('domain', 'Miền'),
                                         ('sequence', 'Số tự tăng'),
                                         ('location_src', 'Mã kho nguồn'),
-                                        ('location_des', 'Mã kho đích')],string='(3) - Lựa chọn tiền tố', default='sequence', tracking=True)
+                                        ('location_des', 'Mã kho đích'),
+                                        ('pos_code', 'Mã POS')],string='(3) - Lựa chọn tiền tố', default='sequence', tracking=True)
     prefix_3 = fields.Char('(3) - Mã, Miền',tracking=True)
     prefix_sequence_3 = fields.Integer('(3) - Độ dài',tracking=True)
     #44444444444
     select_prefix_4 = fields.Selection([('domain', 'Miền'),
                                         ('sequence', 'Số tự tăng'),
                                         ('location_src', 'Mã kho nguồn'),
-                                        ('location_des', 'Mã kho đích')],string='(4) - Lựa chọn tiền tố', default='sequence', tracking=True)
+                                        ('location_des', 'Mã kho đích'),
+                                        ('pos_code', 'Mã POS')],string='(4) - Lựa chọn tiền tố', default='sequence', tracking=True)
     prefix_4 = fields.Char('(4) - Mã, Miền',tracking=True)
     prefix_sequence_4 = fields.Integer('(4) - Độ dài',tracking=True)
     #55555555555
     select_prefix_5 = fields.Selection([('domain', 'Miền'),
                                         ('sequence', 'Số tự tăng'),
                                         ('location_src', 'Mã kho nguồn'),
-                                        ('location_des', 'Mã kho đích')],string='(5) - Lựa chọn tiền tố', default='sequence', tracking=True)
+                                        ('location_des', 'Mã kho đích'),
+                                        ('pos_code', 'Mã POS')],string='(5) - Lựa chọn tiền tố', default='sequence', tracking=True)
     prefix_5 = fields.Char('(5) - Mã, Miền',tracking=True)
     prefix_sequence_5 = fields.Integer('(5) - Độ dài',tracking=True)
 
@@ -100,7 +104,7 @@ class DeclareCode(models.Model):
             raise UserError(_('Invalid prefix or suffix for domain \'%s\'') % prefix)
         return interpolated_prefix
     
-    def _get_code_by_select_prefix(self, select_prefix, code,prefix_sequence, location_code, location_des_code):
+    def _get_code_by_select_prefix(self, select_prefix, code,prefix_sequence, location_code, location_des_code, pos_code):
         prefix = ''
         len_sequence = 0
         if select_prefix == 'domain':
@@ -114,9 +118,12 @@ class DeclareCode(models.Model):
         elif select_prefix == 'location_des':
             if location_des_code:
                 prefix += location_des_code
+        elif select_prefix == 'pos_code':
+            if pos_code:
+                prefix += pos_code
         return prefix, len_sequence
 
-    def _get_code(self, code='', location_code='', location_des_code=''):
+    def _get_code(self, code='', location_code='', location_des_code='', pos_code=''):
         try:
             count_prefix = int(self.select_prefix)
             prefix = ''
@@ -125,22 +132,22 @@ class DeclareCode(models.Model):
                 if self.prefix_1:
                     prefix += self._get_prefix(self.prefix_1)
             if count_prefix >= 2:
-                sub_prefix_2, len_sequence = self._get_code_by_select_prefix(self.select_prefix_2, self.prefix_2, self.prefix_sequence_2, location_code, location_des_code)
+                sub_prefix_2, len_sequence = self._get_code_by_select_prefix(self.select_prefix_2, self.prefix_2, self.prefix_sequence_2, location_code, location_des_code, pos_code)
                 prefix += sub_prefix_2
             if count_prefix >= 3:
-                sub_prefix_3, new_len_sequence = self._get_code_by_select_prefix(self.select_prefix_3, self.prefix_3, self.prefix_sequence_3, location_code, location_des_code)
+                sub_prefix_3, new_len_sequence = self._get_code_by_select_prefix(self.select_prefix_3, self.prefix_3, self.prefix_sequence_3, location_code, location_des_code, pos_code)
                 if len_sequence != 0:
                     raise UserError('Tiền tố 2 đã là dãy số tự tăng!')
                 len_sequence = new_len_sequence
                 prefix += sub_prefix_3
             if count_prefix >= 4:
-                sub_prefix_4, new_len_sequence = self._get_code_by_select_prefix(self.select_prefix_4, self.prefix_4, self.prefix_sequence_4, location_code, location_des_code)
+                sub_prefix_4, new_len_sequence = self._get_code_by_select_prefix(self.select_prefix_4, self.prefix_4, self.prefix_sequence_4, location_code, location_des_code, pos_code)
                 if len_sequence != 0:
                     raise UserError('Tiền tố 3 đã là dãy số tự tăng!')
                 len_sequence = new_len_sequence
                 prefix += sub_prefix_4
             if count_prefix >= 5:
-                sub_prefix_5, new_len_sequence = self._get_code_by_select_prefix(self.select_prefix_5, self.prefix_5, self.prefix_sequence_5, location_code, location_des_code)
+                sub_prefix_5, new_len_sequence = self._get_code_by_select_prefix(self.select_prefix_5, self.prefix_5, self.prefix_sequence_5, location_code, location_des_code, pos_code)
                 if len_sequence != 0:
                     raise UserError('Tiền tố 4 đã là dãy số tự tăng!')
                 len_sequence = new_len_sequence
@@ -149,8 +156,8 @@ class DeclareCode(models.Model):
         except ValueError:
             raise UserError('Có vấn đề trong quá trình tính toán mã phiếu. Vui lòng liên hệ quản trị viên')
     
-    def genarate_code(self, company_id, model_code, field_code, sequence = 0, location_code='', location_des_code=''):
-        code, len_sequence = self._get_code(field_code, location_code, location_des_code)
+    def genarate_code(self, company_id, model_code, field_code, sequence = 0, location_code='', location_des_code='', pos_code=''):
+        code, len_sequence = self._get_code(field_code, location_code, location_des_code, pos_code)
         try:
             domain = [(field_code,'like',code),('company_id','=',company_id)]
             record_id = self.env[model_code].sudo().search(domain,order=field_code+' desc',limit=1)
