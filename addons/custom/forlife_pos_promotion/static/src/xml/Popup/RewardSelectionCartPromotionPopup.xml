@@ -39,7 +39,7 @@
                                     <input type="number"
                                            t-att-id="'quantity-'+reward.line.cid+'p'+this.state.program.program.str_id" name="SL"
                                            t-att-value="reward.quantity" min="0" t-att-max="reward.max_qty"
-                                           t-on-change="(ev) => this.onChangeQty(reward, ev.target)"
+                                           t-on-change="(ev) => this.onChangeQty(reward, ev.target.value)"
                                     />
 
                                 </div>

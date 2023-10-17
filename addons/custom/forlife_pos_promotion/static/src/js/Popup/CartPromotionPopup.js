@@ -23,6 +23,7 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
             });
         }
 
+/*
         async select_reward(programOption) {
             console.log('select_reward', this);
             let program = this.env.pos.get_program_by_id(String(programOption.id));
@@ -61,6 +62,7 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                 }
             });
         }
+*/
 
         selectedQtyOnProgram(option) {
             return option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
@@ -133,6 +135,62 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                 };
             };
         }
+
+        autoSelectReward(option) {
+
+            const selectedQty = option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0)
+            if (selectedQty > 0) {
+                return;
+            };
+
+            let program = option.program;
+            option.reward_line_vals.sort((r1,r2) => r2.line.product.lst_price - r1.line.product.lst_price);
+
+            // Compute recommend values
+            let recommendRewards = {};
+            const remainingRewardQtyTotal = option.reward_line_vals.reduce((sum, r) => sum + r.line.quantity - this.getSelectedQtyOfLine(r), 0);
+            if (remainingRewardQtyTotal <= option.max_reward_quantity) {
+                for (let reward of option.reward_line_vals) {
+                    let remaining = reward.line.quantity - this.getSelectedQtyOfLine(reward)
+                    recommendRewards[reward.line.cid] = remaining;
+                };
+            } else {
+                /*
+                // Từ danh sách reward line tách thành các phần tử có số lượng là 1
+                // Phần thưởng chọn được lấy xen kẽ, từ phần tử thứ 2 trở đi đến đủ số lượng phần thưởng tối đa
+                */
+                const split_rewards = [];
+                for (let reward of option.reward_line_vals) {
+                    const remaining_qty = reward.line.quantity - this.getSelectedQtyOfLine(reward);
+                    if (remaining_qty > 0) {
+                        for (let i = 0; i < Number.parseInt(remaining_qty); i ++) {
+                            split_rewards.push(reward.line.cid)
+                        };
+                    };
+                };
+                let counting_selected = 0;
+                for (let idx = 1; idx < split_rewards.length; idx += 2) {
+                    if (recommendRewards[split_rewards[idx]]) {
+                        recommendRewards[split_rewards[idx]] += 1;
+                    } else {
+                        recommendRewards[split_rewards[idx]] = 1;
+                    };
+                    counting_selected += 1;
+                    if (counting_selected >= option.max_reward_quantity) break;
+                };
+                console.log({split_rewards});
+            };
+
+            console.log({recommendRewards});
+            for (let [key, qty] of Object.entries(recommendRewards || {})) {
+                let reward = option.reward_line_vals.find(r=> r.line.cid == key);
+                reward.quantity = Number.parseInt(qty);
+                reward.isSelected = true;
+            };
+            if (!_.isEmpty(recommendRewards)) {
+                option.isSelected = true;
+            };
+        };
 
         getPayload() {
             return this.props.programs

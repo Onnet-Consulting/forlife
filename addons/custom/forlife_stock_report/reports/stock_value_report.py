@@ -657,7 +657,7 @@ class StockValueReport(models.TransientModel):
                 'date': self.date_to,
                 'company_id': self.env.company.id,
                 'line_ids': debit_move_lines,
-                'journal_id': journal_id,
+                'journal_id': journal_id.id,
                 'ref': ref,
             }
             move_id = self.env['account.move'].create(move_vals)
@@ -674,7 +674,7 @@ class StockValueReport(models.TransientModel):
                 'date': self.date_to,
                 'company_id': self.env.company.id,
                 'line_ids': credit_move_lines,
-                'journal_id': journal_id,
+                'journal_id': journal_id.id,
                 'ref': ref,
             }
             move_id = self.env['account.move'].create(move_vals)

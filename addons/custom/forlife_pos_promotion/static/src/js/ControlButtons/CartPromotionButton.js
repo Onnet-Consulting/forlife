@@ -99,7 +99,12 @@ export class CartPromotionButton extends PosComponent {
                         program: programOption.program
                     }}
                 ) || [];
-            }
+            };
+            if (program.reward_type == 'cart_get_x_free' && program.min_quantity == 2.0 && program.reward_quantity == 1.0 && program.progressive_reward_compute) {
+                programOption.is_buy1_get1 = true;
+            } else {
+                programOption.is_buy1_get1 = false;
+            };
         };
         // Sort by options before showing popup
         programs.sort((a, b) => Number(!b.isSelected && !_.isEmpty(b.reward_line_vals)) - Number(!a.isSelected && !_.isEmpty(a.reward_line_vals))

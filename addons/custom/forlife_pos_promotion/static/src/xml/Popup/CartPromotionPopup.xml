@@ -21,9 +21,17 @@
                             <i t-att-class="program.fixed ? 'fa fa-caret-up' : 'fa fa-caret-down'"
                                t-att-style="program.fixed ? 'color: red' : 'color: green'"
                                aria-hidden="true" t-on-click="()=>this.fixProgram(program)"/>
+                            <t t-if="program.is_buy1_get1">
+                                <button class="btn-recommend"
+                                        style="border: 2px solid #017e84;
+                                         font-size: small;
+                                         margin-left: 12px;"
+                                        t-on-click="() => this.autoSelectReward(program)">Đề xuất</button>
+                            </t>
                             <label t-att-for="program.program.id" style="font-weight: bold;">
                                 [<t t-esc="program.program.id"/>]&nbsp;&nbsp;<t t-esc="program.program.display_name"/>
                             </label>
+
                             <div style="margin: 0 0 0 15px">
                                 <div t-if="program.selectedQty > 0">
                                     <strong t-esc="program.selectedQty"/> sản phẩm đã áp dụng khuyến mãi
@@ -60,6 +68,13 @@
                         Cancel
                     </div>
             </footer>
+            <style>
+                .btn-recommend:hover {
+                    background: #017e84;
+                    color: #fff !important;
+                    cursor: pointer;
+                }
+            </style>
         </div>
     </t>
 
