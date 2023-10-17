@@ -59,7 +59,7 @@ class AccountMove(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'view_type': 'form',
-            'context': {'default_origin_invoice_id': self.id},
+            'context': {'default_origin_invoice_id': self.id, 'hide_import_vendor_price': self.select_type_inv != 'normal'},
             'target': 'new',
         }
 
