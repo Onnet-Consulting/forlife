@@ -36,7 +36,7 @@ class AccountMove(models.Model):
                 # In the form view, we need to compute a default sequence so that the user can edit
                 # it. We only check the first move as an approximation (enough for new in form view)
                 declare_code_id = move._get_declare_code()
-                if not declare_code_id or check_origin_entry:
+                if not declare_code_id:
                     move._set_next_sequence()
                 else:
                     move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
@@ -44,7 +44,7 @@ class AccountMove(models.Model):
             elif move.quick_edit_mode and not move.posted_before:
                 # We always suggest the next sequence as the default name of the new move
                 declare_code_id = move._get_declare_code()
-                if not declare_code_id or check_origin_entry:
+                if not declare_code_id:
                     move._set_next_sequence()
                 else:
                     move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
@@ -56,7 +56,7 @@ class AccountMove(models.Model):
                 except ValidationError:
                     # Has never been posted and the name doesn't match the date: recompute it
                     declare_code_id = move._get_declare_code()
-                    if not declare_code_id or check_origin_entry:
+                    if not declare_code_id:
                         move._set_next_sequence()
                     else:
                         move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
@@ -64,7 +64,7 @@ class AccountMove(models.Model):
             else:
                 # The name is not set yet and it is posted
                 declare_code_id = move._get_declare_code()
-                if not declare_code_id or check_origin_entry:
+                if not declare_code_id:
                     move._set_next_sequence()
                 else:
                     move.name = declare_code_id.genarate_code(move.company_id.id,'account.move','name',sequence,store_code,pos_code)
