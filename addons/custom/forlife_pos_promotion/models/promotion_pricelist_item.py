@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import itertools
+import json
 
 from odoo import models, fields, api, _, tools
 from odoo.exceptions import UserError, ValidationError
@@ -61,4 +62,12 @@ class PromotionPricelistItem(models.Model):
                 record_name = str(line.fixed_price)
                 result.append((line.id, record_name))
             return result
+        return res
+    
+    def unlink(self):
+        res_ids = self.ids
+        res = super().unlink()
+        if res_ids:
+            Utility = self.env['res.utility']
+            Utility.create_ir_logging(self._name, json.dumps(res_ids), func='unlink')
         return res
