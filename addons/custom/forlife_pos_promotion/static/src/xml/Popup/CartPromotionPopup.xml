@@ -24,6 +24,11 @@
                             <label t-att-for="program.program.id" style="font-weight: bold;">
                                 [<t t-esc="program.program.id"/>]&nbsp;&nbsp;<t t-esc="program.program.display_name"/>
                             </label>
+                            <t t-if="program.is_buy1_get1">
+                                <button class="highlight"
+                                        style="border: 2px solid #017e84; font-size: small;"
+                                        t-on-click="() => this.autoSelectReward(program)">Đề xuất</button>
+                            </t>
                             <div style="margin: 0 0 0 15px">
                                 <div t-if="program.selectedQty > 0">
                                     <strong t-esc="program.selectedQty"/> sản phẩm đã áp dụng khuyến mãi
