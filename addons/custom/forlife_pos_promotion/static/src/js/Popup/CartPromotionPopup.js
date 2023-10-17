@@ -137,6 +137,12 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
         }
 
         autoSelectReward(option) {
+
+            const selectedQty = option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0)
+            if (selectedQty > 0) {
+                return;
+            };
+
             let program = option.program;
             option.reward_line_vals.sort((r1,r2) => r2.line.product.lst_price - r1.line.product.lst_price);
 
