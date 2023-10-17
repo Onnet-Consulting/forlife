@@ -60,17 +60,39 @@ class PosModelCache(models.Model):
         changed_records = changed_records.read(self.get_model_fields())
         record_by_id = {x.get('id'): x for x in changed_records}
 
-        if changed_records:
+        unlink_logging_ids = self.env['ir.logging'].search([
+            ('func', '=', 'unlink'),
+            ('name', '=', self.model),
+            ('create_date', '>=', self.last_update)
+        ])
+        # get record unlink from logging
+        record_unlink_ids = []
+        if unlink_logging_ids:
+            for log in unlink_logging_ids:
+                record_unlink_ids += json.loads(log.message)
+        record_unlink_ids = set(record_unlink_ids)
+
+        if changed_records or record_unlink_ids:
             # Lock table for update
-            model_table_name = self.model.replace(".", "_")
-            self.lock_table_for_cache_refresh(model_table_name, changed_records)
+            if changed_records:
+                model_table_name = self.model.replace(".", "_")
+                self.lock_table_for_cache_refresh(model_table_name, changed_records)
 
             cached_records = self.cache2json()
+            idx_to_remove = []
             # Update records
             for idx, cached_record in enumerate(cached_records):
                 if cached_record.get('id') in record_by_id:
                     cached_records[idx] = record_by_id[cached_record.get('id')]
                     del record_by_id[cached_record.get('id')]
+                # To Remove Record
+                if cached_record.get('id') in record_unlink_ids:
+                    idx_to_remove.append(idx)
+
+            # Remove unlinked record
+            for idx in idx_to_remove:
+                del cached_records[idx]
+
             # Add new record
             cached_records.extend([record_by_id[x] for x in record_by_id])
             self.write({

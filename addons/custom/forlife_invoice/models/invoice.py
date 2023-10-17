@@ -848,7 +848,6 @@ class AccountMove(models.Model):
         total_tax = round(self.x_amount_tax * self.exchange_rate) if self.x_amount_tax else 0
         total_trade = total_value - total_tax
 
-
         invoice_line_ids = [
             (0, 0, {
                 'account_id': self.partner_id.property_account_payable_id.id,
@@ -873,9 +872,13 @@ class AccountMove(models.Model):
                     'credit': total_tax if is_in else 0.0,
                 })
             )
-
+        domain = [('company_id', '=', self.env.company.id), ('code', '=', 'IN01')]
+        journal_id = self.env['account.journal'].search(domain, limit=1)
+        if not journal_id:
+            raise ValidationError("Hiện tại không thấy sổ nhật ký có mã 'IN01' trong hệ thống, vui lòng cấu hình thêm trong phân hệ Kế toán!")
         invoice_ck = self.create({
             'e_in_check': self.id,
+            'journal_id': journal_id.id,
             'partner_id': self.partner_id.id,
             'ref': f"{self.name} Chiết khấu tổng đơn",
             'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') else False,

@@ -20,14 +20,11 @@ BEGIN
     RETURN Query (
         WITH opening as (
             -- đầu kỳ
-            select aml.product_id,
-                    sum(aml.quantity) as quantity,
-                    sum(aml.debit - aml.credit) as total_value
+            select aml.product_id, sum(aml.quantity) as quantity, sum(aml.debit - aml.credit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
-            where 1=1
-            and am.state = 'posted'
+            where am.state = 'posted'
             and am.date < _date_from::date
             and am.company_id = _company_id
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
@@ -41,14 +38,11 @@ BEGIN
         ),
         incoming as (
             -- nhập trong kỳ
-            select aml.product_id,
-                    sum(aml.quantity) as quantity,
-                    sum(aml.debit) as total_value
+            select aml.product_id, sum(aml.quantity) as quantity, sum(aml.debit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
-            where 1=1
-            and aml.debit > 0
+            where aml.debit > 0
             and am.state = 'posted'
             and am.date >= _date_from::date and am.date <= _date_to::date
             and am.company_id = _company_id
@@ -63,14 +57,11 @@ BEGIN
         ),
         outgoing as (
             -- xuất trong kỳ
-            select aml.product_id,
-                    sum(-aml.quantity) as quantity,
-                    sum(aml.credit) as total_value
+            select aml.product_id, sum(-aml.quantity) as quantity, sum(aml.credit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
             left join product_product pp on pp.id = aml.product_id
-            where 1=1
-            and aml.credit > 0
+            where aml.credit > 0
             and am.state = 'posted'
             and am.date >= _date_from::date and am.date <= _date_to::date
             and am.company_id = _company_id
@@ -94,12 +85,12 @@ BEGIN
                 end) as real_outgoing_value
         FROM
             (SELECT pp.id as product_id,
-                    coalesce(opening.quantity, 0) as opening_quantity,
-                    coalesce(opening.total_value, 0) as opening_value,
-                    coalesce(incoming.quantity, 0) as incoming_quantity,
-                    coalesce(incoming.total_value, 0) as incoming_value,
-                    coalesce(outgoing.quantity, 0) as odoo_outgoing_quantity,
-                    coalesce(outgoing.total_value, 0) as odoo_outgoing_value
+                coalesce(opening.quantity, 0) as opening_quantity,
+                coalesce(opening.total_value, 0) as opening_value,
+                coalesce(incoming.quantity, 0) as incoming_quantity,
+                coalesce(incoming.total_value, 0) as incoming_value,
+                coalesce(outgoing.quantity, 0) as odoo_outgoing_quantity,
+                coalesce(outgoing.total_value, 0) as odoo_outgoing_value
             FROM product_product pp
             LEFT JOIN opening ON opening.product_id = pp.id
             LEFT JOIN incoming ON incoming.product_id = pp.id

@@ -11,7 +11,7 @@ class AccountMovePurchaseAsset(models.Model):
         columns = self.bravo_get_purchase_asset_service_columns()
         employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            user_id = str(record.user_id.id) or str(self._uid)
+            user_id = str(record.user_id.id or self._uid)
             employee = employees.get(user_id) or {}
             res.extend(record.bravo_get_purchase_asset_service_value(is_reversed, employee.get('code')))
         return columns, res
@@ -35,6 +35,16 @@ class AccountMovePurchaseAsset(models.Model):
         partner = self.partner_id
         is_partner_group_1 = partner.group_id == self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
 
+        journal_lines = self.line_ids
+        invoice_lines = self.invoice_line_ids
+        # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
+        journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
+        tax_line = journal_tax_lines and journal_tax_lines[0]
+        payable_lines = journal_lines - invoice_lines - journal_tax_lines
+        payable_line = payable_lines and payable_lines[0]
+        payable_account_code = payable_line.account_id.code
+        exchange_rate = self.exchange_rate
+
         journal_value = {
             "CompanyCode": self.company_id.code or None,
             "Stt": self.name or None,
@@ -42,7 +52,7 @@ class AccountMovePurchaseAsset(models.Model):
             "DocNo": self.name or None,
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
-            "ExchangeRate": self.exchange_rate or None,
+            "ExchangeRate": exchange_rate or None,
             "CustomerCode": partner.ref or None,
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
@@ -56,6 +66,8 @@ class AccountMovePurchaseAsset(models.Model):
             "DocNo_PO": self.reference or None,
             "DueDate": self.invoice_date_due or None,
             "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 3,
+            "CreditAccount": payable_account_code or None,
+            "CreditAccount3": payable_account_code or None,
         }
 
         if self.select_type_inv in ('expense', 'labor'):
@@ -64,31 +76,32 @@ class AccountMovePurchaseAsset(models.Model):
             dept_code = self.invoice_line_ids.filtered(lambda f: f.account_analytic_id) or self.invoice_line_ids.filtered(lambda f: f.analytic_account_id)
             asset_code = self.invoice_line_ids.filtered(lambda f: f.asset_id) or self.invoice_line_ids.filtered(lambda f: f.asset_code)
             asset_code = asset_code and asset_code[0]
-            credit_acc = job_code or doc_no_wo or dept_code or asset_code or self.invoice_line_ids
-            credit_acc = credit_acc and credit_acc[0]
 
             for idx, line in enumerate(self.vendor_back_ids, start=1):
                 journal_value_line = journal_value.copy()
                 expense_code = (line.invoice_description.barcode or '')[1:]
                 valid_expense_code = self.env['expense.item'].search(
                     [('code', '=', expense_code), ('company_id', '=', self.company_id.id)], limit=1)
+                tax_account = line.tax_percent.refund_repartition_line_ids.account_id if is_reversed else line.tax_percent.invoice_repartition_line_ids.account_id
+                tax_account = tax_account and tax_account[0].code or '1331000001'
+
                 journal_value_line.update({
                     "BuiltinOrder": idx,
                     "ItemCode": line.invoice_description.barcode or None,
                     "ItemName": line.invoice_description.name or None,
                     "UnitPurCode": line.invoice_description.uom_id.code or None,
-                    "DebitAccount": line.invoice_description.categ_id.property_account_expense_categ_id.code or None,
+                    "DebitAccount": line.invoice_description.categ_id.property_stock_account_input_categ_id.code or None,
                     "Quantity9": 1,
                     "ConvertRate9": 1,
                     "Quantity": 1,
                     "PriceUnit": line.price_subtotal_back,
-                    "OriginalPriceUnit": line.price_subtotal_back * self.exchange_rate,
+                    "OriginalPriceUnit": line.price_subtotal_back * exchange_rate,
                     "Discount": 0,
                     "OriginalDiscount": 0,
                     "OriginalUnitCost": line.price_subtotal_back,
-                    "UnitCost": line.price_subtotal_back * self.exchange_rate,
+                    "UnitCost": line.price_subtotal_back * exchange_rate,
                     "OriginalAmount": line.price_subtotal_back,
-                    "Amount": line.price_subtotal_back * self.exchange_rate,
+                    "Amount": line.price_subtotal_back * exchange_rate,
                     "IsPromotions": 0,
                     "JobCode": (job_code and job_code[0].occasion_code_id.code) or None,
                     "RowId": line.id,
@@ -99,10 +112,8 @@ class AccountMovePurchaseAsset(models.Model):
                     "ProductCode": (asset_code.asset_id.type == 'XDCB' and asset_code.asset_id.code) or (asset_code.asset_code.type == 'XDCB' and asset_code.asset_code.code) or None,
                     "TaxCode": line.tax_percent.code or None,
                     "OriginalAmount3": line.tax_back,
-                    "Amount3": line.tax_back * self.exchange_rate,
-                    "DebitAccount3": line.tax_percent.code or '1331000001',
-                    "CreditAccount3": credit_acc.account_id.code or None,
-                    "CreditAccount": credit_acc.account_id.code or None,
+                    "Amount3": line.tax_back * exchange_rate,
+                    "DebitAccount3": tax_account,
                 })
                 if is_reversed:
                     reversed_account_values = {
@@ -115,15 +126,6 @@ class AccountMovePurchaseAsset(models.Model):
 
                 values.append(journal_value_line)
         else:
-            journal_lines = self.line_ids
-            invoice_lines = self.invoice_line_ids
-            # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
-            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id)
-            tax_line = journal_tax_lines and journal_tax_lines[0]
-            payable_lines = journal_lines - invoice_lines - journal_tax_lines
-            payable_line = payable_lines and payable_lines[0]
-            payable_account_code = payable_line.account_id.code
-            exchange_rate = self.exchange_rate
             for idx, invoice_line in enumerate(invoice_lines, start=1):
                 purchase_order_line = invoice_line.purchase_line_id
                 product = invoice_line.product_id
@@ -162,8 +164,6 @@ class AccountMovePurchaseAsset(models.Model):
                     "OriginalAmount3": invoice_line.tax_amount,
                     "Amount3": invoice_line.tax_amount * exchange_rate,
                     "DebitAccount3": tax_line.account_id.code,
-                    "CreditAccount3": payable_account_code,
-                    "CreditAccount": payable_account_code or None,
                 })
                 if is_reversed:
                     reversed_account_values = {
@@ -187,7 +187,7 @@ class AccountMovePurchaseProduct(models.Model):
         columns = self.bravo_get_purchase_product_columns()
         employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            user_id = str(record.user_id.id) or str(self._uid)
+            user_id = str(record.user_id.id or self._uid)
             employee = employees.get(user_id) or {}
             res.extend(record.bravo_get_purchase_product_value(is_reversed, employee.get('code')))
         return columns, res
@@ -246,7 +246,7 @@ class AccountMovePurchaseProduct(models.Model):
                 "DebitAccount": invoice_line.account_id.code or None,
                 "CreditAccount": payable_account_code or None,
                 "DebitAccount3": tax_line.account_id.code or None,
-                "CreditAccount3": payable_account_code or None,
+                "CreditAccount3": payable_account_code if tax_line else None,
                 "TaxCode": tax_line.tax_line_id.code or None,
                 "OriginalAmount": invoice_line.price_subtotal,
                 "Amount": invoice_line.price_subtotal * exchange_rate,
@@ -254,8 +254,9 @@ class AccountMovePurchaseProduct(models.Model):
                 "Amount3": invoice_line.tax_amount * exchange_rate,
                 "RowId": invoice_line.id or None,
                 "JobCode": invoice_line.occasion_code_id.code or None,
-                "DeptCode": invoice_line.analytic_account_id.code or None,
-                "DocNo_WO": invoice_line.work_order.code or None,
+                "DeptCode": invoice_line.account_analytic_id.code or invoice_line.analytic_account_id.code or None,
+                "DocNo_WO": invoice_line.production_order.code or invoice_line.work_order.code or None,
+                "AssetCode": (invoice_line.asset_id.type in ("CCDC", "TSCD") and invoice_line.asset_id.code) or (invoice_line.asset_code.type in ("CCDC", "TSCD") and invoice_line.asset_code.code) or None,
             })
 
             if is_reversed:
@@ -342,7 +343,7 @@ class StockPickingPurchaseProduct(models.Model):
         columns = self.bravo_get_picking_purchase_columns()
         employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            user_id = str(record.user_id.id) or str(self._uid)
+            user_id = str(record.user_id.id or self._uid)
             employee = employees.get(user_id) or {}
             res.extend(record.bravo_get_picking_purchase_value(employee.get('code')))
         return columns, res
@@ -387,8 +388,7 @@ class StockPickingPurchaseProduct(models.Model):
         purchase_order = purchase_order_line.order_id
         picking = stock_move.picking_id
         partner = picking.partner_id
-        is_partner_group_1 = partner.group_id == \
-                             self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
+        is_partner_group_1 = partner.group_id == self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
 
         # purchase order line info
         exchange_rate = purchase_order.exchange_rate
@@ -414,7 +414,7 @@ class StockPickingPurchaseProduct(models.Model):
             "ItemCode": product.barcode or None,
             "ItemName": product.name or None,
             "UnitPurCode": purchase_order_line.purchase_uom.code or None,
-            "DebitAccount": debit_account.code or None,
+            "DebitAccount": (product.categ_id.property_stock_valuation_account_id.code if stock_move.free_good else debit_account.code) or None,
             "Quantity9": stock_move.quantity_purchase_done,
             "ConvertRate9": stock_move.quantity_change,
             "Quantity": stock_move.quantity_done,
@@ -455,7 +455,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "CreditAccount",
             "BuiltinOrder", "ItemCode", "ItemName", "DebitAccount", "OriginalAmount", "Amount", "DocNo_PO",
-            "WarehouseCode", "JobCode", "RowId", "DeptCode",
+            "WarehouseCode", "JobCode", "RowId", "DeptCode", "UnitPurCode",
         ]
 
     def bravo_get_picking_purchase_costing_value(self, is_reversed, employee_code):
@@ -494,6 +494,7 @@ class AccountMovePurchaseCostingAllocation(models.Model):
                     "BuiltinOrder": idx or None,
                     "ItemCode": line.product_id.barcode or None,
                     "ItemName": line.product_id.name or None,
+                    "UnitPurCode": line.product_id.uom_id.code or None,
                     "DebitAccount": line.account_id.code or None,
                     "OriginalAmount": line.debit,
                     "Amount": line.debit,
@@ -516,15 +517,16 @@ class AccountMovePurchaseCostingAllocation(models.Model):
                     "BuiltinOrder": idx or None,
                     "ItemCode": line.product_id.barcode or None,
                     "ItemName": line.product_id.name or None,
-                    "DebitAccount": line.account_id.code or None,
+                    "UnitPurCode": line.product_id.uom_id.code or None,
+                    "DebitAccount": debit_account_code or None,
                     "OriginalAmount": line.credit,
                     "Amount": line.credit,
                     "DocNo_PO": self.reference or None,
-                    "WarehouseCode": picking.location_dest_id.warehouse_id.code or None,
+                    "WarehouseCode": picking.location_id.warehouse_id.code or None,
                     "JobCode": line.occasion_code_id.code or None,
                     "RowId": line.id or None,
                     "DeptCode": line.analytic_account_id.code or None,
-                    "CreditAccount": debit_account_code or None,
+                    "CreditAccount": line.account_id.code or None,
                 })
                 values.append(line_value)
 
@@ -574,6 +576,7 @@ class StockPickingPurchaseReturn(models.Model):
             "CompanyCode": picking.company_id.code or None,
             "Stt": picking.name or None,
             "DocCode": "XT",
+            "DocNo": picking.name or None,
             "DocDate": picking.date_done or None,
             "CurrencyCode": picking.company_id.currency_id.name or None,
             "ExchangeRate": exchange_rate or None,

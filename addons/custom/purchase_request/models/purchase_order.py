@@ -145,7 +145,7 @@ class PurchaseOrderLine(models.Model):
     def write(self, vals):
         res = super().write(vals)
         for r in self.filtered(lambda x: x.x_check_npl and not x.purchase_order_line_material_line_ids):
-            product = self.product_id
+            product = r.product_id
             production_order = self.env['production.order'].search([('product_id', '=', product.id), ('type', '=', 'normal'), ('company_id', '=', self.env.company.id)], limit=1)
             production_data = []
             if not production_order.order_line_ids:

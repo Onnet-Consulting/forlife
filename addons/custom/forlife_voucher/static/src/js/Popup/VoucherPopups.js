@@ -190,11 +190,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                         - item.money_reduce_from_product_defective - discount_ck
                     if(data[i].value.price_residual >= (total_to_pay)){
                         data[i].value.price_residual = data[i].value.price_residual - total_to_pay;
-                        so_tien_da_tra[item_id] = total_to_pay;
+                        so_tien_da_tra[item_id] += total_to_pay;
                         return total_to_pay;
                     } else {
                         let total_paid = data[i].value.price_residual;
-                        so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
+                        so_tien_da_tra[item_id] += data[i].value.price_residual;
                         data[i].value.price_residual = 0;
                         return total_paid;
                     }
