@@ -13,6 +13,6 @@ class PosConfig(models.Model):
             if rec.store_id:
                 pos_ids = rec.store_id.pos_config_ids.ids
                 pos_ids.sort()
-                rec.pos_id = pos_ids.index(rec.id) if rec.id else len(pos_ids)
+                rec.pos_id = pos_ids.index(rec.id) if rec.id and rec.id in pos_ids else len(pos_ids)
             else:
                 rec.pos_id = 0
