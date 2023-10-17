@@ -24,6 +24,8 @@ class PosOrder(models.Model):
 
     def _export_for_ui(self, order):
         timezone = pytz.timezone(self._context.get('tz') or self.env.user.tz or 'UTC')
+        if self.env.user.has_group('base.group_user'):
+            order = order.sudo()
         return {
             'lines': [[0, 0, line] for line in order.lines.export_for_ui()],
             'statement_ids': [[0, 0, payment] for payment in order.payment_ids.export_for_ui()],
