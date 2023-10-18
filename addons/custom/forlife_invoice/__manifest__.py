@@ -12,10 +12,13 @@
         'base',
         # 'forlife_purchase',
         'forlife_stock',
+        'report_xlsx',
     ],
     "data": [
         'data/ir_attachment_data.xml',
         'security/ir.model.access.csv',
+        'wizard/import_vendor_back_view.xml',
+
         'views/invoice_view.xml',
         'views/account_tax_view.xml',
         'views/menus.xml',

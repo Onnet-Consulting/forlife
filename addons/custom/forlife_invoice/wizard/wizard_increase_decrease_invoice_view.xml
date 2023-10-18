@@ -9,9 +9,13 @@
                     <group>
                         <field name="origin_invoice_id" invisible="1"/>
                         <field name="invoice_type" required="1" string="Loại"/>
-                    </group>
-                    <group>
                         <field name="selected_all" string="Chọn tất cả"/>
+                    </group>
+                    <group invisible="context.get('hide_import_vendor_price')">
+                        <field name="import_file" filename="import_file_name"/>
+                        <field name="import_file_name" invisible="1"/>
+                        <field name="error_file" filename="error_file_name" readonly="1" force_save="1" attrs="{'invisible': [('error_file', '=', False)]}"/>
+                        <field name="error_file_name" invisible="1"/>
                     </group>
                 </group>
                 <notebook>
@@ -25,7 +29,9 @@
                                 <field name="uom_id" readonly="1" force_save="1" string="ĐVT"/>
                                 <field name="currency_id" readonly="1" invisible="1" force_save="1"/>
                                 <field name="quantity" readonly="1" force_save="1" string="Số lượng"/>
+                                <field name="exchange_quantity" readonly="1" string="Tỷ lệ quy đổi" invisible="context.get('hide_import_vendor_price')"/>
                                 <field name="discount" readonly="1" force_save="1" string="Chiết khấu"/>
+                                <field name="vendor_price" string="Giá nhà cung cấp" invisible="context.get('hide_import_vendor_price')"/>
                                 <field name="price_unit" readonly="1" force_save="1" string="Đơn giá"/>
                                 <field name="price_subtotal" readonly="1" force_save="1" string="Thành tiền"/>
                                 <field name="tax_ids" readonly="1" invisible="1" force_save="1"/>
@@ -38,6 +44,8 @@
                 <footer>
                     <button name="action_confirm" string="Xác nhận" type="object" class="btn-primary"/>
                     <button string="Hủy" class="btn-secondary" special="cancel"/>
+                    <button name="print_xlsx" string="Tải mẫu" type="object" class="btn-primary" invisible="context.get('hide_import_vendor_price')"/>
+                    <button name="action_import" string="Nhập Excel" type="object" class="btn-primary" attrs="{'invisible': [('import_file', '=', False)]}" invisible="context.get('hide_import_vendor_price')"/>
                 </footer>
             </form>
         </field>

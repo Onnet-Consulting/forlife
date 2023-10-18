@@ -6,18 +6,18 @@ from odoo import api, fields, models, _
 class JournalEntryPayroll(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_journal_entry_payroll_values(self, trade_discount_other=False):
+    def bravo_get_journal_entry_values(self, journal_entry_tax=False):
         res = []
-        columns = self.bravo_get_journal_entry_payroll_columns()
+        columns = self.bravo_get_journal_entry_columns()
         employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
-            user_id = str(record.user_id.id) or str(self._uid)
+            user_id = str(record.user_id.id or self._uid)
             employee = employees.get(user_id) or {}
-            res.extend(record.bravo_get_journal_entry_payroll_value(employee.get('code'), trade_discount_other))
+            res.extend(record.bravo_get_journal_entry_value(employee.get('code'), journal_entry_tax))
         return columns, res
 
     @api.model
-    def bravo_get_journal_entry_payroll_columns(self):
+    def bravo_get_journal_entry_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DocumentType",
@@ -25,7 +25,7 @@ class JournalEntryPayroll(models.Model):
             "JobCode", "RowId", "AssetCode", "DocNo_WO", "ExpenseCatgCode", "ProductCode", "DeptCode",
         ]
 
-    def bravo_get_journal_entry_payroll_value(self, employee_code, trade_discount_other):
+    def bravo_get_journal_entry_value(self, employee_code, journal_entry_tax):
         self.ensure_one()
         debit_lines = self.line_ids.filtered(lambda l: l.debit > 0)
         credit_lines = self.line_ids.filtered(lambda l: l.credit > 0)
@@ -50,7 +50,7 @@ class JournalEntryPayroll(models.Model):
                 "CustomerCode": partner.ref or None,
                 "CustomerName": partner.name or None,
                 "Address": partner.contact_address_complete or None,
-                "Description": (self.invoice_description if trade_discount_other else self.ref2) or None,
+                "Description": (self.invoice_description if journal_entry_tax else self.ref2) or None,
                 "EmployeeCode": employee_code or None,
                 "IsTransfer": 1 if self.is_tc else 0,
                 "DocumentType": None,

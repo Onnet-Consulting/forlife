@@ -96,7 +96,8 @@ with datas as (select (po.date_order + interval '{tz_offset} hours')::date      
                         left join account_tax at on at.id = tax_rel.account_tax_id
                where type = 'card'
                 and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}' 
-                and {f'store.id = any(array{self.store_ids.ids})' if self.store_ids else f'store.brand_id = {self.brand_id.id}'}
+                and store.id = any(array{self.store_ids.ids if self.store_ids else (
+                self.env['store'].with_context(report_ctx='report.num23,store').search([('brand_id', '=', self.brand_id.id)]).ids or [-1])})
                group by ngay, cua_hang, hang, thue_suat
                order by ngay),
      data_by_day as (select ngay                    as ngay,

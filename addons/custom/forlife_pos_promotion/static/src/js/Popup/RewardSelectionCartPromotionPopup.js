@@ -239,10 +239,9 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 //            this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
         }
 
-        onChangeQty(reward, target) {
+        onChangeQty(reward, value) {
             let currentLine = reward;
-            let quantity_input = parse.float(target.value);
-
+            let quantity_input = parse.float(value);
             this._computeOnchangeQty(reward, quantity_input);
         }
 
@@ -282,7 +281,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 //                    op.executingPro = null;
 //                });
             };
-            let otherOptions = this.state.programOptions.filter(p => p.fixed && p.isSelected && p.id != this.state.program.id);
+            let otherOptions = this.state.programOptions.filter(p => p.isSelected && p.id != this.state.program.id);
             for (let option of otherOptions) {
                 // Recompute floor
                 let selectedQty = this.selectedQtyOnProgram(option);

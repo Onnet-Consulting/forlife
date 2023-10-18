@@ -49,9 +49,11 @@ class ForLifeProduction(models.Model):
                         'ItemCode': material.product_id.barcode or None,
                         'ItemName': material.product_id.name or None,
                         'UnitCode': material.production_uom_id.code or None,
-                        'NormQuantityUnit': material.rated_level or 0,
-                        'NormAmountUnit': 0,
-                        'NormQuantity': material.rated_level * material.qty or 0,
+                        'NormQuantityUnit9': material.rated_level,
+                        'NormQuantityUnit': material.rated_level * material.conversion_coefficient,
+                        'NormAmountUnit': 1,
+                        'NormQuantity9': material.rated_level * material.qty,
+                        'NormQuantity': material.rated_level * material.qty * material.conversion_coefficient,
                         'LossRate': material.loss or 0,
                         'Quantity9': (material.rated_level * material.qty or 0) * (1 + (material.loss or 0) / 100),
                         'Quantity': (material.rated_level * material.qty or 0) * (1 + (material.loss or 0) / 100) * (material.conversion_coefficient or 0),
@@ -72,8 +74,10 @@ class ForLifeProduction(models.Model):
                         'ItemCode': expense.product_id.barcode or None,
                         'ItemName': expense.product_id.name or None,
                         'UnitCode': expense.product_id.uom_id.code or None,
+                        'NormQuantityUnit9': 1,
                         'NormQuantityUnit': 1,
                         'NormAmountUnit': expense.cost_norms or 0,
+                        'NormQuantity9': expense.quantity or 0,
                         'NormQuantity': expense.quantity or 0,
                         'LossRate': 0,
                         'Quantity9': 0,
@@ -101,7 +105,7 @@ class ForLifeProduction(models.Model):
             }
             employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
             for record in self:
-                user_id = str(record.user_id.id) or str(self._uid)
+                user_id = str(record.user_id.id or self._uid)
                 employee = employees.get(user_id) or {}
                 values.append({
                     'CompanyCode': record.company_id.code or None,

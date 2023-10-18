@@ -1,5 +1,6 @@
 from . import purchase_request
 from . import purchase_order
+from . import pos_config
 from . import pos_order
 from . import sale_order
 from . import other_in_out_request

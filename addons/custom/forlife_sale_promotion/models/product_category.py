@@ -9,10 +9,10 @@ ACCOUNT_DOMAIN = "['&', '&', '&', ('deprecated', '=', False), ('account_type', '
 class ProductCategory(models.Model):
     _inherit = 'product.category'
 
-    promotion_account_id = fields.Many2one("account.account", string="Promotion account", company_dependent=True, domain=ACCOUNT_DOMAIN)
-    product_gift_account_id = fields.Many2one("account.account", string="Gift account", company_dependent=True, domain=ACCOUNT_DOMAIN)
-    discount_account_id = fields.Many2one("account.account", string="Discount account", company_dependent=True, domain=ACCOUNT_DOMAIN)
-    expense_online_account_id = fields.Many2one("account.account", string="Expense online account", company_dependent=True, domain=ACCOUNT_DOMAIN)
-    expense_sale_account_id = fields.Many2one("account.account", string="Expense sale account", company_dependent=True, domain=ACCOUNT_DOMAIN)
-    income_online_account_id = fields.Many2one("account.account", string="Income online account", company_dependent=True, domain=ACCOUNT_DOMAIN)
-    income_sale_account_id = fields.Many2one("account.account", string="Income sale account", company_dependent=True, domain=ACCOUNT_DOMAIN)
+    promotion_account_id = fields.Many2one("account.account", string="Promotion account", company_dependent=True, domain=ACCOUNT_DOMAIN, tracking=True)
+    product_gift_account_id = fields.Many2one("account.account", string="Gift account", company_dependent=True, domain=ACCOUNT_DOMAIN, tracking=True)
+    discount_account_id = fields.Many2one("account.account", string="Discount account", company_dependent=True, domain=ACCOUNT_DOMAIN, tracking=True)
+    expense_online_account_id = fields.Many2one("account.account", string="Expense online account", company_dependent=True, domain=ACCOUNT_DOMAIN, tracking=True)
+    expense_sale_account_id = fields.Many2one("account.account", string="Expense sale account", company_dependent=True, domain=ACCOUNT_DOMAIN, tracking=True)
+    income_online_account_id = fields.Many2one("account.account", string="Income online account", company_dependent=True, domain=ACCOUNT_DOMAIN, tracking=True)
+    income_sale_account_id = fields.Many2one("account.account", string="Income sale account", company_dependent=True, domain=ACCOUNT_DOMAIN, tracking=True)

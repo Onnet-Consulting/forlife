@@ -319,7 +319,6 @@ class StockPicking(models.Model):
         if not journal_id:
             raise ValidationError("Không tìm thấy sổ nhật ký có mã 'EX02'. Vui lòng cấu hình thêm!")
         if record.state == 'done':
-            move = False
             ### Tìm bản ghi Xuât Nguyên Phụ Liệu
             export_production_order = self.env['stock.location'].search([('company_id', '=', self.env.company.id), ('code', '=', 'X1201')], limit=1)
             if not export_production_order.x_property_valuation_in_account_id:
@@ -328,10 +327,14 @@ class StockPicking(models.Model):
                 if not export_production_order.reason_type_id:
                     raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: X1201')
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
-            for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
+            for r in record.move_ids_without_package:
                 # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', record.id)])
+                if not r.purchase_line_id.x_check_npl:
+                    continue
+                item = r.purchase_line_id
                 move = record.move_ids.filtered(lambda x: x.purchase_line_id.id == item.id)
-                if not move: continue
+                if not move:
+                    continue
                 qty_po_done = sum(move.mapped('quantity_done'))
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
@@ -393,8 +396,7 @@ class StockPicking(models.Model):
                                     'credit': value,
                                 })
                                 list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
-                if record.state == 'done' and list_line_xk:
-                    self.create_xk_picking(po, record, list_line_xk, export_production_order)
+
                 if debit_cost > 0:
                     debit_cp = (0, 0, {
                         'sequence': 9,
@@ -501,6 +503,10 @@ class StockPicking(models.Model):
                             'stock_valuation_layer_ids': svl_allowcation_values
                         })
                         entry_allowcation_npls._post()
+
+            # tạo phiếu xuất NPL
+            if list_line_xk:
+                self.create_xk_picking(po, record, list_line_xk, export_production_order)
 
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
     def create_xk_picking(self, po, record, list_line_xk, export_production_order, account_move=None):

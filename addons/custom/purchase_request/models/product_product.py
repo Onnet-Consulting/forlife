@@ -1,6 +1,7 @@
 from odoo import api, fields, models
 from odoo.tools import float_compare
 
+ACCOUNT_DOMAIN = "['&', '&', '&', ('deprecated', '=', False), ('account_type', 'not in', ('asset_receivable','liability_payable','asset_cash','liability_credit_card')), ('company_id', '=', current_company_id), ('is_off_balance', '=', False)]"
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -10,6 +11,16 @@ class ProductProduct(models.Model):
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     asset_location_id = fields.Many2one('asset.location', string="Asset Location")
     x_check_npl = fields.Boolean('', company_dependent=True)
+    property_account_income_id = fields.Many2one('account.account', company_dependent=True,
+                                                 string="Income Account",
+                                                 domain=ACCOUNT_DOMAIN,
+                                                 tracking=True,
+                                                 help="Keep this field empty to use the default value from the product category.")
+    property_account_expense_id = fields.Many2one('account.account', company_dependent=True,
+                                                  string="Expense Account",
+                                                  domain=ACCOUNT_DOMAIN,
+                                                  tracking=True,
+                                                  help="Keep this field empty to use the default value from the product category. If anglo-saxon accounting with automated valuation method is configured, the expense account on the product category will be used.")
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):

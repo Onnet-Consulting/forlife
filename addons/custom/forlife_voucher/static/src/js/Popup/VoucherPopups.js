@@ -190,11 +190,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                         - item.money_reduce_from_product_defective - discount_ck
                     if(data[i].value.price_residual >= (total_to_pay)){
                         data[i].value.price_residual = data[i].value.price_residual - total_to_pay;
-                        so_tien_da_tra[item_id] = total_to_pay;
+                        so_tien_da_tra[item_id] += total_to_pay;
                         return total_to_pay;
                     } else {
                         let total_paid = data[i].value.price_residual;
-                        so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
+                        so_tien_da_tra[item_id] += data[i].value.price_residual;
                         data[i].value.price_residual = 0;
                         return total_paid;
                     }
@@ -252,21 +252,6 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    $(this).val(index+1)
                 }
             });
-//            for(let i = 0; i < data.length; i ++){
-//                if(codes[i].value != false && data[i].value != false){
-//                    if(data[i].value.price_change == 0){
-//                        data[i].value.price_change = data[i].value.price_residual
-//                    }
-//                }
-//            }
-//            var obj_count_program = data.reduce((acc, item) => {
-//                  const key = item.bookName
-//                  if (!acc.hasOwnProperty(key)) {
-//                    acc[key] = 0
-//                  }
-//                  acc[key] += 1
-//                  return acc
-//                }, {})
             var arr = []
             data.forEach(function(item){
                 if(item.value){
@@ -386,9 +371,12 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    let to_pay_condition = 0;
                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
                         let has_discount = (item.point || item.promotion_usage_ids.length>0 || item.card_rank_discount>0 || item.money_reduce_from_product_defective >0 || item.discount > 0);
-                        if(data[i].value.has_condition == false){
-                            self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
-                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
+                        if(!data[i].value.has_condition
+                            && !(has_discount && data[i].value.is_full_price_applies)
+                            && !item.refunded_orderline_id) {
+//                            self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
+//                            data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
+                            to_pay_condition += self.condition_voucher(item, i, data,so_tien_da_tra,list_id_product_apply_condition)
                         }
                         else if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id))
                                 && !(has_discount && data[i].value.is_full_price_applies)
@@ -406,11 +394,18 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         let paid_voucher_amount = data.filter(el=>el.value.voucher_id !== data[i].value.voucher_id)
                                         .reduce((tmp, el) => {
                                             if (el.value) {
-                                                let tmp = tmp + el.value.original_price_residual - el.value.price_residual;
+                                                tmp = tmp + el.value.original_price_residual - el.value.price_residual;
                                             };
                                             return tmp;
                                         }, 0);
-
+                        /*
+                        // Trường hợp đơn đổi trả:
+                        - Trả sản phẩm A: Giá trị - 190K
+                        - Đổi sản phẩm B: Giá trị + 290K
+                        - Tổng đơn:               + 100K
+                        - to_pay_condition        + 290K
+                        >> Kiểm tra số tiền to_pay_condition > (Tổng đơn: - đã trả bằng voucher khác) -> điều chỉnh to_pay_condition = 100K
+                        */
                         if (refund_amount && (order.get_due() - paid_voucher_amount) < to_pay_condition) {
                             to_pay_condition = order.get_due() - paid_voucher_amount
                         };

@@ -88,3 +88,38 @@ msgstr "Dung sai"
 #: model:ir.model.fields,field_description:forlife_product.field_product_tolerance_line__tolerance
 msgid "Tolerance (%)"
 msgstr "Dung sai (%)"
+
+#. module: forlife_product
+#: model:ir.model.fields,field_description:forlife_product.field_product_category__property_cost_method
+msgid "Costing Method"
+msgstr "Phương pháp giá vốn"
+
+#. module: forlife_product
+#: model:ir.model.fields,field_description:forlife_product.field_product_category__property_stock_account_input_categ_id
+msgid "Stock Input Account"
+msgstr "Tài khoản nhập kho"
+
+#. module: forlife_product
+#: model:ir.model.fields,field_description:forlife_product.field_product_category__property_stock_valuation_account_id
+msgid "Stock Valuation Account"
+msgstr "Tài khoản Định giá Tồn kho"
+
+#. module: forlife_product
+#: model:ir.model.fields,field_description:forlife_product.field_product_category__property_stock_account_output_categ_id
+msgid "Stock Output Account"
+msgstr "Tài khoản xuất kho"
+
+#. module: forlife_product
+#: model:ir.model.fields,field_description:forlife_product.field_product_category__property_stock_valuation_account_id
+msgid "Stock Valuation Account"
+msgstr "Tài khoản định giá tồn kho"
+
+#. module: forlife_product
+#: model:ir.model.fields,field_description:forlife_product.field_product_category__property_account_income_categ_id
+msgid "Income Account"
+msgstr "Tài khoản doanh thu"
+
+#. module: forlife_product
+#: model:ir.model.fields,field_description:forlife_product.field_product_category__property_account_expense_categ_id
+msgid "Expense Account"
+msgstr "Tài khoản chi phí"

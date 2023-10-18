@@ -20,9 +20,7 @@ BEGIN
     RETURN Query (
         WITH opening as (
             -- đầu kỳ
-            select sm.product_id,
-                    sum(svl.quantity) as quantity,
-                    sum(svl.value) as total_value
+            select sm.product_id, sum(svl.quantity) as quantity, sum(svl.value) as total_value
             from stock_valuation_layer svl
             left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
@@ -35,9 +33,7 @@ BEGIN
         ),
         incoming as (
             -- nhập trong kỳ
-            select sm.product_id,
-                    sum(svl.quantity) as quantity,
-                    sum(svl.value) as total_value
+            select sm.product_id, sum(svl.quantity) as quantity, sum(svl.value) as total_value
             from stock_valuation_layer svl
             left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
@@ -50,9 +46,7 @@ BEGIN
         ),
         outgoing as (
             -- xuất trong kỳ
-            select sm.product_id,
-                    abs(sum(svl.quantity)) as quantity,
-                    abs(sum(svl.value)) as total_value
+            select sm.product_id, abs(sum(svl.quantity)) as quantity, abs(sum(svl.value)) as total_value
             from stock_valuation_layer svl
             left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
