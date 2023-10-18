@@ -79,3 +79,23 @@ class AccountMove(models.Model):
                     'qty_to_invoice': invoice_line_id.quantity
                 })
         return super(AccountMove, self).button_draft()
+
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        res = super().copy(default)
+        if self.env.context.get('move_reverse_cancel'):
+            if res.reversed_entry_id and res.reversed_entry_id.vendor_back_ids and res.line_ids:
+                res.reversed_entry_id.vendor_back_ids.copy({'vendor_back_id': res.id})
+                res.reversed_entry_id.account_expense_labor_detail_ids.copy({'move_id': res.id})
+            origin_tax_line_ids = res.reversed_entry_id.line_ids.filtered(lambda x: x.display_type == 'tax')
+            if origin_tax_line_ids:
+                tax_line_ids = origin_tax_line_ids.copy({'move_id': res.id})
+                for tax_line_id in tax_line_ids:
+                    debit = tax_line_id.debit
+                    credit = tax_line_id.credit
+                    tax_line_id.write({
+                        'debit': credit,
+                        'credit': debit,
+                    })
+        return res
