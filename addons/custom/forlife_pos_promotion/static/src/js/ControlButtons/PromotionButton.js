@@ -105,7 +105,7 @@ export class PromotionButton extends PosComponent {
         let programsList = potentialPrograms.map(el => el.program);
         let bestCombine;
         if (programsList.every(p => p.promotion_type == 'pricelist' && !p.with_code)) {
-            bestCombine = programsList;
+            bestCombine = programsList.map(p => this.env.pos.get_str_id(p));
         } else {
             bestCombine = order.computeBestCombineOfProgram(programsList) || [];
         }
