@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_inventory_view_tree" model="ir.ui.view">
+            <field name="name">product_inventory_view_tree</field>
+            <field name="model">product.inventory.by.period</field>
+            <field name="arch" type="xml">
+                <tree string="product_inventory_tree">
+                    <field name="name"/>
+                    <field name="month"/>
+                    <field name="year"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="product_inventory_view_form" model="ir.ui.view">
+            <field name="name">product_inventory_view_form</field>
+            <field name="model">product.inventory.by.period</field>
+            <field name="arch" type="xml">
+                <form string="product_inventory_form">
+                    <header>
+                        <button name="action_product_inventory" string="Chốt tồn" class="oe_highlight" states="draft" type="object"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_product_inventory" type="object"
+                                    class="oe_stat_button" icon="fa-star">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Chi tiết tồn</span>
+                                </div>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="month" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="from_date"/>
+                            </group>
+                            <group>
+                                <field name="year" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="to_date"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page name="inv_lines" string="Chi tiết tồn">
+                                <field name="inv_lines" readonly="1">
+                                    <tree>
+                                        <field name="product_id"/>
+                                        <field name="qty_begin_period"/>
+                                        <field name="qty_in_period"/>
+                                        <field name="qty_out_period"/>
+                                        <field name="amount_begin_period"/>
+                                        <field name="amount_period"/>
+                                        <field name="qty_product"/>
+                                        <field name="amount_product"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="product_inventory_line_view_tree" model="ir.ui.view">
+            <field name="name">product_inventory_line_view_tree</field>
+            <field name="model">product.inventory.by.period.line</field>
+            <field name="arch" type="xml">
+                <tree string="product_inventory_line_tree">
+                    <field name="parent_id"/>
+                    <field name="product_id"/>
+                    <field name="qty_begin_period"/>
+                    <field name="qty_in_period"/>
+                    <field name="qty_out_period"/>
+                    <field name="amount_begin_period"/>
+                    <field name="amount_period"/>
+                    <field name="qty_product"/>
+                    <field name="amount_product"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="product_inventory_line_action" model="ir.actions.act_window">
+            <field name="name">Tồn kho theo sản phẩm</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.inventory.by.period.line</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="product_inventory_action" model="ir.actions.act_window">
+            <field name="name">Chốt tồn cuối kỳ</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.inventory.by.period</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="product_inventory_action_action_menu"
+                parent="stock.menu_warehouse_report"
+                action="forlife_stock_report.product_inventory_action"
+                groups="base.group_user"
+        />
+    </data>
+</odoo>

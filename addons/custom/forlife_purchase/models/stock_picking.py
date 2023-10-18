@@ -491,7 +491,7 @@ class StockPicking(models.Model):
                             'purchase_type': po.purchase_type,
                             'move_type': 'entry',
                             'journal_id': journal_id,
-                            # 'x_entry_types': 'entry_material',
+                            'x_entry_types': 'entry_material',
                             'reference': po.name,
                             'exchange_rate': po.exchange_rate,
                             'date': (record.date_done + timedelta(hours=7)).date(),

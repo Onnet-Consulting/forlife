@@ -208,6 +208,7 @@ class SpilitProductLine(models.Model):
     _description = 'Dòng sản phẩm chính'
 
     def _domain_location(self):
+
         return [('id', 'in', self.env.user.get_location())]
 
     split_product_id = fields.Many2one('split.product')
