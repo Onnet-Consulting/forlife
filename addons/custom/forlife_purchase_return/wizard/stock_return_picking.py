@@ -83,6 +83,12 @@ class StockReturnPicking(models.TransientModel):
 
     select_all = fields.Boolean(string='Chọn tất cả', default=False)
 
+    def _prepare_move_default_values(self, return_line, new_picking):
+        vals = super(StockReturnPicking, self)._prepare_move_default_values(return_line, new_picking)
+        if return_line.move_id.quantity_change:
+            vals['quantity_purchase_done'] = return_line.quantity / return_line.move_id.quantity_change
+        return vals
+
     @api.model_create_multi
     def create(self, vals_list):
         for val in vals_list:
