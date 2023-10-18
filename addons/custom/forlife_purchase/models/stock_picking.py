@@ -327,7 +327,7 @@ class StockPicking(models.Model):
                 if not export_production_order.reason_type_id:
                     raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: X1201')
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
-            for item, r in record.move_ids_without_package:
+            for r in record.move_ids_without_package:
                 # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', record.id)])
                 if not r.purchase_line_id.x_check_npl:
                     continue
