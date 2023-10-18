@@ -27,14 +27,12 @@ class InheritPosOrder(models.Model):
                        or order_line.order_id.session_id.config_id.store_id.contact_id.id)
         display_name = order_line.product_id.get_product_multiline_description_sale()
         name = order_line.product_id.default_code + " " + display_name if order_line.product_id.default_code else display_name
-        if order_line.product_src_id.refunded_orderline_id and order_line.promotion_type in ('ctkm', 'product_defective', 'handle'):
+        if order_line.refunded_orderline_id:
             credit_account_id = order_line.product_id.product_tmpl_id.categ_id.x_property_account_return_id.id
-            if not credit_account_id:
-                raise ValidationError(_(
-                    'Product categories "%s" has not configured refund account!',
-                    order_line.product_id.product_tmpl_id.categ_id.display_name
-                ))
         elif not credit_account_id:
+            # if order_line.is_reward_line:
+            #     credit_account_id = order_line.product_id.product_tmpl_id.categ_id.product_gift_account_id.id
+            # else:
             credit_account = order_line.product_id.product_tmpl_id._get_product_accounts()
             credit_account_id = (credit_account['income'] or credit_account['expense']).id
         compute_all_taxes = order_line.tax_ids.compute_all(
