@@ -79,12 +79,6 @@ with po_datas as (select po.id                  as po_id,
                                       join promotion_code pro_code on pro_code.id = pul.code_id
                              where pul.order_line_id in (select distinct pol_id from po_datas where type > 0)) as xx
                        group by po_id),
-     ma_the_gg_tl as (select po_id, array_to_string(array_agg(code), ', ') as codes
-                      from (select DISTINCT pul.order_id as po_id, pro_code.name as code
-                            from promotion_usage_line pul
-                                     join promotion_code pro_code on pro_code.id = pul.code_id
-                            where pul.order_line_id in (select distinct pol_id from po_datas where type < 0)) as xx
-                      group by po_id),
      voucher_mua as (select po_id, array_to_string(array_agg(voucher), ', ') as vouchers
                      from (select DISTINCT pvl.pos_order_id as po_id, vv.name as voucher
                            from pos_voucher_line pvl
@@ -99,9 +93,10 @@ with po_datas as (select po.id                  as po_id,
      tien_the_gg as (select pol.id                             as pol_id,
                             sum(pul.discount_amount * pol.qty) as card_discount
                      from promotion_usage_line pul
-                              join promotion_program prp on prp.id = pul.program_id and prp.promotion_type = 'code'
+                              join promotion_program prp on prp.id = pul.program_id
                               join pos_order_line pol on pol.id = pul.order_line_id
                      where pul.order_line_id in (select distinct pol_id from po_datas)
+                      and prp.promotion_type in ('code', 'pricelist')
                      group by pol.id),
      chi_tiet_mua as (select row_number() over (PARTITION BY pol.order_id order by pol.id)  as num,
                            pol.order_id                                                   as po_id,
@@ -230,6 +225,7 @@ with po_datas as (select po.id                  as po_id,
        sl_x.tien_sp_voucher                                                                  as tien_sp_voucher,
        coalesce(sl_x.tien_the_gg, 0)                                                         as tien_the_gg,
        greatest(po.amount_total, 0)                                                          as phai_thu,
+       greatest(po.amount_total, 0)                                                          as dt_ch,
        (select greatest(coalesce((value::json ->> concat(po.id, 'tien_mat'))::int, 0), 0) from thanh_toan_x) as tien_mat,
        (select greatest(coalesce((value::json ->> concat(po.id, 'tien_the'))::int, 0), 0) from thanh_toan_x) as tien_the,
        (select greatest(coalesce((value::json ->> concat(po.id, 'tien_vnpay'))::int, 0), 0) from thanh_toan_x) as tien_vnpay,
@@ -290,12 +286,12 @@ data_final_tl as ("""
               sto.code                                                          as ma_cn,
               sto.name                                                          as ten_cn,
               to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')  as ngay,
-              po.name                                                  as so_ct,
+              po.name                                                           as so_ct,
               rp.ref                                                            as ma_kh,
               rp.phone                                                          as sdt,
               rp.name                                                           as ten_kh,
               po.note                                                           as mo_ta,
-              gg_x.codes                                                        as ma_the_gg,
+              ''                                                                as ma_the_gg,
               ''                                                                as voucher,
               sl_x.sl                                                           as sl,
               sl_x.cong                                                         as cong,
@@ -310,6 +306,7 @@ data_final_tl as ("""
               0                                                                 as tien_sp_voucher,
               coalesce(sl_x.tien_the_gg, 0)                                     as tien_the_gg,
               0                                                                 as phai_thu,
+              least(po.amount_total, 0)                                         as dt_ch,
               (select least(coalesce((value::json ->> concat(po.id, 'tien_mat'))::int, 0), 0) from thanh_toan_x) as tien_mat,
               (select least(coalesce((value::json ->> concat(po.id, 'tien_the'))::int, 0), 0) from thanh_toan_x) as tien_the,
               (select least(coalesce((value::json ->> concat(po.id, 'tien_vnpay'))::int, 0), 0) from thanh_toan_x) as tien_vnpay,
@@ -357,7 +354,6 @@ data_final_tl as ("""
                 left join pos_session ses on ses.id = po.session_id
                 left join pos_config conf on conf.id = ses.config_id
                 left join store sto on sto.id = conf.store_id
-                left join ma_the_gg_tl gg_x on gg_x.po_id = po.id
                 left join so_luong_x_tl sl_x on sl_x.po_id = po.id
                 left join chi_tiet_s_tl ct_s on ct_s.po_id = po.id
        where po.id in (select distinct po_id from po_datas where type < 0))
@@ -424,7 +420,7 @@ from (select *
             sheet.write(row, 22, value.get('tru_tich_luy', 0), formats.get('int_number_format'))
             sheet.write(row, 23, value.get('tien_the_gg', 0), formats.get('int_number_format'))
             sheet.write(row, 24, value.get('phai_thu', 0), formats.get('int_number_format'))
-            sheet.write(row, 25, value.get('hs_dt', 0) * (value.get('phai_thu', 0) - (value.get('tien_voucher', 0) / 2) - value.get('tien_sp_voucher', 0)), formats.get('int_number_format'))
+            sheet.write(row, 25, value.get('dt_ch', 0) - value.get('hs_dt', 0) * ((value.get('tien_voucher', 0) / 2) - value.get('tien_sp_voucher', 0)), formats.get('int_number_format'))
             sheet.write(row, 26, value.get('tien_mat', 0), formats.get('int_number_format'))
             sheet.write(row, 27, value.get('tien_the', 0), formats.get('int_number_format'))
             sheet.write(row, 28, value.get('tien_vnpay', 0), formats.get('int_number_format'))
