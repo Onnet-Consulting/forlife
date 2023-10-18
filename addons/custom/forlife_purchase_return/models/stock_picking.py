@@ -83,7 +83,7 @@ class StockPicking(models.Model):
             qty_po_done = sum(move.mapped('quantity_done'))
             po = line.order_id
             move_value = {
-                'ref': f"{self.name} - {line.product_id.name}",
+                'ref': f"{self.name}",
                 'purchase_type': po.purchase_type,
                 'move_type': 'entry',
                 'reference': po.name,
