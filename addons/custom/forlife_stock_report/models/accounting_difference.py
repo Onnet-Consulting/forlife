@@ -98,14 +98,14 @@ class CalculateFinalValueInherit(models.Model):
                 join account_account aa on aml.account_id = aa.id
                 join product_category pc on
                     pt.categ_id = pc.id
-                join ir_property ip on
+                left join ir_property ip on
                     ip.res_id = 'product.category,' || pt.categ_id
                     and ip."name" = 'property_stock_valuation_account_id'
-                    and ip.company_id = 3
+                    and ip.company_id = {company_id}
                     and ip.value_reference = 'account.account,' || aa.id
-                join purchase_order_line pol on
+                left join purchase_order_line pol on
                     aml.purchase_line_id = pol.id
-                join purchase_order po on
+                left join purchase_order po on
                     pol.order_id = po.id
                 where
                     po.company_id = {company_id}
@@ -138,16 +138,16 @@ class CalculateFinalValueInherit(models.Model):
                 join account_account aa on aml.account_id = aa.id
                 join product_category pc on
                     pt.categ_id = pc.id
-                join ir_property ip on
+                left join ir_property ip on
                     ip.res_id = 'product.category,' || pt.categ_id
                     and ip."name" = 'property_stock_valuation_account_id'
-                    and ip.company_id = 3
+                    and ip.company_id = {company_id}
                     and ip.value_reference = 'account.account,' || aa.id
-                join stock_move sm on
+                left join stock_move sm on
                     am.stock_move_id = sm.id
-                join purchase_order_line pol on
+                left join purchase_order_line pol on
                     pol.id = sm.purchase_line_id
-                join purchase_order po on
+                left join purchase_order po on
                     pol.order_id = po.id
                 where
                     po.company_id = {company_id}
