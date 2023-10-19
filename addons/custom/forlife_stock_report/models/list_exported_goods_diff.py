@@ -43,7 +43,7 @@ class CalculateFinalValue(models.Model):
                 where 
                 aml.debit > 0 
                 and sm.company_id = {company_id} 
-                and sm.date >= '{from_date}' and sm.date <= '{to_date} 23:59:59'
+                and sm.date + interval '7 hours' >= '{from_date}' and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
                 and sm.state = 'done'
                 and (sp.x_is_check_return is false or sp.x_is_check_return is null)
                 and cpt.code = {category_type}
@@ -83,7 +83,7 @@ class CalculateFinalValue(models.Model):
                 where 
                 aml.debit > 0 
                 and sm.company_id = {company_id} 
-                and sm.date >= '{from_date}' and sm.date <= '{to_date} 23:59:59'
+                and sm.date + interval '7 hours' >= '{from_date}' and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
                 and sm.state = 'done'
                 and (sp.x_is_check_return is false or sp.x_is_check_return is null)
                 and cpt.code = {category_type}
@@ -120,8 +120,8 @@ class CalculateFinalValue(models.Model):
         self.goods_diff_lines.unlink()
         query = self._sql_string_good_diff().format(
             company_id=self.env.company.id,
-            from_date=self.from_date - timedelta(hours=7),
-            to_date=self.to_date - timedelta(hours=7),
+            from_date=self.from_date,
+            to_date=self.to_date,
             parent_id=self.id,
             category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
         )
