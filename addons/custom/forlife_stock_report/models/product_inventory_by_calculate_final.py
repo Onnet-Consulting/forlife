@@ -38,8 +38,8 @@ class CalculateFinalValue(models.Model):
                     join stock_picking sp on
                         sm.picking_id = sp.id
                     where
-                        sm.date >= '{from_date}'
-                        and sm.date <= '{to_date} 23:59:59'
+                        sm.date + interval '7 hours' >= '{from_date}'
+                        and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
                         and sl."usage" = 'internal'
                         and sp.transfer_id is null
                         and sm.state = 'done'
@@ -63,8 +63,8 @@ class CalculateFinalValue(models.Model):
         self.product_inv_lines.unlink()
         query = self._sql_product_inv_line_str().format(
             company_id=self.env.company.id,
-            from_date=self.from_date - timedelta(hours=7),
-            to_date=self.to_date - timedelta(hours=7),
+            from_date=self.from_date,
+            to_date=self.to_date,
             from_date_begin=self.from_date - timedelta(days=1),
             parent_id=self.id,
             category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
