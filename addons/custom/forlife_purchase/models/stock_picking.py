@@ -511,7 +511,7 @@ class StockPicking(models.Model):
     ###tự động tạo phiếu xuất khác và hoàn thành khi nhập kho hoàn thành
     def create_xk_picking(self, po, record, list_line_xk, export_production_order, account_move=None):
         company_id = self.env.company.id
-        picking_type_out = self.env['stock.picking.type'].search([('code', '=', 'outgoing'), ('company_id', '=', company_id)], limit=1)
+        picking_type_out = po.location_export_material_id.warehouse_id.out_type_id
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
