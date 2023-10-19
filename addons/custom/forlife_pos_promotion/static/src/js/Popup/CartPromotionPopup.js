@@ -112,8 +112,15 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                 } else {
                     if (option.floor > 1) {
                         let tryFloor = option.floor;
-                        let reward = option.reward_line_vals.find(reward => this.getSelectedQtyOfLine(reward) < reward.line.quantity);
-                        if (reward) {
+                        let to_click_rewards = option.reward_line_vals.filter(reward => this.getSelectedQtyOfLine(reward) < reward.line.quantity);
+                        if (to_click_rewards.length > 0) {
+                            let reward;
+                            if (to_click_rewards.find(reward => reward.isSelected)) {
+                                reward = to_click_rewards.find(reward => reward.isSelected);
+                                reward.isSelected = false;
+                            } else {
+                                reward = to_click_rewards[0]
+                            };
                             let success = false;
                             while (tryFloor >= 1) {
                                 option.max_reward_quantity = (tryFloor - 1) * option.program.reward_quantity;
