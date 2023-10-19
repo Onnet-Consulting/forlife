@@ -2220,7 +2220,7 @@ class PurchaseOrderLine(models.Model):
                 'free_good': self.free_good,
                 'quantity_change': self.exchange_quantity,
                 'quantity_purchase_done': self.purchase_quantity,
-                'quantity_done': self.product_qty,
+                # 'quantity_done': self.product_qty,
                 'occasion_code_id': self.occasion_code_id.id or False,
                 'work_production': self.production_id.id or False,
                 'account_analytic_id': self.account_analytic_id.id or False,
