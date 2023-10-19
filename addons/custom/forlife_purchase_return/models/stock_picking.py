@@ -236,7 +236,7 @@ class StockPicking(models.Model):
             "immediate_transfer": False,
             'reason_type_id': location_id.reason_type_id.id,
             'location_id': location_id.id,
-            'location_dest_id': record.location_export_material_id.id,
+            'location_dest_id': po.location_export_material_id.id,
             'scheduled_date': fields.datetime.now(),
             'origin': po.name + " nhập trả NPL" if po else record.name + " nhập trả NPL",
             'state': 'assigned',
