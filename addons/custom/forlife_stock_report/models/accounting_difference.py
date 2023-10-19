@@ -1,5 +1,6 @@
 from odoo import fields, api, models, _
 import datetime
+from datetime import timedelta
 
 
 class CalculateFinalValueInherit(models.Model):
@@ -194,8 +195,8 @@ class CalculateFinalValueInherit(models.Model):
             where_string += f' and ip.purchase_id = any(array{self.purchase_ids.ids})'
         query = self._sql_string().format(
             company_id=self.env.company.id,
-            from_date=self.from_date,
-            to_date=self.to_date,
+            from_date=self.from_date - timedelta(hours=7),
+            to_date=self.to_date - timedelta(hours=7),
             parent_id=self.id,
             where=where_string,
         )

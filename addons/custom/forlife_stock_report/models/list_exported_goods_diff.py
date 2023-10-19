@@ -1,5 +1,6 @@
 from odoo import fields, api, models, _
 from odoo.exceptions import ValidationError
+from datetime import timedelta
 
 
 class CalculateFinalValue(models.Model):
@@ -119,8 +120,8 @@ class CalculateFinalValue(models.Model):
         self.goods_diff_lines.unlink()
         query = self._sql_string_good_diff().format(
             company_id=self.env.company.id,
-            from_date=self.from_date,
-            to_date=self.to_date,
+            from_date=self.from_date - timedelta(hours=7),
+            to_date=self.to_date - timedelta(hours=7),
             parent_id=self.id,
             category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
         )

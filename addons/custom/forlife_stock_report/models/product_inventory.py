@@ -1,5 +1,6 @@
 from odoo import fields, api, models
 import datetime
+from datetime import timedelta
 
 
 class ProductInventory(models.Model):
@@ -224,7 +225,7 @@ class ProductInventory(models.Model):
                     
                             where
                                 am.state = 'posted'
-                                and am.date >= '{to_date}' and am.date <= '{to_date} 23:59:59'
+                                and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
                                 and am.company_id = {company_id}
                     
                         
@@ -548,7 +549,11 @@ class ProductInventory(models.Model):
     """
 
     def action_product_inventory(self):
-        sql = self._sql_string_inv().format(parent_id=self.id, from_date=self.from_date, to_date=self.to_date, company_id=self.env.company.id)
+        sql = self._sql_string_inv().format(
+            parent_id=self.id,
+            from_date=self.from_date - timedelta(hours=7),
+            to_date=self.to_date - timedelta(hours=7),
+            company_id=self.env.company.id)
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
         inv_line = self.inv_lines.create(data)
