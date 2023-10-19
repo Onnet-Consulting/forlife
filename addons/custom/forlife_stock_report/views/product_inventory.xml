@@ -51,10 +51,10 @@
                                     <tree>
                                         <field name="product_id"/>
                                         <field name="qty_begin_period"/>
-                                        <field name="qty_in_period"/>
-                                        <field name="qty_out_period"/>
                                         <field name="amount_begin_period"/>
+                                        <field name="qty_in_period"/>
                                         <field name="amount_period"/>
+                                        <field name="qty_out_period"/>
                                         <field name="qty_product"/>
                                         <field name="amount_product"/>
                                     </tree>

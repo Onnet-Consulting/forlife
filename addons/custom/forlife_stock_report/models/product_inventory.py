@@ -60,7 +60,7 @@ class ProductInventory(models.Model):
                     join stock_picking sp on
                         sm.picking_id = sp.id
                     where
-                        sm.date < '{from_date}'
+                        sm.date + interval '7 hours' < '{from_date}'
                         and sl."usage" = 'internal'
                         and sp.transfer_id is null
                         and sm.state = 'done'
@@ -79,7 +79,7 @@ class ProductInventory(models.Model):
                     join stock_picking sp on
                         sm.picking_id = sp.id
                     where
-                        sm.date < '{from_date}'
+                        sm.date + interval '7 hours' < '{from_date}'
                         and sl."usage" = 'internal'
                         and sp.transfer_id is null
                         and sm.state = 'done'
@@ -102,8 +102,8 @@ class ProductInventory(models.Model):
                     join stock_picking sp on
                         sm.picking_id = sp.id
                     where
-                        sm.date >= '{from_date}'
-                        and sm.date <= '{to_date} 23:59:59'
+                        sm.date + interval '7 hours' >= '{from_date}'
+                        and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
                         and sl."usage" = 'internal'
                         and sp.transfer_id is null
                         and sm.state = 'done'
@@ -124,8 +124,8 @@ class ProductInventory(models.Model):
                     join stock_picking sp on
                         sm.picking_id = sp.id
                     where
-                        sm.date >= '{from_date}'
-                        and sm.date <= '{to_date} 23:59:59'
+                        sm.date + interval '7 hours' >= '{from_date}'
+                        and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
                         and sl."usage" = 'internal'
                         and sp.transfer_id is null
                         and sm.state = 'done'
@@ -147,8 +147,8 @@ class ProductInventory(models.Model):
                     join stock_picking sp on
                         sm.picking_id = sp.id
                     where
-                        sm.date >= '{from_date}'
-                        and sm.date <= '{to_date} 23:59:59'
+                        sm.date + interval '7 hours' >= '{from_date}'
+                        and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
                         and sm.state = 'done'
                         and sl."usage" = 'internal'
                         and sp.transfer_id is null
@@ -551,8 +551,8 @@ class ProductInventory(models.Model):
     def action_product_inventory(self):
         sql = self._sql_string_inv().format(
             parent_id=self.id,
-            from_date=self.from_date - timedelta(hours=7),
-            to_date=self.to_date - timedelta(hours=7),
+            from_date=self.from_date,
+            to_date=self.to_date,
             company_id=self.env.company.id)
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
