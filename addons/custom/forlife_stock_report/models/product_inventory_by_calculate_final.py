@@ -63,8 +63,8 @@ class CalculateFinalValue(models.Model):
         self.product_inv_lines.unlink()
         query = self._sql_product_inv_line_str().format(
             company_id=self.env.company.id,
-            from_date=self.from_date,
-            to_date=self.to_date,
+            from_date=self.from_date - timedelta(hours=7),
+            to_date=self.to_date - timedelta(hours=7),
             from_date_begin=self.from_date - timedelta(days=1),
             parent_id=self.id,
             category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
