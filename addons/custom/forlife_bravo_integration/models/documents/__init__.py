@@ -6,7 +6,7 @@ from . import stock_picking_other_export
 from . import sale_order
 from . import pos_session
 from . import journal_entry
-from . import order_exist_bkav
+from . import picking_order_bkav
 from . import stock_picking_transfer_bkav
 from . import synthetic_daily_transfer
 from . import synthetic_move_journal_po01
