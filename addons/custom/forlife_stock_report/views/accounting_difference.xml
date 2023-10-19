@@ -34,6 +34,7 @@
                         </div>
                         <group>
                             <group>
+                                <field name="company_id" invisible="1"/>
                                 <field name="month"/>
                                 <field name="from_date"/>
                             </group>
@@ -44,8 +45,8 @@
                         </group>
                         <group col="2">
                             <group>
-                                <field name="account_ids" widget="many2many_tags"/>
-                                <field name="purchase_ids" widget="many2many_tags"/>
+                                <field name="account_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
+                                <field name="purchase_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
                             </group>
                         </group>
                         <button name="get_data_diff" string="Tổng hợp dữ liệu" class="oe_highlight" type="object"/>
