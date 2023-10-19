@@ -60,7 +60,7 @@ class JournalEntryPayroll(models.Model):
                 "OriginalAmount": max(line.debit, line.credit),
                 "Amount": max(line.debit, line.credit) * self.exchange_rate,
                 "DescriptionDetails": self.ref2 or None,
-                "JobCode": line.occasion_code_id.code or one_line.occasion_code_id.code or None,
+                "JobCode": line.occasion_code_id.code or None,
                 "RowId": line.id or None,
                 "AssetCode": asset_id.code if (asset_id and asset_id.type in ("CCDC", "TSCD")) else None,
                 "DocNo_WO": line.work_order.code or one_line.work_order.code or None,
