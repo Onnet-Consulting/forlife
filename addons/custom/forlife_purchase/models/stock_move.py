@@ -32,7 +32,7 @@ class StockMoveLine(models.Model):
         res.original_quantity_purchase_done = res.quantity_purchase_done
         return res
 
-    @api.depends('quantity_purchase_done')
+    @api.depends('quantity_purchase_done', 'qty_done')
     def _compute_original_qty_diff(self):
         for rec in self:
             rec.original_qty_diff = rec.original_quantity_purchase_done - rec.quantity_purchase_done
