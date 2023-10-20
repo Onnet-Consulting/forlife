@@ -35,6 +35,7 @@
         'forlife_pos_popup_cash',
         'forlife_product_combo',
         'stock_inventory',
+        'bkav_pos_summary',
     ],
     'auto_install': True,
 

@@ -21,12 +21,12 @@ class AccountDocSale(models.Model):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "TaxRegNo", "Description", "EmployeeCode", "IsTransfer", "DebitAccount2",
-            "DueDate", "BuiltinOrder", "ItemCode", "ItemName", 'UnitCode', "CreditAccount2",
+            "DueDate", "BuiltinOrder", "ItemCode", "ItemName", 'UnitCode', "CreditAccount2", 'DebitAccount4',
             "TaxRegName", "IsCompany", "UnitPurCode", "Quantity9", "ConvertRate9", "Quantity", "PriceUnit",
             "OriginalPriceUnit", "Discount", "OriginalDiscount", "OriginalUnitCost", "UnitCost", "OriginalAmount",
-            "Amount", "TaxCode", "OriginalAmount3", "Amount3", 'UnitPrice', 'OriginalAmount2',
+            "Amount", "TaxCode", "OriginalAmount3", "Amount3", 'UnitPrice', 'OriginalAmount2', 'CreditAccount4',
             "DebitAccount3", "CreditAccount3", "DocNo_SO", "RowId", 'OriginalUnitPrice', 'Amount2',
-            "DocNo_WO", "DeptCode", "AssetCode", "ProductCode", "JobCode", 'EinvoiceItemType',
+            "DocNo_WO", "DeptCode", "AssetCode", "ProductCode", "JobCode", 'EinvoiceItemType', 'PushDate'
         ]
 
     def bravo_get_account_doc_sale_value(self, employee_code):
@@ -56,6 +56,7 @@ class AccountDocSale(models.Model):
             "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if self.is_tc else 0,
             "DebitAccount2": receivable_account_code,
+            "PushDate": self.create_date or None,
             "DueDate": self.invoice_date_due or None,
         }
 
