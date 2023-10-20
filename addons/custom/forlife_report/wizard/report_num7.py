@@ -53,6 +53,7 @@ select array_agg(emp_id) as ids from (
         self.ensure_one()
         tz_offset = self.tz_offset
         employee_conditions = f'and pol.employee_id = any (array{self.employee_ids.ids})' if self.employee_ids else ''
+        category_type = self.env.ref('forlife_base.product_category_type_01').id
 
         query = f"""
 with product_line_data as (
@@ -60,8 +61,9 @@ with product_line_data as (
         pp.id 								 	              as product_id,
         coalesce(split_part(pc.complete_name, ' / ', 3), '')  as product_line
     from  product_product pp
-        left join product_template pt on pt.id = pp.product_tmpl_id
-        left join product_category pc on pc.id = pt.categ_id
+        join product_template pt on pt.id = pp.product_tmpl_id
+        join product_category pc on pc.id = pt.categ_id
+        where pc.category_type_id = {category_type}
 ),
 po_line as (
     select 
@@ -72,18 +74,20 @@ po_line as (
         join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
         join product_product pp on pp.id = pol.product_id
         left join product_template pt on pt.id = pp.product_tmpl_id
-        left join product_line_data pld on pld.product_id = pol.product_id
+        join product_line_data pld on pld.product_id = pol.product_id
     where po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = any (array{store_ids})))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
         {employee_conditions}
-)
-select row_number() over ()                                     as num,
-        product_line                                            as product_line,
-        sum(qty)                                                as qty,
-        sum(revenue)                                            as revenue,
-        sum(revenue) / (select sum(revenue) from po_line) * 100 as percent_revenue
-from po_line
-group by product_line
+),
+    data as (select product_line                                            as product_line,
+                     sum(qty)                                                as qty,
+                     sum(revenue)                                            as revenue,
+                     sum(revenue) / (select sum(revenue) from po_line) * 100 as percent_revenue
+              from po_line
+              group by product_line)
+select row_number() over (order by revenue desc) as num,
+       *
+from data
 order by num
 """
         return query
