@@ -15,10 +15,7 @@ class AccountMoveLine(models.Model):
         return super()._get_stock_valuation_layers(move)
 
     def _get_stock_layer_price_difference(self, layers, layers_price_unit, price_unit):
-        if self.currency_id != self.company_id.currency_id and self.move_id.exchange_rate:
-            price_unit = self.price_unit * self.move_id.exchange_rate
-            return super()._get_stock_layer_price_difference(layers, layers_price_unit, price_unit)
-        return super()._get_stock_layer_price_difference(layers, layers_price_unit, price_unit)
+        return {}
 
     def _prepare_exchange_difference_move_vals(self, amounts_list, company=None, exchange_date=None):
         res = super(AccountMoveLine, self)._prepare_exchange_difference_move_vals(amounts_list, company, exchange_date)
