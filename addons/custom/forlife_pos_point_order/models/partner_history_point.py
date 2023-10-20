@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class PartnerHistoryPointForLife(models.Model):
     _name = 'partner.history.point'
+    _rec_name = 'partner_id'
 
     _description = 'History of Customer purchase POS'
     _order = 'create_date desc'
