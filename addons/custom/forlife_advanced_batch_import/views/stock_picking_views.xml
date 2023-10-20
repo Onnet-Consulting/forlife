@@ -9,7 +9,7 @@
             <field name="code">
             if records:
                 for record in records:
-                    res = record.with_context({'create_job': True}).with_delay(channel='import', priority=1, eta=0).button_validate()
+                    res = record.with_delay(channel='import', priority=1, eta=0).button_validate()
             </field>
         </record>
 </odoo>

@@ -6,7 +6,7 @@ class StockValuationLayer(models.Model):
 
     def _validate_accounting_entries(self):
         context = self.env.context
-        if self.stock_move_id.picking_type_id.warehouse_id and context.get('create_job', False):
+        if self.stock_move_id.picking_type_id.warehouse_id:
             job_name = 'wh_'+self.stock_move_id.picking_type_id.warehouse_id.code+'_job_channel'
             if not (context.get('job_channel', False) and context.get('job_channel') in (job_name, 'validate_stock_valuation_2')) :
                 model_job_channel = self.env['queue.job.channel'].sudo()
