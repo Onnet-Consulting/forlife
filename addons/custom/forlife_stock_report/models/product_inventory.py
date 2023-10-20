@@ -276,6 +276,7 @@ class ProductInventory(models.Model):
                     
                         
                             from account_move am
+                            join account_journal aj on am.journal_id = aj.id
                             join account_move_line aml on
                             am.id = aml.move_id
                             join product_product pp on
@@ -288,7 +289,7 @@ class ProductInventory(models.Model):
                             left join purchase_order po on pol.order_id = po.id and (po.is_return is null or po.is_return is false)
                             
                             where 
-                            aa.code like '1562%' 
+                            (aa.code like '1562%' or aa.code like '3319%') 
                             and am.state = 'posted'
                             and am.payment_state != 'reversed'
                             and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
@@ -314,6 +315,7 @@ class ProductInventory(models.Model):
                             - (sum(aml.credit) - sum(aml.debit)) amount
                             
                             from account_move am
+                            join account_journal aj on am.journal_id = aj.id
                             join account_move_line aml on
                             am.id = aml.move_id
                             join product_product pp on
@@ -326,7 +328,7 @@ class ProductInventory(models.Model):
                             join stock_picking sp on sm.picking_id = sp.id
                             
                             where 
-                            aa.code like '1562%' 
+                            (aa.code like '1562%' or aa.code like '3319%') 
                             and am.state = 'posted'
                             and am.payment_state != 'reversed'
                             and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
@@ -458,6 +460,7 @@ class ProductInventory(models.Model):
                     
                         
                             from account_move am
+                            join account_journal aj on am.journal_id = aj.id
                             join account_move_line aml on
                             am.id = aml.move_id
                             join product_product pp on
@@ -470,7 +473,7 @@ class ProductInventory(models.Model):
                             left join purchase_order po on pol.order_id = po.id and (po.is_return is null or po.is_return is false)
                             
                             where 
-                            aa.code like '1562%' 
+                            (aa.code like '1562%' or aa.code like '3319%') 
                             and am.state = 'posted'
                             and am.payment_state != 'reversed'
                             and am.date < '{from_date}'
@@ -496,6 +499,7 @@ class ProductInventory(models.Model):
                             - (sum(aml.credit) - sum(aml.debit)) amount
                             
                             from account_move am
+                            join account_journal aj on am.journal_id = aj.id
                             join account_move_line aml on
                             am.id = aml.move_id
                             join product_product pp on
@@ -508,7 +512,7 @@ class ProductInventory(models.Model):
                             join stock_picking sp on sm.picking_id = sp.id
                             
                             where 
-                            aa.code like '1562%' 
+                            (aa.code like '1562%' or aa.code like '3319%') 
                             and am.state = 'posted'
                             and am.payment_state != 'reversed'
                             and am.date < '{from_date}'
