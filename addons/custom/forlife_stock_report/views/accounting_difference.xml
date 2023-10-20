@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="accounting_difference_view_tree" model="ir.ui.view">
+            <field name="name">accounting_difference_view_tree</field>
+            <field name="model">accounting.difference</field>
+            <field name="arch" type="xml">
+                <tree string="accounting_difference_tree">
+                    <field name="name"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="accounting_difference_view_form" model="ir.ui.view">
+            <field name="name">accounting_difference_view_form</field>
+            <field name="model">accounting.difference</field>
+            <field name="arch" type="xml">
+                <form string="accounting_difference_form">
+                    <header>
+                        <button name="action_create_account_move" states="draft" string="Tạo bút toán chênh lệch" type="object" class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="action_view_invoice" class="oe_stat_button"
+                                    icon="fa-pencil-square-o"
+                                    attrs="{'invisible':[('move_count', '=', 0)]}">
+                                <field name="move_count" widget="statinfo" string="Vendor Bills"/>
+                                <field name="move_ids" invisible="1"/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="company_id" invisible="1"/>
+                                <field name="month"/>
+                                <field name="from_date"/>
+                            </group>
+                            <group>
+                                <field name="year"/>
+                                <field name="to_date"/>
+                            </group>
+                        </group>
+                        <group col="2">
+                            <group>
+                                <field name="account_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
+                                <field name="purchase_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
+                            </group>
+                        </group>
+                        <button name="get_data_diff" string="Tổng hợp dữ liệu" class="oe_highlight" type="object"/>
+                        <notebook>
+                            <page name="diff_lines" string="Chi tiết chênh lệch">
+                                <field name="diff_lines" readonly="1">
+                                    <tree>
+                                        <field name="account_source_id" x_width="10%"/>
+                                        <field name="purchase_id" x_width="20%"/>
+                                        <field name="product_id" x_width="20%"/>
+                                        <field name="account_stock_id" x_width="10%"/>
+                                        <field name="debit" x_width="10%"/>
+                                        <field name="credit" x_width="10%"/>
+                                        <field name="diff" x_widh="10%"/>
+                                        <field name="diff_rate" x_width="10%"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="accounting_difference_view_action" model="ir.actions.act_window">
+            <field name="name">Hạch toán chênh lệnh</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">accounting.difference</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="accounting_difference_action_menu" parent="stock.menu_warehouse_report"
+                  action="accounting_difference_view_action"/>
+    </data>
+</odoo>

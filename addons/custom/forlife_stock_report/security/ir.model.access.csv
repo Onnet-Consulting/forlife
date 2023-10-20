@@ -5,3 +5,12 @@ access_stock_value_report_detail,forlife_stock_report_stock_value_report_detail,
 access_stock_balance_difference_report_all,stock.balance.difference.report.all,model_stock_balance_difference_report,base.group_user,1,1,1,1
 access_stock_balance_difference_report_line_all,stock.balance.difference.report.line.all,model_stock_balance_difference_report_line,base.group_user,1,1,1,1
 access_stock_balance_difference_report_account_move_all,stock.balance.difference.report.account.move.all,model_stock_balance_difference_report_account_move,base.group_user,1,1,1,1
+
+access_calculate.final.value,calculate.final.value,model_calculate_final_value,base.group_user,1,1,1,1
+access_accounting_difference,forlife_accounting_difference,model_accounting_difference,base.group_user,1,1,1,1
+access_accounting_difference_line,forlife_accounting_difference_lime,model_accounting_difference_line,base.group_user,1,1,1,1
+access_product.inventory.by.period,product.inventory.by.period,model_product_inventory_by_period,base.group_user,1,1,1,1
+access_product.inventory.by.period.line,product.inventory.by.period.line,model_product_inventory_by_period_line,base.group_user,1,1,1,1
+access_list.exported.goods.diff,list.exported.goods.diff,model_list_exported_goods_diff,base.group_user,1,1,1,1
+access_product.inventory.by.calculate.final,product.inventory.by.calculate.final,model_product_inventory_by_calculate_final,base.group_user,1,1,1,1
+

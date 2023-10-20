@@ -321,8 +321,9 @@ class ForlifeOtherInOutRequestLine(models.Model):
         for rec in self:
             if rec.other_in_out_request_id.required_work_production and not rec.production_id:
                 raise ValidationError('Trường Lệnh sản xuất là bắt buộc !')
-            if rec.other_in_out_request_id.required_amount_total and not rec.amount_total:
-                raise ValidationError('Trường Tổng tiền là bắt buộc !')
+            # Bỏ cảnh báo, cho phép nhập = 0
+            # if rec.other_in_out_request_id.required_amount_total and not rec.amount_total:
+            #     raise ValidationError('Trường Tổng tiền là bắt buộc !')
             if rec.other_in_out_request_id.required_ref_asset and not rec.asset_id:
                 raise ValidationError('Trường Tài sản là bắt buộc !')
 

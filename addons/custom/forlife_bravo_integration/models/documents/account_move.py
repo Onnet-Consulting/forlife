@@ -70,8 +70,8 @@ class AccountMove(models.Model):
             bravo_table = "B30AccDocCashReceipt"
         elif journal_data in ("journal_entry_payroll", 'journal_entry_tax', 'journal_entry_other'):
             bravo_table = "B30AccDocJournalEntry"
-        elif journal_data == "order_exist_bkav":
-            bravo_table = "B30AccDocExportSales"
+        elif journal_data == 'account_doc_sale':
+            bravo_table = "B30AccDocSales"
         elif journal_update:
             bravo_table = "B30UpdateData"
         return bravo_table
@@ -170,10 +170,10 @@ class AccountMove(models.Model):
                 m.line_ids.filtered(lambda l: re.match("^111", l.account_id.code) and l.debit > 0)))
         if journal_data in ("journal_entry_payroll", 'journal_entry_other'):
             return self.filtered(lambda am: am.journal_id.code in ('EX01', 'NE01', 'VN01', 'VN02', 'VTI01', 'VC01'))
-        if journal_data == "order_exist_bkav":
-            return self.filtered(lambda am: am.exists_bkav and am.stock_move_id and am.stock_move_id.picking_id and
-                                            ((am.stock_move_id.picking_id.sale_id and not am.stock_move_id.picking_id.sale_id.x_is_return) or
-                                             am.stock_move_id.picking_id.pos_order_id))
+        if journal_data == 'account_doc_sale':
+            return self.filtered(lambda am: am.issue_invoice_type == 'vat' and am.stock_move_id.picking_id.sale_id and not am.stock_move_id.picking_id.sale_id.x_is_return
+                                            and (am.stock_move_id.picking_id.sale_id.x_sale_chanel in ('wholesale', 'intercompany')
+                                                 or (am.stock_move_id.picking_id.sale_id.x_sale_chanel == 'online' and am.is_post_bkav)))
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -201,8 +201,8 @@ class AccountMove(models.Model):
             return self.bravo_get_cash_in_move_values()
         if journal_data in ("journal_entry_payroll", 'journal_entry_other'):
             return self.bravo_get_journal_entry_values()
-        if journal_data == "order_exist_bkav":
-            return self.bravo_get_order_exist_bkav_values()
+        if journal_data == 'account_doc_sale':
+            return self.bravo_get_account_doc_sale_values()
         if update_move_data:
             return self.bravo_get_update_move_values(**kwargs)
         return [], []
@@ -286,13 +286,6 @@ class AccountMove(models.Model):
         if journal_entry_payroll_queries:
             queries.extend(journal_entry_payroll_queries)
 
-        # Order exist_bkav
-        current_context = {CONTEXT_JOURNAL_ACTION: 'order_exist_bkav'}
-        records = self.bravo_filter_record_by_context(**current_context)
-        order_exist_bkav_queries = records.bravo_get_insert_sql(**current_context)
-        if order_exist_bkav_queries:
-            queries.extend(order_exist_bkav_queries)
-
         current_context = {CONTEXT_JOURNAL_ACTION: 'journal_entry_tax'}
         records = self.bravo_filter_record_by_context(**current_context)
         journal_entry_tax_queries = records.bravo_get_insert_sql(**current_context)
@@ -304,6 +297,12 @@ class AccountMove(models.Model):
         journal_entry_other_queries = records.bravo_get_insert_sql(**current_context)
         if journal_entry_other_queries:
             queries.extend(journal_entry_other_queries)
+
+        current_context = {CONTEXT_JOURNAL_ACTION: 'account_doc_sale'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        account_doc_sale_queries = records.bravo_get_insert_sql(**current_context)
+        if account_doc_sale_queries:
+            queries.extend(account_doc_sale_queries)
 
         return queries
 

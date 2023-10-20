@@ -83,7 +83,7 @@ class StockPicking(models.Model):
             qty_po_done = sum(move.mapped('quantity_done'))
             po = line.order_id
             move_value = {
-                'ref': f"{self.name} - {line.product_id.name}",
+                'ref': f"{self.name}",
                 'purchase_type': po.purchase_type,
                 'move_type': 'entry',
                 'reference': po.name,
@@ -214,12 +214,10 @@ class StockPicking(models.Model):
         return entries_values
 
     def _get_picking_info_return(self, po):
-        if po and po.picking_type_id:
-            if po.picking_type_id.other_picking_type_id:
-                picking_type_id = po.picking_type_id.other_picking_type_id
-            elif po.picking_type_id.return_picking_type_id:
-                picking_type_id = po.picking_type_id.return_picking_type_id
-        else:
+        picking_type_id =  False
+        if po and po.location_export_material_id:
+            picking_type_id = po.location_export_material_id.warehouse_id.in_type_id
+        if not picking_type_id:
             picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('company_id', '=', self.env.company.id)], limit=1)
 
         location_id = self.env['stock.location'].search([('code', '=', 'N0701'), ('company_id', '=', self.env.company.id)], limit=1)
@@ -238,7 +236,7 @@ class StockPicking(models.Model):
             "immediate_transfer": False,
             'reason_type_id': location_id.reason_type_id.id,
             'location_id': location_id.id,
-            'location_dest_id': record.location_id.id,
+            'location_dest_id': po.location_export_material_id.id,
             'scheduled_date': fields.datetime.now(),
             'origin': po.name + " nhập trả NPL" if po else record.name + " nhập trả NPL",
             'state': 'assigned',

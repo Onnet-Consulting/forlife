@@ -14,6 +14,9 @@ class AccountMoveLine(models.Model):
             return self.env['stock.valuation.layer']
         return super()._get_stock_valuation_layers(move)
 
+    def _get_stock_layer_price_difference(self, layers, layers_price_unit, price_unit):
+        return {}
+
     def _prepare_exchange_difference_move_vals(self, amounts_list, company=None, exchange_date=None):
         res = super(AccountMoveLine, self)._prepare_exchange_difference_move_vals(amounts_list, company, exchange_date)
         if res['move_vals'].get('line_ids'):
