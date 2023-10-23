@@ -9,7 +9,7 @@ class BravoSyntheticAccountMovePos(models.Model):
     _inherit = ['synthetic.account.move.pos', 'bravo.model.insert.action']
     _bravo_table = 'B30AccDocSales'
 
-    is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
+    is_bravo_pushed = fields.Boolean('Bravo pushed', default=False, copy=False)
 
     @api.model
     def sync_bravo_account_move_pos(self):
@@ -50,7 +50,7 @@ class BravoSyntheticAccountMovePos(models.Model):
                     'BuiltinOrder': idx,
                     "ItemCode": detail.barcode or None,
                     "ItemName": detail.product_id.name or None,
-                    "UnitCode": detail.product_id.uom_id.name or None,
+                    "UnitCode": detail.product_id.uom_id.code or None,
                     "CreditAccount2": detail.with_company(company).product_id.categ_id.property_account_income_categ_id.code or None,
                     "Quantity9": detail.quantity,
                     "ConvertRate9": 1,
@@ -86,7 +86,7 @@ class BravoSyntheticAccountMovePos(models.Model):
                     'BuiltinOrder': idx,
                     "ItemCode": item_code,
                     "ItemName": product.name or None,
-                    "UnitCode": product.uom_id.name or None,
+                    "UnitCode": product.uom_id.code or None,
                     "CreditAccount2": account_income,
                     "DebitAccount4": account_income,
                     "CreditAccount4": account_receivable,

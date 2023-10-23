@@ -12,7 +12,7 @@ class AccountMove(models.Model):
     _name = 'account.move'
     _inherit = ['account.move', 'bravo.model.insert.action']
 
-    is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
+    is_bravo_pushed = fields.Boolean('Bravo pushed', default=False, copy=False)
 
     @api.model
     def sync_bravo_account_move_daily(self, **kwargs):
