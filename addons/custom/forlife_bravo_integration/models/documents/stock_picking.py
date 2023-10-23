@@ -19,7 +19,7 @@ class StockPicking(models.Model):
     _name = 'stock.picking'
     _inherit = ['stock.picking', 'bravo.model.insert.action']
 
-    is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
+    is_bravo_pushed = fields.Boolean('Bravo pushed', default=False, copy=False)
 
     @api.model
     def sync_bravo_picking_daily(self):

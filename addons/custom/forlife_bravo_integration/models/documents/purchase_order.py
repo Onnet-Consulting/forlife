@@ -63,7 +63,7 @@ class AccountMovePurchaseAsset(models.Model):
             "TaxRegNo": partner.vat or None,
             "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if self.is_tc else 0,
-            "DocNo_PO": self.reference or None,
+            "DocNo_PO": ','.join(self.purchase_order_product_id.mapped('name')) or None,
             "DueDate": self.invoice_date_due or None,
             "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 3,
             "CreditAccount": payable_account_code or None,
@@ -195,11 +195,11 @@ class AccountMovePurchaseProduct(models.Model):
     @api.model
     def bravo_get_purchase_product_columns(self):
         return [
-            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CreditCustomerCode",
             "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
             "AtchDocFormNo", "AtchDocSerialNo", "EmployeeCode", "IsTransfer", "DueDate", "BuiltinOrder", "DebitAccount",
-            "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount", "Amount",
-            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO", "DocNo_PO",
+            "CreditAccount", "DebitAccount3", "CreditAccount3", "TaxCode", "OriginalAmount", "Amount", "IsCompany",
+            "OriginalAmount3", "Amount3", "JobCode", "RowId", "DeptCode", "DocNo_WO", "DocNo_PO", "DebitCustomerCode",
         ]
 
     def bravo_get_purchase_product_value(self, is_reversed, employee_code):
@@ -225,7 +225,8 @@ class AccountMovePurchaseProduct(models.Model):
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
             "ExchangeRate": exchange_rate,
-            "CustomerCode": partner.ref or None,
+            "CreditCustomerCode": partner.ref or None,
+            "DebitCustomerCode": partner.ref or None,
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
             "Description": self.invoice_description or None,
@@ -236,7 +237,8 @@ class AccountMovePurchaseProduct(models.Model):
             "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if self.is_tc else 0,
             "DueDate": self.invoice_date_due or None,
-            "DocNo_PO": self.purchase_id.name or None,
+            "DocNo_PO": ','.join(self.purchase_order_product_id.mapped('name')) or None,
+            "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 3,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
@@ -301,6 +303,7 @@ class AccountMoveVendorBack(models.Model):
         value = {
             "DocCode": "NM",
             "DocNo": self.name or None,
+            "Stt": self.name or None,
             "DocDate": self.date or None,
             "CurrencyCode": self.currency_id.name or None,
             "ExchangeRate": self.exchange_rate,
@@ -316,7 +319,6 @@ class AccountMoveVendorBack(models.Model):
             debit_accounts = record.tax_percent.invoice_repartition_line_ids.filtered(lambda l: bool(l.account_id))
             debit_account_code = debit_accounts[0].account_id.code if debit_accounts else '1331000001'
             line_value.update({
-                "Stt": record.id,
                 "AtchDocNo": record.invoice_reference or None,
                 "TaxRegName": record.vendor or None,
                 "TaxRegNo": record.code_tax or None,
