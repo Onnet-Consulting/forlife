@@ -22,7 +22,7 @@ class AccountDocSale(models.Model):
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "TaxRegNo", "Description", "EmployeeCode", "IsTransfer", "DebitAccount2",
             "DueDate", "BuiltinOrder", "ItemCode", "ItemName", 'UnitCode', "CreditAccount2", 'DebitAccount4',
-            "Quantity9", "ConvertRate9", "Quantity", "PriceUnit",
+            "Quantity9", "ConvertRate9", "Quantity", "PriceUnit", 'Amount4', 'OriginalAmount4',
             "TaxCode", "OriginalAmount3", "Amount3", 'UnitPrice', 'OriginalAmount2', 'CreditAccount4',
             "DebitAccount3", "CreditAccount3", "DocNo_SO", "RowId", 'OriginalUnitPrice', 'Amount2',
             "DocNo_WO", "DeptCode", "AssetCode", "ProductCode", "JobCode", 'EinvoiceItemType',
@@ -153,6 +153,8 @@ class AccountDocSale(models.Model):
                     "CreditAccount4": partner.property_account_receivable_id.code or None,
                     "DebitAccount3": journal_value_line.get('CreditAccount3'),
                     "CreditAccount3": journal_value_line.get('DebitAccount3'),
+                    "Amount4": price_unit,
+                    "OriginalAmount4": price_unit * exchange_rate,
                 })
 
             values.append(journal_value_line)

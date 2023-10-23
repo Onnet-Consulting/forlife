@@ -4,19 +4,21 @@ from odoo import api, fields, models, _
 import copy
 
 
-class BravoSyntheticAccountMovePos(models.Model):
-    _name = 'synthetic.account.move.pos'
-    _inherit = ['synthetic.account.move.pos', 'bravo.model.insert.action']
+class BravoSyntheticAccountMoveSoNhanh(models.Model):
+    _name = 'synthetic.account.move.so.nhanh'
+    _inherit = ['synthetic.account.move.so.nhanh', 'bravo.model.insert.action']
     _bravo_table = 'B30AccDocSales'
 
     is_bravo_pushed = fields.Boolean('Bravo pushed', default=False)
 
     @api.model
-    def sync_bravo_account_move_pos(self):
+    def sync_bravo_account_move_so_nhanh(self):
         if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
             return False
-        domain = ['&', ('is_bravo_pushed', '=', False), '|', ('store_id.is_post_bkav', '=', False),
-                  '&', ('store_id.is_post_bkav', '=', True), ('data_compare_status', '=', '2')]
+        if self.env['ir.config_parameter'].sudo().get_param('bkav.is_general_bkav_nhanh'):
+            domain = ['&', ('is_bravo_pushed', '=', False), ('data_compare_status', '=', '2')]
+        else:
+            domain = [('is_bravo_pushed', '=', False)]
         results = self.search(domain)
         values = []
         exchange_rate = 1
@@ -36,16 +38,17 @@ class BravoSyntheticAccountMovePos(models.Model):
                 "CustomerName": partner.name or None,
                 "Address": partner.contact_address_complete or None,
                 "TaxRegNo": partner.vat or None,
-                "Description": f"Tổng hợp bán hàng {line.store_id.name or ''}",
-                "IsTransfer": 1 if line.store_id.is_post_bkav else 0,
+                "Description": f"Tổng hợp bán hàng{line.invoice_date and line.invoice_date.strftime(' %d/%m/%Y') or ''}",
+                "IsTransfer": 1 if line.invoice_no else 0,
                 "DebitAccount2": account_receivable,
                 "PushDate": line.create_date or None,
                 "DueDate": line.invoice_date or None,
-                "DeptCode": line.store_id.analytic_account_id.code or None,
+                "DeptCode": partner.property_account_cost_center_id.code or None,
             }
             idx = 0
             for idx, detail in enumerate(line.line_ids, start=1):
                 value_line = copy.copy(value)
+                convert_rate = 1
                 value_line.update({
                     'BuiltinOrder': idx,
                     "ItemCode": detail.barcode or None,
@@ -53,8 +56,8 @@ class BravoSyntheticAccountMovePos(models.Model):
                     "UnitCode": detail.product_id.uom_id.name or None,
                     "CreditAccount2": detail.with_company(company).product_id.categ_id.property_account_income_categ_id.code or None,
                     "Quantity9": detail.quantity,
-                    "ConvertRate9": 1,
-                    "Quantity": detail.quantity,
+                    "ConvertRate9": convert_rate,
+                    "Quantity": detail.quantity * convert_rate,
                     "PriceUnit": abs(detail.price_unit),
                     "OriginalUnitPrice": abs(detail.price_unit),
                     'UnitPrice': 0,
@@ -76,34 +79,31 @@ class BravoSyntheticAccountMovePos(models.Model):
                         "CreditAccount3": account.code,
                     })
                 values.append(value_line)
-            products = self.env['product.product'].search([('barcode', 'in', ('DIEM', 'THE'))])
-            for idx, detail in enumerate(line.discount_ids.filtered(lambda f: f.promotion_type in ('point', 'card')), start=idx + 1):
+            products = self.env['product.product'].search([('barcode', 'in', ('DIEM', 'THE', 'SHIP'))])
+            for idx, detail in enumerate(line.line_discount_ids, start=idx + 1):
                 value_line = copy.copy(value)
-                item_code = {'point': 'DIEM', 'card': 'THE'}.get(detail.promotion_type) or ''
+                item_code = {'out_point': 'DIEM', 'vip_amount': 'THE', 'customer_shipping_fee': 'SHIP'}.get(detail.promotion_type) or ''
                 product = products.filtered(lambda p: p.barcode == item_code)
                 account_income = product.with_company(company).categ_id.property_account_income_categ_id.code or None
+                tax_id = detail.tax_ids
+                amount = detail.amount_total / (1 + (tax_id and tax_id[0].amount/100 or 0))
                 value_line.update({
                     'BuiltinOrder': idx,
                     "ItemCode": item_code,
                     "ItemName": product.name or None,
                     "UnitCode": product.uom_id.name or None,
                     "CreditAccount2": account_income,
-                    "DebitAccount4": account_income,
-                    "CreditAccount4": account_receivable,
-                    "Quantity9": 0,
-                    "ConvertRate9": 0,
-                    "Quantity": 0,
-                    "PriceUnit": 0,
-                    "OriginalUnitPrice": 0,
-                    'UnitPrice': abs(detail.price_unit) * exchange_rate,
-                    'OriginalAmount2': 0,
-                    'Amount2': 0,
+                    "Quantity9": 1 if item_code == 'SHIP' else 0,
+                    "ConvertRate9": 1,
+                    "Quantity": 1 if item_code == 'SHIP' else 0,
+                    "PriceUnit": abs(detail.price_unit) if item_code == 'SHIP' else 0,
+                    "OriginalUnitPrice": abs(detail.price_unit) if item_code == 'SHIP' else 0,
+                    'UnitPrice': abs(detail.price_unit) * exchange_rate if item_code == 'SHIP' else 0,
+                    'OriginalAmount2': amount if item_code == 'SHIP' else 0,
+                    'Amount2': amount * exchange_rate if item_code == 'SHIP' else 0,
                     "RowId": detail.id,
                     "EinvoiceItemType": 2,
-                    "Amount4": abs(detail.price_unit),
-                    "OriginalAmount4": abs(detail.price_unit) * exchange_rate,
                 })
-                tax_id = detail.tax_ids
                 if tax_id:
                     tax_line = tax_id and tax_id[0]
                     account = tax_id.invoice_repartition_line_ids.account_id and tax_id.invoice_repartition_line_ids.account_id[0]
@@ -114,13 +114,21 @@ class BravoSyntheticAccountMovePos(models.Model):
                         "DebitAccount3": account_receivable,
                         "CreditAccount3": account.code,
                     })
+                if item_code in ('THE', 'DIEM'):
+                    value_line.update({
+                        "DebitAccount4": account_income,
+                        "CreditAccount4": account_receivable,
+                        "Amount4": amount,
+                        "OriginalAmount4": amount * exchange_rate,
+                    })
+
                 values.append(value_line)
         if values:
             insert_queries = self.bravo_get_insert_sql(data=values)
             if insert_queries:
-                self.sudo().with_delay(description=f"Bravo: đồng bộ xuất kho bán hàng tổng hợp POS", channel="root.Bravo").bravo_execute_query(insert_queries)
+                self.sudo().with_delay(description=f"Bravo: đồng bộ xuất kho bán hàng tổng hợp NHANH", channel="root.Bravo").bravo_execute_query(insert_queries)
         if results:
-            self._cr.execute(f"update synthetic_account_move_pos set is_bravo_pushed = true where id = any (array{results.ids})")
+            self._cr.execute(f"update synthetic_account_move_so_nhanh set is_bravo_pushed = true where id = any (array{results.ids})")
 
     @api.model
     def bravo_get_insert_values(self, **kwargs):

@@ -36,6 +36,7 @@
         'forlife_product_combo',
         'stock_inventory',
         'bkav_pos_summary',
+        'bkav_sale_summary',
     ],
     'auto_install': True,
 
