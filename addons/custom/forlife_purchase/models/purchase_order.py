@@ -1380,14 +1380,14 @@ class PurchaseOrder(models.Model):
         for cost_line in self.cost_line:
             for line in self.order_line:
 
-                move_ids = line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
+                move_ids = line.move_ids.filtered(lambda x: x.picking_id in picking_in_ids and x.state == 'done')
                 move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
 
                 # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line
                 move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                 if not total_vnd_amount_order or not line.product_qty or move_qty <= 0:
-                    return
+                    continue
 
                 amount_rate = line.total_vnd_amount / total_vnd_amount_order
                 cp = ((amount_rate * cost_line.foreign_amount) / line.product_qty) * move_qty
@@ -1784,19 +1784,19 @@ class PurchaseOrder(models.Model):
             'total_trade_discount': self.total_trade_discount,
             'cost_line': cost_line_vals
         })
-        product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax')
-        if not product_discount_tax:
-            product_discount_tax = self.env['product.product'].search([('name', '=', 'Chiết khấu tổng đơn'), ('detailed_type', '=', 'service')], limit=1)
-
-        if self.order_line.filtered(lambda x: x.product_id.id == product_discount_tax.id):
-            values.update({
-                'move_type': 'in_refund',
-                'is_trade_discount_move': True,
-                'ref': f"{self.name} Chiết khấu tổng đơn",
-                'invoice_description': f"Hóa đơn chiết khấu tổng đơn",
-                'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') else False,
-                'e_in_check': self.id,
-            })
+        # product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax')
+        # if not product_discount_tax:
+        #     product_discount_tax = self.env['product.product'].search([('name', '=', 'Chiết khấu tổng đơn'), ('detailed_type', '=', 'service')], limit=1)
+        #
+        # if self.order_line.filtered(lambda x: x.product_id.id == product_discount_tax.id):
+        #     values.update({
+        #         'move_type': 'in_refund',
+        #         'is_trade_discount_move': True,
+        #         'ref': f"{self.name} Chiết khấu tổng đơn",
+        #         'invoice_description': f"Hóa đơn chiết khấu tổng đơn",
+        #         'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') else False,
+        #         'e_in_check': self.id,
+        #     })
         return values
 
     @api.constrains('partner_id')
