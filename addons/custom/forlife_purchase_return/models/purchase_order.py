@@ -142,9 +142,6 @@ class PurchaseOrder(models.Model):
             pending_section = None
             picking_ids = []
             if self.purchase_type in ('service', 'asset'):
-                # self.write({
-                #     'invoice_status_fake': 'to invoice',
-                # })
                 invoice_relationship = self.env['account.move'].search([('reference', '=', order.name), ('partner_id', '=', order.partner_id.id)])
                 if sum(invoice_relationship.invoice_line_ids.mapped('price_subtotal')) == sum(order.order_line.mapped('price_subtotal')):
                     raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng!'))

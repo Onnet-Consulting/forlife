@@ -108,12 +108,6 @@ class PurchaseOrder(models.Model):
         ('invoiced', 'Hoàn thành'),
         ('close', 'Đóng'),
     ], string='Trạng thái hóa đơn', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
-    invoice_status_fake = fields.Selection([
-        ('no', 'Chưa nhận'),
-        ('to invoice', 'Dở dang'),
-        ('invoiced', 'Hoàn thành'),
-        ('close', 'Đóng'),
-    ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
     date_order = fields.Datetime('Order Deadline', states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,
                                  help="Depicts the date within which the Quotation should be confirmed and converted into a purchase order.")
@@ -306,10 +300,7 @@ class PurchaseOrder(models.Model):
     @api.depends('source_document')
     def compute_origin(self):
         for item in self:
-            if item.source_document:
-                item.origin = item.source_document
-            else:
-                item.origin = False
+            item.origin = item.source_document if item.source_document else False
 
     @api.depends('picking_ids', 'picking_ids.state', 'custom_state')
     def compute_inventory_status(self):
@@ -1333,7 +1324,7 @@ class PurchaseOrder(models.Model):
             for labor_cost_id in labor_cost_ids:
                 pol_id = labor_cost_id.purchase_order_line_id
 
-                move_ids = pol_id.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
+                move_ids = pol_id.move_ids.filtered(lambda x: x.picking_id in picking_in_ids and x.state == 'done')
                 move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done')
 
                 # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line

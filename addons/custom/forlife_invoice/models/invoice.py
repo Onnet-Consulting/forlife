@@ -367,7 +367,7 @@ class AccountMove(models.Model):
             for labor_cost_id in labor_cost_ids:
                 pol_id = labor_cost_id.purchase_order_line_id
 
-                move_ids = pol_id.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
+                move_ids = pol_id.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done' and not x.picking_id.x_is_check_return)
                 move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done' and x.picking_id in picking_ids)
 
                 # lấy tổng SL hoàn thành trừ tổng SL trả của 1 dòng purchase order line

@@ -38,12 +38,6 @@ class ProductionOrder(models.Model):
     production_uom = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
     order_line_ids = fields.One2many('production.order.line', 'order_id', string='Thành phần', copy=True)
     product_qty = fields.Float('Quantity', default=1.0, digits='Unit of Measure', required=True)
-    invoice_status_fake = fields.Selection([
-        ('no', 'Chưa nhận'),
-        ('to invoice', 'Dở dang'),
-        ('invoiced', 'Hoàn thành'),
-    ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
-
     company_id = fields.Many2one('res.company',
                                  string='Công ty',
                                  default=lambda self: self.env.company)
