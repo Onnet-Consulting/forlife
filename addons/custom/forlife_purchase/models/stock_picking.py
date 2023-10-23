@@ -353,9 +353,9 @@ class StockPicking(models.Model):
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id,
-                                'product_id': material_line.product_id.id,
+                                'product_id': move.product_id.id,
                                 'name': material_line.product_id.name,
-                                'text_check_cp_normal': material_line.product_id.name,
+                                'text_check_cp_normal': move.product_id.name,
                                 'debit': 0,
                                 'credit': pbo,
                             })

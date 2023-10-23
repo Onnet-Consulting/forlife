@@ -279,7 +279,7 @@ class AccountMove(models.Model):
 
                 # luồng hóa đơn chi phí
                 for po_line in purchase_order_id.order_line:
-                    move_ids = po_line.move_ids.filtered(lambda x: x.picking_id in picking_ids and x.state == 'done')
+                    move_ids = po_line.move_ids.filtered(lambda x: x.picking_id in picking_in_ids and x.state == 'done')
                     move_return_ids = move_ids.mapped('returned_move_ids').filtered(lambda x: x.state == 'done' and x.picking_id in picking_ids)
 
                     # SL trên đơn PO
@@ -1354,8 +1354,7 @@ class RespartnerVendor(models.Model):
         for rec in self:
             if rec.vendor_back_id.select_type_inv != 'expense':
                 continue
-            invoice_line = rec.vendor_back_id.invoice_line_ids.filtered(
-                lambda x: x.product_id == rec.invoice_description)
+            invoice_line = rec.vendor_back_id.invoice_line_ids.filtered(lambda x: x.product_id == rec.invoice_description)
             if invoice_line:
                 invoice_line.unlink()
         return super().unlink()
