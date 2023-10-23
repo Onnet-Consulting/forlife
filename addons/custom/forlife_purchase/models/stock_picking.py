@@ -340,6 +340,7 @@ class StockPicking(models.Model):
                     raise ValidationError(_("Bạn chưa cấu hình tài khoản định giá tồn kho trong danh mục sản phẩm của sản phẩm có tên %s") % item.product_id.name)
 
                 debit_cost = 0
+                invoice_line_ids = []
                 for material_line in material:
                     if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
                         if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
@@ -355,7 +356,7 @@ class StockPicking(models.Model):
                                 'debit': 0,
                                 'credit': pbo,
                             })
-                            cost_labor_internal_costs.append(credit_cp)
+                            invoice_line_ids.append(credit_cp)
                             debit_cost += pbo
                     else:
                         list_line_xk.append((0, 0, {
@@ -403,20 +404,7 @@ class StockPicking(models.Model):
                         'debit': debit_cost,
                         'credit': 0,
                     })
-                    cost_labor_internal_costs.append(debit_cp)
-                    separated_lists = {}
-                    invoice_line_ids = []
-                    target_items = item.product_id.name
-                    for lines_new in cost_labor_internal_costs:
-                        text_check_cp_normal = lines_new[2]['text_check_cp_normal']
-                        if text_check_cp_normal in target_items:
-                            if text_check_cp_normal in separated_lists:
-                                separated_lists[text_check_cp_normal].append(lines_new)
-                            else:
-                                separated_lists[text_check_cp_normal] = [lines_new]
-                    new_lines_cp_after_tax = [lines for text_check, lines in separated_lists.items()]
-                    for sublist_lines_cp_after_tax in new_lines_cp_after_tax:
-                        invoice_line_ids.extend(sublist_lines_cp_after_tax)
+                    invoice_line_ids.append(debit_cp)
                     svl_values = []
                     svl_values.append((0, 0, {
                         'value': debit_cost,
