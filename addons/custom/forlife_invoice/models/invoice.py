@@ -288,7 +288,7 @@ class AccountMove(models.Model):
                     move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                     if not total_vnd_amount_order or not product_qty or move_qty <= 0:
-                        return
+                        continue
                     amount_rate = po_line.total_vnd_amount / total_vnd_amount_order
                     cp = ((amount_rate * cost_line.vnd_amount) / po_line.product_qty) * move_qty
                     cost_actual_from_po += cp
@@ -558,11 +558,11 @@ class AccountMove(models.Model):
                                 'tax_back': sum_tax_back
                             })
                         invoice_lines = rec.invoice_line_ids.filtered(lambda x: x.product_expense_origin_id == product)
-                        sum_price = sum(invoice_lines.mapped('price_unit'))
+                        sum_price = sum(invoice_lines.mapped('price_subtotal'))
                         total_price_unit = 0
                         indx = 1
                         for invoice_line in invoice_lines:
-                            price_unit = math.ceil((sum_price_subtotal_back * invoice_line.price_unit) / sum_price) if sum_price > 0 else 0
+                            price_unit = math.ceil((sum_price_subtotal_back * invoice_line.price_subtotal) / sum_price) if sum_price > 0 else 0
                             total_price_unit += price_unit
                             if indx == len(invoice_lines):
                                 price_unit = price_unit + (sum_price_subtotal_back - total_price_unit)
