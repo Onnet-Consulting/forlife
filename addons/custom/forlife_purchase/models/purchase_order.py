@@ -1387,7 +1387,7 @@ class PurchaseOrder(models.Model):
                 move_qty = sum(move_ids.mapped('quantity_done')) - sum(move_return_ids.mapped('quantity_done'))
 
                 if not total_vnd_amount_order or not line.product_qty or move_qty <= 0:
-                    return
+                    continue
 
                 amount_rate = line.total_vnd_amount / total_vnd_amount_order
                 cp = ((amount_rate * cost_line.foreign_amount) / line.product_qty) * move_qty
