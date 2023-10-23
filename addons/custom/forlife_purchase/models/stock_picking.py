@@ -327,15 +327,11 @@ class StockPicking(models.Model):
                 if not export_production_order.reason_type_id:
                     raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: X1201')
                 account_export_production_order = export_production_order.x_property_valuation_in_account_id
-            for r in record.move_ids_without_package:
-                # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', record.id)])
+            for r in record.move_ids:
                 if not r.purchase_line_id.x_check_npl:
                     continue
                 item = r.purchase_line_id
-                move = record.move_ids.filtered(lambda x: x.purchase_line_id.id == item.id)
-                if not move:
-                    continue
-                qty_po_done = sum(move.mapped('quantity_done'))
+                qty_po_done = sum(r.mapped('quantity_done'))
                 material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
                 if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
@@ -353,9 +349,9 @@ class StockPicking(models.Model):
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id,
-                                'product_id': move.product_id.id,
+                                'product_id': item.product_id.id,
                                 'name': material_line.product_id.name,
-                                'text_check_cp_normal': move.product_id.name,
+                                'text_check_cp_normal': item.product_id.name,
                                 'debit': 0,
                                 'credit': pbo,
                             })
@@ -380,7 +376,7 @@ class StockPicking(models.Model):
                                 #xử lý phân bổ nguyên vật liệu
                                 debit_allowcation_npl = (0, 0, {
                                     'sequence': 1,
-                                    'product_id': move.product_id.id,
+                                    'product_id': item.product_id.id,
                                     'account_id': account_1561,
                                     'name': item.product_id.name,
                                     'debit': value,
@@ -401,7 +397,7 @@ class StockPicking(models.Model):
                     debit_cp = (0, 0, {
                         'sequence': 9,
                         'account_id': account_1561,
-                        'product_id': move.product_id.id,
+                        'product_id': item.product_id.id,
                         'name': item.product_id.name,
                         'text_check_cp_normal': item.product_id.name,
                         'debit': debit_cost,
@@ -428,12 +424,12 @@ class StockPicking(models.Model):
                         'quantity': 0,
                         'remaining_qty': 0,
                         'description': f"{self.name} - {item.product_id.name}",
-                        'product_id': move.product_id.id,
+                        'product_id': item.product_id.id,
                         'company_id': self.env.company.id,
-                        'stock_move_id': move.id
+                        'stock_move_id': r.id
                     }))
-                    if move.product_id.cost_method == 'average':
-                        self.add_cost_product(move.product_id, debit_cost)
+                    if item.product_id.cost_method == 'average':
+                        self.add_cost_product(item.product_id, debit_cost)
                     entry_cp = self.env['account.move'].create({
                         'ref': f"{record.name}",
                         'purchase_type': po.purchase_type,
@@ -445,7 +441,7 @@ class StockPicking(models.Model):
                         'date': (record.date_done + timedelta(hours=7)).date(),
                         'invoice_payment_term_id': po.payment_term_id.id,
                         'invoice_date_due': po.date_planned,
-                        'stock_move_id': move.id,
+                        'stock_move_id': r.id,
                         'invoice_line_ids': invoice_line_ids,
                         'restrict_mode_hash_table': False,
                         'stock_valuation_layer_ids': svl_values
@@ -480,12 +476,12 @@ class StockPicking(models.Model):
                             'quantity': 0,
                             'remaining_qty': 0,
                             'description': f"{self.name} - {item.product_id.name}",
-                            'product_id': move.product_id.id,
+                            'product_id': item.product_id.id,
                             'company_id': self.env.company.id,
-                            'stock_move_id': move.id
+                            'stock_move_id': r.id
                         }))
-                        if move.product_id.cost_method == 'average':
-                            self.add_cost_product(move.product_id, total_npl_amount)
+                        if item.product_id.cost_method == 'average':
+                            self.add_cost_product(item.product_id, total_npl_amount)
                         entry_allowcation_npls = self.env['account.move'].create({
                             'ref': f"{record.name}",
                             'purchase_type': po.purchase_type,
@@ -499,7 +495,7 @@ class StockPicking(models.Model):
                             'invoice_date_due': po.date_planned,
                             'invoice_line_ids': merged_records_list_allowcation_npl,
                             'restrict_mode_hash_table': False,
-                            'stock_move_id': move.id,
+                            'stock_move_id': r.id,
                             'stock_valuation_layer_ids': svl_allowcation_values
                         })
                         entry_allowcation_npls._post()
