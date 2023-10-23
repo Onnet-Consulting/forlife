@@ -1404,3 +1404,13 @@ msgstr "Ngày dự kiến"
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_move__name
 msgid "Description"
 msgstr "Mô tả"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_forlife_other_in_out_request__location_id
+msgid "Địa điểm nguồn"
+msgstr "Lý do nhập khác"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_forlife_other_in_out_request__location_dest_id
+msgid "Địa điểm đích"
+msgstr "Lý do xuất khác"

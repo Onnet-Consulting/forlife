@@ -20,8 +20,8 @@ class ForlifeOtherInOutRequest(models.Model):
     type_other = fields.Selection([
         ('other_import', 'Nhập khác'),
         ('other_export', 'Xuất khác'),], default='other_import', string='Loại phiếu', required=True)
-    location_id = fields.Many2one('stock.location', string='Location From', domain=_domain_location_id)
-    location_dest_id = fields.Many2one('stock.location', string='Location To', domain=[('virtual_location_inter_company', '=', False)])
+    location_id = fields.Many2one('stock.location', string='Địa điểm nguồn', domain=_domain_location_id)
+    location_dest_id = fields.Many2one('stock.location', string='Địa điểm đích', domain=[('virtual_location_inter_company', '=', False)])
     date_planned = fields.Datetime(string='Ngày kế hoạch', required=True)
     status = fields.Selection([
         ('draft', 'Dự thảo'),
