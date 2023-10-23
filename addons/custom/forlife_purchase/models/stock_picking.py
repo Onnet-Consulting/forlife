@@ -353,9 +353,9 @@ class StockPicking(models.Model):
                             credit_cp = (0, 0, {
                                 'sequence': 99991,
                                 'account_id': material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id,
-                                'product_id': move.product_id.id,
+                                'product_id': material_line.product_id.id,
                                 'name': material_line.product_id.name,
-                                'text_check_cp_normal': move.product_id.name,
+                                'text_check_cp_normal': material_line.product_id.name,
                                 'debit': 0,
                                 'credit': pbo,
                             })
@@ -389,7 +389,7 @@ class StockPicking(models.Model):
 
                                 credit_allowcation_npl = (0, 0, {
                                     'sequence': 2,
-                                    'product_id': move.product_id.id,
+                                    'product_id': material_line.product_id.id,
                                     'account_id': account_export_production_order.id,
                                     'name': account_export_production_order.name,
                                     'debit': 0,
@@ -457,7 +457,7 @@ class StockPicking(models.Model):
                     total_npl_amount = 0
                     for allowcation_npl in list_allowcation_npls:
                         key = (
-                        allowcation_npl[2]['account_id'], allowcation_npl[2]['name'], allowcation_npl[2]['sequence'])
+                        allowcation_npl[2]['account_id'], allowcation_npl[2]['name'], allowcation_npl[2]['product_id'])
                         if key in merged_records_allowcation_npl:
                             merged_records_allowcation_npl[key]['debit'] += allowcation_npl[2]['debit']
                             merged_records_allowcation_npl[key]['credit'] += allowcation_npl[2]['credit']
