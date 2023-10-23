@@ -13,8 +13,8 @@ class SyntheticAccountMovePos(models.Model):
 
     @api.model
     def sync_bravo_account_move_pos(self):
-        # if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
-        #     return False
+        if not self.env['ir.config_parameter'].sudo().get_param("integration.bravo.up"):
+            return False
         domain = ['&', ('is_bravo_pushed', '=', False), '|', ('store_id.is_post_bkav', '=', False),
                   '&', ('store_id.is_post_bkav', '=', True), ('data_compare_status', '=', '2')]
         results = self.search(domain)
@@ -113,12 +113,12 @@ class SyntheticAccountMovePos(models.Model):
                         "CreditAccount3": account.code,
                     })
                 values.append(value_line)
-        # if values:
-        #     insert_queries = self.bravo_get_insert_sql(data=values)
-        #     if insert_queries:
-        #         self.sudo().with_delay(description=f"Bravo: đồng bộ xuất kho bán hàng tổng hợp POS", channel="root.Bravo").bravo_execute_query(insert_queries)
-        # if results:
-        #     self._cr.execute(f"update synthetic_account_move_pos set is_bravo_pushed = true where id = any (array{results.ids})")
+        if values:
+            insert_queries = self.bravo_get_insert_sql(data=values)
+            if insert_queries:
+                self.sudo().with_delay(description=f"Bravo: đồng bộ xuất kho bán hàng tổng hợp POS", channel="root.Bravo").bravo_execute_query(insert_queries)
+        if results:
+            self._cr.execute(f"update synthetic_account_move_pos set is_bravo_pushed = true where id = any (array{results.ids})")
 
     @api.model
     def bravo_get_insert_values(self, **kwargs):

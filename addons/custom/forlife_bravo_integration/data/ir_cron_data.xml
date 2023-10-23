@@ -23,7 +23,7 @@
         <field name="model_id" ref="model_synthetic_daily_transfer"/>
         <field name="code">model.synchronize_daily_transfer()</field>
         <field name="state">code</field>
-        <field name="nextcall" eval="(DateTime.now().replace(hour=18, minute=0, second=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 18:00:00')"/>
     </record>
 
     <record id="ir_cron_synchronize_accounting_inventory_difference" model="ir.cron">
@@ -35,7 +35,7 @@
         <field name="model_id" ref="model_acc_inv_diff_wizard"/>
         <field name="code">model.synchronize_accounting_inventory_difference()</field>
         <field name="state">code</field>
-        <field name="nextcall" eval="(DateTime.now().replace(hour=18, minute=10, second=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 18:20:00')"/>
     </record>
 
     <record id="ir_cron_sync_bravo_picking_daily" model="ir.cron">
@@ -47,7 +47,7 @@
         <field name="model_id" ref="model_stock_picking"/>
         <field name="code">model.sync_bravo_picking_daily()</field>
         <field name="state">code</field>
-        <field name="nextcall" eval="(DateTime.now().replace(hour=18, minute=20, second=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 18:40:00')"/>
     </record>
 
     <record id="ir_cron_sync_bravo_account_move_daily" model="ir.cron">
@@ -59,6 +59,18 @@
         <field name="model_id" ref="model_account_move"/>
         <field name="code">model.sync_bravo_account_move_daily()</field>
         <field name="state">code</field>
-        <field name="nextcall" eval="(DateTime.now().replace(hour=18, minute=30, second=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 19:20:00')"/>
+    </record>
+
+    <record id="ir_cron_sync_bravo_account_move_pos" model="ir.cron">
+        <field name="name">Bravo: đồng bộ xuất kho bán hàng tổng hợp POS</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_synthetic_account_move_pos"/>
+        <field name="code">model.sync_bravo_account_move_pos()</field>
+        <field name="state">code</field>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 20:00:00')"/>
     </record>
 </odoo>

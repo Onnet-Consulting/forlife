@@ -22,11 +22,10 @@ class AccountDocSale(models.Model):
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "TaxRegNo", "Description", "EmployeeCode", "IsTransfer", "DebitAccount2",
             "DueDate", "BuiltinOrder", "ItemCode", "ItemName", 'UnitCode', "CreditAccount2", 'DebitAccount4',
-            "TaxRegName", "IsCompany", "UnitPurCode", "Quantity9", "ConvertRate9", "Quantity", "PriceUnit",
-            "OriginalPriceUnit", "Discount", "OriginalDiscount", "OriginalUnitCost", "UnitCost", "OriginalAmount",
-            "Amount", "TaxCode", "OriginalAmount3", "Amount3", 'UnitPrice', 'OriginalAmount2', 'CreditAccount4',
+            "Quantity9", "ConvertRate9", "Quantity", "PriceUnit",
+            "TaxCode", "OriginalAmount3", "Amount3", 'UnitPrice', 'OriginalAmount2', 'CreditAccount4',
             "DebitAccount3", "CreditAccount3", "DocNo_SO", "RowId", 'OriginalUnitPrice', 'Amount2',
-            "DocNo_WO", "DeptCode", "AssetCode", "ProductCode", "JobCode", 'EinvoiceItemType', 'PushDate'
+            "DocNo_WO", "DeptCode", "AssetCode", "ProductCode", "JobCode", 'EinvoiceItemType',
         ]
 
     def bravo_get_account_doc_sale_value(self, employee_code):
