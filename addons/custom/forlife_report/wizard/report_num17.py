@@ -95,7 +95,8 @@ with po_datas as (select po.id                  as po_id,
                      from promotion_usage_line pul
                               join promotion_program prp on prp.id = pul.program_id
                               join pos_order_line pol on pol.id = pul.order_line_id
-                     where pul.order_line_id in (select distinct pol_id from po_datas)
+                     where pul.order_line_id in (select distinct pol_id from po_datas where type > 0)
+                      and pul.code_id notnull
                       and prp.promotion_type in ('code', 'pricelist')
                      group by pol.id),
      chi_tiet_mua as (select row_number() over (PARTITION BY pol.order_id order by pol.id)  as num,

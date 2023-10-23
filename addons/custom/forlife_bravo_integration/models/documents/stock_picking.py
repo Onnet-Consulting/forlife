@@ -94,7 +94,7 @@ class StockPicking(models.Model):
                         initial_records |= picking
                 elif picking.pos_order_id:
                     order = picking.pos_order_id
-                    if not order.x_is_return and order.is_post_bkav:
+                    if not order.is_refund_order and order.is_post_bkav:
                         initial_records |= picking
                 else:
                     continue
