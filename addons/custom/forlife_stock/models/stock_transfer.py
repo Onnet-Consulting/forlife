@@ -209,13 +209,7 @@ class StockTransfer(models.Model):
 
     def action_out_approve(self):
         self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
-        if self.location_id.id not in self.env.user.get_location():
-            if not self.location_id.type_other and self.location_id.code:
-                location_name = f'[{self.location_id.code}] {self.location_id.complete_name}'
-            else:
-                location_name = self.location_id.complete_name
-            raise ValidationError("Bạn không có quyền ở kho '%s'. Vui lòng liên hệ Quản trị viên!" % location_name)
-
+        self.validate_warehouse_permission(self.location_id)
         if self._context.get('skip_confirm'):
             return self._action_out_approve()
         if not self.stock_transfer_line.filtered(lambda x: x.qty_out != 0):
@@ -237,7 +231,7 @@ class StockTransfer(models.Model):
         # self._check_qty_available()
         if len(self) > 1 and self.filtered(lambda x: x.state not in ['approved', 'in_approve']):
             raise ValidationError("Vui lòng chọn những phiếu ở trạng thái 'Đã phê duyệt' và 'Xác nhận nhập'")
-
+        self.validate_warehouse_permission(self.location_id)
         self._validate_product_quantity()
         self._validate_product_tolerance('out')
         for record in self:
@@ -366,12 +360,7 @@ class StockTransfer(models.Model):
 
     def action_in_approve(self):
         self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
-        if self.location_dest_id.id not in self.env.user.get_location():
-            if not self.location_dest_id.type_other and self.location_dest_id.code:
-                location_name = f'[{self.location_dest_id.code}] {self.location_dest_id.complete_name}'
-            else:
-                location_name = self.location_dest_id.complete_name
-            raise ValidationError("Bạn không có quyền ở kho '%s'. Vui lòng liên hệ Quản trị viên!" % location_name)
+        self.validate_warehouse_permission(self.location_dest_id)
         if not self.stock_transfer_line.filtered(lambda x: x.qty_in != 0):
             view = self.env.ref('forlife_stock.stock_transfer_popup_in_confirm_view_form')
             return {
@@ -729,6 +718,14 @@ class StockTransfer(models.Model):
                 'next': self.env.ref('forlife_stock.stock_transfer_action').read()[0],
             }
         }
+
+    def validate_warehouse_permission(self, location_id):
+        if location_id.id not in self.env.user.get_location():
+            if not location_id.type_other and location_id.code:
+                location_name = f'[{location_id.code}] {location_id.complete_name}'
+            else:
+                location_name = location_id.complete_name
+            raise ValidationError("Bạn không có quyền ở kho '%s' phiếu %s. Vui lòng liên hệ Quản trị viên!" % (location_name, self.name))
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
