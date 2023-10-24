@@ -644,5 +644,35 @@
             <field name="model_id" ref="forlife_point_of_sale.model_res_brand"/>
             <field name="domain_force">[('id', 'in', user.get_brand())]</field>
         </record>
+
+        <!-- Phiếu điều chuyển -->
+        <record model="ir.rule" id="forlife_stock_transfer_in_approve_write">
+            <field name="name">stock_transfer_in_approve_write</field>
+            <field name="model_id" ref="forlife_stock.model_stock_transfer"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_stock_transfer_in_approve'))]"/>
+            <field name="domain_force">['|',
+                '&amp;', ('location_dest_id', 'in', user.get_location()), ('state', '=', 'out_approve'),
+                '&amp;', ('location_dest_id', 'in', user.get_location()), ('state', '!=', 'out_approve')]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="forlife_stock_transfer_out_approve_write">
+            <field name="name">stock_transfer_out_approve_write</field>
+            <field name="model_id" ref="forlife_stock.model_stock_transfer"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_stock_transfer_out_approve'))]"/>
+            <field name="domain_force">['|',
+                '&amp;', ('location_id', 'in', user.get_location()), ('state', '=', 'in_approve'),
+                '&amp;', ('location_id', 'in', user.get_location()), ('state', '!=', 'in_approve')]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
     </data>
 </odoo>
