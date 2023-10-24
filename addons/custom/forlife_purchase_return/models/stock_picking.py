@@ -100,7 +100,7 @@ class StockPicking(models.Model):
                 'sequence': 1,
                 'account_id': product_tax.categ_id.property_stock_account_input_categ_id.id,
                 'product_id': move.product_id.id,
-                'name': line.product_id.name,
+                'name': product_tax.name,
                 'text_check_cp_normal': line.product_id.name,
                 'credit': 0,
                 'debit': (amount / qty_po_origin) * qty_po_done
@@ -122,7 +122,7 @@ class StockPicking(models.Model):
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
                     'product_id': move.product_id.id,
-                    'name': move.product_id.name,
+                    'name': product_tax.name,
                     'text_check_cp_normal': line.product_id.name,
                     'credit': (amount / qty_po_origin) * qty_po_done,
                     'debit': 0,
