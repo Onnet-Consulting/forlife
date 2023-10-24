@@ -209,6 +209,13 @@ class StockTransfer(models.Model):
 
     def action_out_approve(self):
         self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
+        if self.location_id.id not in self.env.user.get_location():
+            if not self.location_id.type_other and self.location_id.code:
+                location_name = f'[{self.location_id.code}] {self.location_id.complete_name}'
+            else:
+                location_name = self.location_id.complete_name
+            raise ValidationError("Bạn không có quyền ở kho '%s'. Vui lòng liên hệ Quản trị viên!" % location_name)
+
         if self._context.get('skip_confirm'):
             return self._action_out_approve()
         if not self.stock_transfer_line.filtered(lambda x: x.qty_out != 0):
@@ -359,6 +366,12 @@ class StockTransfer(models.Model):
 
     def action_in_approve(self):
         self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
+        if self.location_dest_id.id not in self.env.user.get_location():
+            if not self.location_dest_id.type_other and self.location_dest_id.code:
+                location_name = f'[{self.location_dest_id.code}] {self.location_dest_id.complete_name}'
+            else:
+                location_name = self.location_dest_id.complete_name
+            raise ValidationError("Bạn không có quyền ở kho '%s'. Vui lòng liên hệ Quản trị viên!" % location_name)
         if not self.stock_transfer_line.filtered(lambda x: x.qty_in != 0):
             view = self.env.ref('forlife_stock.stock_transfer_popup_in_confirm_view_form')
             return {
