@@ -23,7 +23,7 @@ class AccountMove(models.Model):
         ids = []
         date = (kwargs.get('date') and datetime.strptime(kwargs.get('date'), '%d/%m/%Y').date()) or (fields.Date.today() + timedelta(days=-1))
         for company in companies:
-            moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', '!=', 'PI01')])
+            moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', 'not in', ('PI01', 'VC01'))])
             if moves:
                 moves.with_company(company).action_sync_account_move()
                 ids.extend(moves.ids)
@@ -31,7 +31,13 @@ class AccountMove(models.Model):
             # bút toán tại sổ tiêu điểm/tích điểm journal_code = PI01 phải gom theo ngày và từng tài khoản
             moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', '=', 'PI01'), ('date', '=', date)])
             if moves:
-                self.env['synthetic_move_journal_po01'].with_company(company).action_sync_data(moves, date)
+                self.env['synthetic_move_by_journal_code'].with_company(company).action_sync_data_pi01(moves, date)
+                ids.extend(moves.ids)
+
+            # bút toán tại sổ journal_code = VC01
+            moves = self.with_company(company).search(domain + [('company_id', '=', company.id), ('journal_id.code', '=', 'VC01')])
+            if moves:
+                self.env['synthetic_move_by_journal_code'].with_company(company).action_sync_data_vc01(moves)
                 ids.extend(moves.ids)
         if ids:
             self._cr.execute(f"update account_move set is_bravo_pushed = true where id = any (array{ids})")
@@ -169,7 +175,7 @@ class AccountMove(models.Model):
                                            and bool(
                 m.line_ids.filtered(lambda l: re.match("^111", l.account_id.code) and l.debit > 0)))
         if journal_data in ("journal_entry_payroll", 'journal_entry_other'):
-            return self.filtered(lambda am: am.journal_id.code in ('EX01', 'NE01', 'VN01', 'VN02', 'VTI01', 'VC01'))
+            return self.filtered(lambda am: am.journal_id.code in ('EX01', 'NE01', 'VN01', 'VN02', 'VTI01'))
         if journal_data == 'account_doc_sale':
             return self.filtered(lambda am: am.issue_invoice_type == 'vat' and am.stock_move_id.picking_id.sale_id and not am.stock_move_id.picking_id.sale_id.x_is_return
                                             and (am.stock_move_id.picking_id.sale_id.x_sale_chanel in ('wholesale', 'intercompany')
@@ -184,7 +190,7 @@ class AccountMove(models.Model):
         if journal_data == 'purchase_asset_service_reversed':
             return self.bravo_get_purchase_asset_service_values(is_reversed=True)
         if journal_data in ('purchase_product', 'invoice_trade_discount'):
-            return self.bravo_get_purchase_product_values()
+            return self.bravo_get_purchase_product_values(cktm=(journal_data == 'invoice_trade_discount'))
         if journal_data == 'journal_entry_tax':
             return self.bravo_get_journal_entry_values(journal_entry_tax=True)
         if journal_data == 'purchase_product_reserved':

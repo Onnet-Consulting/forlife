@@ -9,4 +9,4 @@ access_synthetic_daily_transfer,synthetic.daily.transfer,model_synthetic_daily_t
 access_synthetic_daily_transfer_location,synthetic.daily.transfer.location,model_synthetic_daily_transfer_location,base.group_user,1,0,0,0
 access_synthetic_daily_transfer_line,synthetic.daily.transfer.line,model_synthetic_daily_transfer_line,base.group_user,1,0,0,0
 access_acc_inv_diff_wizard,acc.inv.diff.wizard,model_acc_inv_diff_wizard,base.group_user,1,1,1,0
-access_synthetic_move_journal_po01,synthetic_move_journal_po01,model_synthetic_move_journal_po01,base.group_user,1,1,1,1
+access_synthetic_move_by_journal_code,synthetic_move_by_journal_code,model_synthetic_move_by_journal_code,base.group_user,1,1,1,1

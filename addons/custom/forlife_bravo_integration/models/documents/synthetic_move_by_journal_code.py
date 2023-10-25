@@ -4,13 +4,13 @@ from odoo import api, fields, models, _
 import copy
 
 
-class SyntheticMoveJournalPo01(models.TransientModel):
-    _name = 'synthetic_move_journal_po01'
-    _description = 'Synthetic Move Journal PI01'
+class SyntheticMoveByJournalCode(models.TransientModel):
+    _name = 'synthetic_move_by_journal_code'
+    _description = 'Synthetic Move By Journal Code'
     _inherit = 'bravo.model.insert.action'
-    _bravo_table = 'B30AccDocInventory'
+    _bravo_table = 'B30AccDocOther'
 
-    def action_sync_data(self, moves, date):
+    def action_sync_data_pi01(self, moves, date):
         data = {}
         for m in moves:
             debit_line = m.line_ids.filtered(lambda l: l.debit > 0)
@@ -66,7 +66,8 @@ class SyntheticMoveJournalPo01(models.TransientModel):
                 amount = v_item.get('amount')
                 x_vals.update({
                     'Stt': sequence_stt._next(),
-                    'CustomerCode': partner_id.ref or None,
+                    'CreditCustomerCode': partner_id.ref or None,
+                    'DebitCustomerCode': partner_id.ref or None,
                     'CustomerName': partner_id.name or None,
                     'Address': partner_id.contact_address_complete or None,
                     'BuiltinOrder': idx,
@@ -83,11 +84,49 @@ class SyntheticMoveJournalPo01(models.TransientModel):
             if insert_queries:
                 self.sudo().with_delay(description=f"Bravo: đồng bộ gom bút toán tiêu/tích điểm ngày {date.strftime('%d/%m/%Y')}", channel="root.Bravo").bravo_execute_query(insert_queries)
 
+    def action_sync_data_vc01(self, moves):
+        data = []
+        for m in moves:
+            debit_line = m.line_ids.filtered(lambda l: l.debit > 0)
+            credit_line = (m.line_ids - debit_line).filtered(lambda l: l.credit > 0)
+            debit_line = debit_line and debit_line[0]
+            credit_line = credit_line and credit_line[0]
+            exchange_rate = 1
+            job_code = m.line_ids.occasion_code_id and m.line_ids.occasion_code_id[0]
+            dept_code = (m.line_ids.account_analytic_id and m.line_ids.account_analytic_id[0]) or (m.line_ids.analytic_account_id and m.line_ids.analytic_account_id[0])
+            value = {
+                'CompanyCode': self.env.company.code or None,
+                'DocCode': 'PK',
+                'DocNo': m.name or None,
+                'DocDate': m.date.strftime('%Y-%m-%d'),
+                'CurrencyCode': self.env.company.currency_id.name or None,
+                'ExchangeRate': exchange_rate,
+                'Description': m.ref2 or None,
+                'IsTransfer': 1 if m.is_tc else 0,
+                'Stt': m.name or None,
+                'CreditCustomerCode': credit_line.partner_id.ref or None,
+                'DebitCustomerCode': debit_line.partner_id.ref or None,
+                'CustomerName': credit_line.partner_id.name or None,
+                'Address': credit_line.partner_id.contact_address_complete or None,
+                'BuiltinOrder': 1,
+                'CreditAccount': credit_line.account_id.code or None,
+                'DebitAccount': debit_line.account_id.code or None,
+                'OriginalAmount': credit_line.credit,
+                'Amount': credit_line.credit * exchange_rate,
+                'JobCode': job_code.code or None,
+                'DeptCode': dept_code.code or None,
+            }
+            data.append(value)
+        if data:
+            insert_queries = self.bravo_get_insert_sql(data=data)
+            if insert_queries:
+                self.sudo().with_delay(description=f"Bravo: đồng bộ bút toán voucher", channel="root.Bravo").bravo_execute_query(insert_queries)
+
     @api.model
     def bravo_get_insert_values(self, **kwargs):
         column_names = [
-            'CompanyCode', 'Stt', 'DocCode', 'DocDate', 'CurrencyCode', 'ExchangeRate', 'CustomerCode', 'CustomerName', 'Address', 'Description',
-            'IsTransfer', 'BuiltinOrder', 'DebitAccount', 'CreditAccount', 'OriginalAmount', 'Amount', 'JobCode', 'DeptCode',
+            'CompanyCode', 'Stt', 'DocCode', 'DocDate', 'DocNo', 'CurrencyCode', 'ExchangeRate', 'CreditCustomerCode', 'CustomerName', 'Address', 'Description',
+            'IsTransfer', 'BuiltinOrder', 'DebitAccount', 'CreditAccount', 'OriginalAmount', 'Amount', 'JobCode', 'DeptCode', 'DebitCustomerCode',
         ]
         values = kwargs.get('data')
         return column_names, values

@@ -90,7 +90,7 @@ class StockPicking(models.Model):
                     customer_location = self.env.ref('stock.stock_location_customers')
                     if not order.x_is_return and (order.x_sale_chanel in ('wholesale', 'intercompany') or (
                             picking.location_dest_id == customer_location and order.x_sale_chanel == 'online'
-                            and all(picking.invoice_ids.filtered(lambda x: x.issue_invoice_type == 'vat').mapped('is_post_bkav')))):
+                            and all(order.invoice_ids.filtered(lambda x: x.issue_invoice_type == 'vat').mapped('is_post_bkav')))):
                         initial_records |= picking
                 elif picking.pos_order_id:
                     order = picking.pos_order_id

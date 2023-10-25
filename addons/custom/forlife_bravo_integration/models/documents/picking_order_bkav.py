@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import re
 
 
 class PickingOrderBkav(models.Model):
@@ -53,14 +54,14 @@ class PickingOrderBkav(models.Model):
             "CustomerCode": partner.ref or None,
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
-            "Description": self.note or None,
+            "Description": re.sub('<.*?>', '', self.note or '') or 'Xuất kho bán hàng',
             "EmployeeCode": employee_code or None,
             "IsTransfer": 1 if account_move.is_tc else 0,
             "BuiltinOrder": idx,
             "DebitAccount": debit_line.account_id.code or stock_move.product_id.categ_id.with_company(self.company_id).property_stock_account_output_categ_id.code or None,
             'ItemCode': stock_move.product_id.barcode or None,
             'ItemName': stock_move.product_id.name or None,
-            'UnitPurCode': stock_move.product_uom.name or None,
+            'UnitPurCode': stock_move.product_uom.code or None,
             "CreditAccount": credit_line.account_id.code or stock_move.product_id.categ_id.with_company(self.company_id).property_stock_valuation_account_id.code or None,
             'Quantity9': stock_move.quantity_done,
             'ConvertRate9': 1,

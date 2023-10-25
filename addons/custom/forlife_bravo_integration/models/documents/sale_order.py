@@ -114,7 +114,7 @@ class AccountDocSale(models.Model):
                 'BuiltinOrder': idx2,
                 "ItemCode": item_code.get(invoice_line.promotion_type) or None,
                 "ItemName": product.name or None,
-                "UnitCode": product.uom_id.name or None,
+                "UnitCode": product.uom_id.code or None,
                 "CreditAccount2": invoice_line.account_id.code or None,
                 "Quantity9": quantity,
                 "ConvertRate9": convert_rate,
