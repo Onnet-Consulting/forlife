@@ -9,6 +9,6 @@ from . import journal_entry
 from . import picking_order_bkav
 from . import stock_picking_transfer_bkav
 from . import synthetic_daily_transfer
-from . import synthetic_move_journal_po01
+from . import synthetic_move_by_journal_code
 from . import synthetic_account_move_pos
 from . import synthetic_account_move_so_nhanh

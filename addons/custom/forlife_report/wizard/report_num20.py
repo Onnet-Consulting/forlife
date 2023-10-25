@@ -60,8 +60,8 @@ with pol_datas as (select pol.id                                                
                           pol.employee_id                                                  as employee_id,
                           rp.id                                                            as customer_id,
                           rp.ref                                                           as ma_kh,
-                          sto.code                                                         as ma_ch,
-                          sto.name                                                         as ten_ch,
+                          sto.code                                                         as ma_cn,
+                          sto.name                                                         as ten_cn,
                           rp.phone                                                         as sdt,
                           rp.name                                                          as ten_kh,
                           pp.barcode                                                       as ma_vach,
@@ -171,8 +171,8 @@ with pol_datas as (select pol.id                                                
                                        join pos_order po on pol.order_id = po.id
                               where pol_goc notnull) as dhg)
 select row_number() over (order by po_id)                                        as num,
-       ma_ch,
-       ten_ch,
+       ma_cn,
+       ten_cn,
        so_hd,
        mo_ta,
        ngay_hd,

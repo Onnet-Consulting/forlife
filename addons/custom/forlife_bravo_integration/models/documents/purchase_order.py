@@ -182,14 +182,17 @@ class AccountMovePurchaseAsset(models.Model):
 class AccountMovePurchaseProduct(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_purchase_product_values(self, is_reversed=False):
+    def bravo_get_purchase_product_values(self, is_reversed=False, cktm=False):
         res = []
         columns = self.bravo_get_purchase_product_columns()
         employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
             user_id = str(record.user_id.id or self._uid)
             employee = employees.get(user_id) or {}
-            res.extend(record.bravo_get_purchase_product_value(is_reversed, employee.get('code')))
+            if cktm:
+                res.extend(record.bravo_get_invoice_trade_discount_value(employee.get('code')))
+            else:
+                res.extend(record.bravo_get_purchase_product_value(is_reversed, employee.get('code')))
         return columns, res
 
     @api.model
@@ -273,6 +276,74 @@ class AccountMovePurchaseProduct(models.Model):
             values.append(journal_value_line)
 
         return values
+
+    def bravo_get_invoice_trade_discount_value(self, employee_code):
+        self.ensure_one()
+        origin_po = self.env['purchase.order'].browse(self.e_in_check)
+        product_line = self.line_ids.filtered(lambda l: l.product_id)
+        product_line = product_line and product_line[0]
+        if product_line.debit > 0:
+            tax_line = (self.line_ids - product_line).filtered(lambda f: f.debit > 0)
+            credit_lines = self.line_ids - product_line - tax_line
+            credit_line = credit_lines and credit_lines[0]
+            debit_line = product_line
+            credit_acc3 = origin_po.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
+            tax_line = tax_line and tax_line[0]
+            debit_acc3 = tax_line.account_id.code or None
+        else:
+            tax_line = (self.line_ids - product_line).filtered(lambda f: f.credit > 0)
+            debit_lines = self.line_ids - product_line - tax_line
+            debit_line = debit_lines and debit_lines[0]
+            credit_line = product_line
+            tax_line = tax_line and tax_line[0]
+            credit_acc3 = tax_line.account_id.code or None
+            debit_acc3 = origin_po.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
+
+        partner = self.partner_id
+        exchange_rate = self.exchange_rate
+        job_code = self.line_ids.occasion_code_id and self.line_ids.occasion_code_id[0]
+        doc_no = self.line_ids.production_order and self.line_ids.production_order[0] or self.line_ids.work_order and self.line_ids.work_order[0]
+        dept_code = self.line_ids.account_analytic_id and self.line_ids.account_analytic_id[0] or self.line_ids.analytic_account_id and self.line_ids.analytic_account_id[0]
+        tax_code = origin_po.trade_tax_id.code or None
+
+        value = {
+            "CompanyCode": self.company_id.code or None,
+            "Stt": self.name or None,
+            "DocCode": "BT",
+            "DocNo": self.name or None,
+            "DocDate": self.date or None,
+            "CurrencyCode": self.currency_id.name or None,
+            "ExchangeRate": exchange_rate,
+            "CreditCustomerCode": partner.ref or None,
+            "DebitCustomerCode": partner.ref or None,
+            "CustomerName": partner.name or None,
+            "Address": partner.contact_address_complete or None,
+            "Description": self.invoice_description or None,
+            "AtchDocDate": self.invoice_date or None,
+            "AtchDocNo": self.number_bills or None,
+            "TaxRegName": partner.name or None,
+            "TaxRegNo": partner.vat or None,
+            "EmployeeCode": employee_code or None,
+            "IsTransfer": 1 if self.is_tc else 0,
+            "DueDate": self.invoice_date_due or None,
+            "DocNo_PO": ','.join(self.purchase_order_product_id.mapped('name')) or None,
+            "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 3,
+            "BuiltinOrder": 1,
+            "DebitAccount": debit_line.account_id.code or None,
+            "CreditAccount": credit_line.account_id.code or None,
+            "DebitAccount3": debit_acc3,
+            "CreditAccount3": credit_acc3,
+            "TaxCode": tax_code,
+            "OriginalAmount": max(product_line.debit, product_line.credit),
+            "Amount": max(product_line.debit, product_line.credit) * exchange_rate,
+            "OriginalAmount3": max(tax_line.debit, tax_line.credit),
+            "Amount3": max(tax_line.debit, tax_line.credit) * exchange_rate,
+            "RowId": product_line.id or None,
+            "JobCode": job_code and job_code.code or None,
+            "DeptCode": dept_code and dept_code.code or None,
+            "DocNo_WO": doc_no and doc_no.code or None,
+        }
+        return [value]
 
 
 class AccountMoveVendorBack(models.Model):
