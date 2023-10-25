@@ -100,7 +100,8 @@ class CalculateFinalValue(models.Model):
             lp.product_end_id product_end_id,
             sum(lp.qty) qty,
             sum(lp.amount_export) amount_export,
-            sum(pibcf.amount_product) amount_avg 
+            sum(pibcf.amount_product) amount_avg,
+            (sum(lp.amount_export) - sum(pibcf.amount_product)) amount_diff
             from list_product lp left join product_inventory_by_calculate_final pibcf on 
             lp.product_id = pibcf.product_id and pibcf.parent_id = {parent_id}
             group by
@@ -127,9 +128,13 @@ class CalculateFinalValue(models.Model):
         )
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        self.env['list.exported.goods.diff'].create(data)
+        create_vals = []
+        for d in data:
+            if d['amount_diff'] == 0:
+                continue
+            create_vals.append(d)
+        self.env['list.exported.goods.diff'].create(create_vals)
         self.state = 'step2'
-
 
 class ListExportedGoodsDiff(models.Model):
     _name = 'list.exported.goods.diff'
@@ -146,7 +151,7 @@ class ListExportedGoodsDiff(models.Model):
     qty = fields.Float(string='Số lượng')
     amount_export = fields.Float(string='Giá trị xuất')
     amount_avg = fields.Float(string='Giá trị bình quân')
-    amount_diff = fields.Float(string='Chênh lệch', compute='compute_amount_diff', store=True)
+    amount_diff = fields.Float(string='Chênh lệch', store=True)
 
     @api.depends('amount_export', 'amount_avg')
     def compute_amount_diff(self):

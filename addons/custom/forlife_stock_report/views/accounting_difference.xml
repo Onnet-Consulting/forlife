@@ -21,6 +21,7 @@
                 <form string="accounting_difference_form">
                     <header>
                         <button name="action_create_account_move" states="draft" string="Tạo bút toán chênh lệch" type="object" class="oe_highlight"/>
+                        <button name="post_invoice" states="invoice" string="Vào sổ" type="object" class="oe_highlight"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -45,11 +46,11 @@
                         </group>
                         <group col="2">
                             <group>
-                                <field name="account_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
+                                <field name="account_ids" required="1" widget="many2many_tags" domain="[('company_id', '=', company_id), '|', ('code', 'like', '3319'), ('code', 'like', '1562')]"/>
                                 <field name="purchase_ids" widget="many2many_tags" domain="[('company_id', '=', company_id)]"/>
                             </group>
                         </group>
-                        <button name="get_data_diff" string="Tổng hợp dữ liệu" class="oe_highlight" type="object"/>
+                        <button name="get_data_diff" states="draft" string="Tổng hợp dữ liệu" class="oe_highlight" type="object"/>
                         <notebook>
                             <page name="diff_lines" string="Chi tiết chênh lệch">
                                 <field name="diff_lines" readonly="1">

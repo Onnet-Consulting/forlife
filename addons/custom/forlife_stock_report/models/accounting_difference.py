@@ -17,9 +17,9 @@ class CalculateFinalValueInherit(models.Model):
     purchase_ids = fields.Many2many('purchase.order', 'ad_po_rel', 'ad_id', 'po_id', string='Đơn hàng')
     diff_lines = fields.One2many('accounting.difference.line', 'parent_id', string='Chi tiết chênh lệch')
     move_ids = fields.Many2many('account.move', 'calculate_final_move_rel', 'cf_id', 'move_id',
-                                string='Bút toán chênh lệch')
-    move_count = fields.Integer(string='Số bút toán', compute='compute_move_count')
-    state = fields.Selection([('draft', 'Dự thảo'), ('posted', 'Đã vào sổ')], string='Trạng thái', default='draft')
+                                string='Bút toán chênh lệch', copy=False)
+    move_count = fields.Integer(string='Số bút toán', compute='compute_move_count', copy=False)
+    state = fields.Selection([('draft', 'Dự thảo'), ('invoice', 'Tạo bút toán chênh lệch'), ('posted', 'Đã vào sổ')], string='Trạng thái', default='draft')
 
     def first_and_last_day_of_month(self, year, month):
         # Tạo một ngày đầu tiên của tháng
@@ -88,8 +88,8 @@ class CalculateFinalValueInherit(models.Model):
                 account_move_line aml 
                 join account_move am on aml.move_id = am.id
                 join product_product pp on aml.product_id = pp.id
-                join purchase_order_line pol on aml.purchase_line_id = pol.id
-                join purchase_order po on pol.order_id = po.id
+                join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+                join purchase_order po on ampor.purchase_order_id = po.id
                 join product_template pt on pp.product_tmpl_id = pt.id
                 join product_category pc on pt.categ_id = pc.id
                 join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
@@ -174,25 +174,21 @@ class CalculateFinalValueInherit(models.Model):
                     aml.account_id account_source_id,
                     0 debit,
                     aml.credit credit,
-                    po.id purchase_id
+                    case when po2.id is not null then po2.id else po.id end purchase_id
                 from
                     account_move_line aml
-                join account_move am on
-                    aml.move_id = am.id
-                join product_product pp on
-                    pp.id = aml.product_id
-                join product_template pt on
-                    pp.product_tmpl_id = pt.id
+                join account_move am on aml.move_id = am.id
+                join product_product pp on pp.id = aml.product_id
+                join product_template pt on pp.product_tmpl_id = pt.id
                 join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
                 and ip."name" = 'property_stock_valuation_account_id' 
                 and ip.company_id = {company_id}
                 join account_account aa on 'account.account,' || aa.id = ip.value_reference
-                join stock_move sm on
-                    am.stock_move_id = sm.id
-                join purchase_order_line pol on
-                    pol.id = sm.purchase_line_id
-                join purchase_order po on
-                    pol.order_id = po.id
+                left join stock_move sm on am.stock_move_id = sm.id
+                left join purchase_order_line pol on pol.id = sm.purchase_line_id
+                left join purchase_order po on pol.order_id = po.id
+                left join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+                left join purchase_order po2 on ampor.purchase_order_id = po2.id
                 where
                     am.company_id = {company_id} 
                     and aml.credit > 0 
@@ -203,8 +199,10 @@ class CalculateFinalValueInherit(models.Model):
             )
             
             select 
+                {parent_id} parent_id,
                 sum(debit) debit,
                 sum(credit) credit,
+                (sum(debit) - sum(credit)) diff,
                 product_id,
                 account_stock_id,
                 account_source_id,
@@ -236,7 +234,12 @@ class CalculateFinalValueInherit(models.Model):
         )
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        self.env['accounting.difference.line'].create(data)
+        create_vals = []
+        for d in data:
+            if d['diff'] == 0:
+                continue
+            create_vals.append(d)
+        self.env['accounting.difference.line'].create(create_vals)
 
     def prepare_value_by_diff(self):
         journal = self.env['account.journal']
@@ -261,9 +264,7 @@ class CalculateFinalValueInherit(models.Model):
                     'date': self.to_date,
                     'purchase_order_product_id': [(6, 0, purchase.ids)],
                     'ref': self.name,
-                    'journal_id': journal_up_id.id if line.diff > 0 else journal_down_id.id,
-                    'stock_move_id': line.stock_move_id.id if self.is_account_stock(line.product_id.categ_id.id) == str(
-                        line.account_source_id.id) else False,
+                    'journal_id': journal_up_id.id if line.diff < 0 else journal_down_id.id,
                     'auto_post': 'no',
                     'x_root': 'other',
                     'end_period_entry': True,
@@ -273,21 +274,21 @@ class CalculateFinalValueInherit(models.Model):
                             'product_id': line.product_id.id,
                             'purchase_line_id': line.purchase_line_id.id,
                             'quantity': 0,
-                            'credit': line.diff if line.diff > 0 else -line.diff,
-                            'account_id': line.account_source_id.id if line.diff > 0 else line.account_stock_id.id
+                            'credit': line.diff if line.diff < 0 else -line.diff,
+                            'account_id': line.account_source_id.id if line.diff < 0 else line.account_stock_id.id
                         }),
                         (0, 0, {
                             'name': self.name,
                             'product_id': line.product_id.id,
                             'purchase_line_id': line.purchase_line_id.id,
                             'quantity': 0,
-                            'debit': line.diff if line.diff > 0 else -line.diff,
-                            'account_id': line.account_stock_id.id if line.diff > 0 else line.account_source_id.id
+                            'debit': line.diff if line.diff < 0 else -line.diff,
+                            'account_id': line.account_stock_id.id if line.diff < 0 else line.account_source_id.id
                         }),
                     ],
                     'move_type': 'entry',
                     'stock_valuation_layer_ids': [(0, 0, {
-                        'value': line.diff if line.diff > 0 else -line.diff,
+                        'value': line.diff if line.diff < 0 else -line.diff,
                         'unit_cost': 0,
                         'quantity': 0,
                         'remaining_qty': 0,
@@ -301,8 +302,14 @@ class CalculateFinalValueInherit(models.Model):
 
     def action_create_account_move (self):
         move_vals = self.prepare_value_by_diff()
-        account_move = self.env['account.move'].create(move_vals)
+        account_move = self.env['account.move'].with_context(not_compute_account_id=True).create(move_vals)
         self.move_ids = [(6, 0, account_move.ids)]
+        self.state = 'invoice'
+
+    def post_invoice(self):
+        for move in self.move_ids:
+            move.action_post()
+        self.state = 'posted'
 
 
 class AccountingDifferenceLine(models.Model):
