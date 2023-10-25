@@ -103,6 +103,7 @@ class CalculateFinalValueInherit(models.Model):
                 and aml.account_id != aa.id 
                 and am.state = 'posted'
                 and am.payment_state != 'reversed'
+                and am.date >= '{from_date}' and am.date <= '{to_date}'
                  
                 union all 
                 
@@ -134,6 +135,7 @@ class CalculateFinalValueInherit(models.Model):
                 and aml.account_id != aa.id
                 and am.state = 'posted'
                 and am.payment_state != 'reversed'
+                and am.date >= '{from_date}' and am.date <= '{to_date}'
                 
                 union all
                 
@@ -162,6 +164,7 @@ class CalculateFinalValueInherit(models.Model):
                 and aml2.debit > 0 
                 and aml2.account_id != aa.id
                 and am.state = 'posted'
+                and am.date >= '{from_date}' and am.date <= '{to_date}'
             
                 union all
                 
@@ -196,6 +199,7 @@ class CalculateFinalValueInherit(models.Model):
                     and aml.account_id != aa.id
                     and am.state = 'posted'
                     and am.payment_state != 'reversed'
+                    and am.date >= '{from_date}' and am.date <= '{to_date}'
             )
             
             select 
