@@ -52,6 +52,8 @@ class PurchaseOrder(models.Model):
                     continue
         res = super(PurchaseOrder, self).action_approved()
         for rec in self:
+            if rec.purchase_type != 'product':
+                continue
             material_data = []
             for line in rec.order_line:
                 product = line.product_id
@@ -79,7 +81,9 @@ class PurchaseOrder(models.Model):
                 'purchase_material_line_ids': material_data,
             })
         for rec in self:
-            for item in rec.order_line:
+            if rec.purchase_type != 'product':
+                continue
+            for item in rec.order_line.filtered(lambda x: x.x_check_npl and not x.purchase_order_line_material_line_ids):
                 production_order = self.env['production.order'].search(
                     [('product_id', '=', item.product_id.id), ('type', '=', 'normal')], limit=1)
                 if not item.purchase_order_line_material_line_ids:
