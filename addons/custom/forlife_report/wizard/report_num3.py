@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.addons.forlife_report.wizard.report_base import format_date_query
+from odoo.addons.forlife_report.wizard.report_base import format_date_query, ReportBase
 from odoo.osv import expression
 
 TITLES = ['STT', 'Thương hiệu', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính', 'Mã SP',
@@ -20,7 +20,7 @@ class ReportNum3(models.TransientModel):
     product_group_ids = fields.Many2many('product.category', 'report_num3_group_rel', string='Level 2')
     product_line_ids = fields.Many2many('product.category', 'report_num3_line_rel', string='Level 3')
     texture_ids = fields.Many2many('product.category', 'report_num3_texture_rel', string='Level 4')
-    collection = fields.Char('Collection')
+    collection = fields.Selection(string='Collection', selection=ReportBase.get_collection)
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num3_warehouse_rel', string='Warehouse')
     defective_inventory = fields.Boolean(string='Skip defective inventory')
     order_inventory = fields.Boolean(string='Skip order inventory')

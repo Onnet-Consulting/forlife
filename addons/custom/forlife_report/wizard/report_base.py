@@ -28,6 +28,13 @@ class ReportBase(models.AbstractModel):
     _inherit = 'report.base'
 
     @api.model
+    def get_collection(self):
+        self._cr.execute('''select json_agg(value) as value from (select distinct collection as value
+             from product_template where collection notnull order by value) as x''')
+        value = (self._cr.dictfetchone() or {}).get('value') or []
+        return [(i, i) for i in value]
+
+    @api.model
     def get_default_name(self):
         return AVAILABLE_REPORT.get(self._name, {}).get('name', '')
 
