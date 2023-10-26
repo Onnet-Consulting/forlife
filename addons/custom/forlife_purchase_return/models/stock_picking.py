@@ -274,7 +274,7 @@ class StockPicking(models.Model):
         product_plan_qty = move.quantity_done * (material_line_id.product_qty / purchase_line_id.product_qty)
         return (0, 0, {
             'product_id': material_line_id.product_id.id,
-            'product_uom': material_line_id.uom.id,
+            'product_uom': material_line_id.uom.id or material_line_id.product_id.uom_id.id,
             'price_unit': material_line_id.production_line_price_unit,
             'location_id': npl_location_id.id,
             'location_dest_id': self.location_id.id,
@@ -342,7 +342,7 @@ class StockPicking(models.Model):
                                 'sequence': 1,
                                 'product_id': material_line.product_id.id,
                                 'account_id': account_export_production_order.id, #tiennq
-                                'name': item.product_id.name,
+                                'name': account_export_production_order.name,
                                 'debit': value,
                                 'credit': 0,
                             })
@@ -351,7 +351,7 @@ class StockPicking(models.Model):
                                 'sequence': 2,
                                 'product_id': move.product_id.id,
                                 'account_id': account_1561,
-                                'name': account_export_production_order.name,
+                                'name': move.product_id.name,
                                 'debit': 0,
                                 'credit': value,
                             })
@@ -369,7 +369,7 @@ class StockPicking(models.Model):
                 })
                 invoice_line_ids.append(credit_cp)
 
-                svl_values = (0, 0, {
+                svl_values = [(0, 0, {
                     'value': - credit_cost,
                     'unit_cost': credit_cost / qty_po_done,
                     'quantity': 0,
@@ -378,7 +378,7 @@ class StockPicking(models.Model):
                     'product_id': move.product_id.id,
                     'company_id': move.company_id.id,
                     'stock_move_id': move.id
-                })
+                })]
                 if move.product_id.cost_method == 'average':
                     self.add_cost_product(move.product_id, -credit_cost)
                 entry_cp = self.env['account.move'].create({
@@ -400,7 +400,7 @@ class StockPicking(models.Model):
                 entry_cp._post()
 
             if list_allowcation_npls:
-                svl_allowcation_values = (0, 0, {
+                svl_allowcation_values = [(0, 0, {
                     'value': -total_npl_amount,
                     'unit_cost': total_npl_amount / qty_po_done,
                     'quantity': 0,
@@ -409,7 +409,7 @@ class StockPicking(models.Model):
                     'product_id': move.product_id.id,
                     'company_id': move.company_id.id,
                     'stock_move_id': move.id
-                })
+                })]
                 if move.product_id.cost_method == 'average':
                     self.add_cost_product(move.product_id, -total_npl_amount)
                 entry_allowcation_npls = self.env['account.move'].create({
