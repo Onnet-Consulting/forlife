@@ -287,15 +287,12 @@ class StockPicking(models.Model):
         })
     
     def create_return_valuation_entries(self):
-        list_allowcation_npls = []
-        cost_labor_internal_costs = []
         journal_id = self.env['account.journal'].search([('code', '=', 'EX02'), ('type', '=', 'general')], limit=1).id
         if not journal_id:
             raise ValidationError("Không tìm thấy sổ nhật ký có mã 'EX02'. Vui lòng cấu hình thêm!")
         po = self.purchase_id
         if not po:
             return
-        move = False
         ### Tìm kho xuất
         picking_type_id, export_production_order = self._get_picking_info_return(po)
         if not export_production_order.x_property_valuation_out_account_id:
@@ -304,11 +301,11 @@ class StockPicking(models.Model):
             if not export_production_order.reason_type_id:
                 raise ValidationError('Bạn chưa cấu hình loại lý do cho lý do nhập khác có mã: N0701')
         account_export_production_order = export_production_order.x_property_valuation_out_account_id
-        for item, r in zip(po.order_line_production_order, self.move_ids):
-            # move = self.env['stock.move'].search([('purchase_line_id', '=', item.id), ('picking_id', '=', self.id)])
-            move = self.move_ids.filtered(lambda x: x.purchase_line_id.id == item.id)
-            if not move: continue
+        for move in self.move_ids:
+            invoice_line_ids = []
+            list_allowcation_npls = []
             qty_po_done = sum(move.mapped('quantity_done'))
+            item = move.purchase_line_id
             material = self.env['purchase.order.line.material.line'].search([('purchase_order_line_id', '=', item.id)])
 
             if item.product_id.categ_id and item.product_id.categ_id.with_company(self.company_id).property_stock_valuation_account_id:
@@ -317,12 +314,13 @@ class StockPicking(models.Model):
                 raise ValidationError(_("Bạn chưa cấu hình tài khoản định giá tồn kho trong danh mục sản phẩm của sản phẩm có tên %s") % item.product_id.name)
 
             credit_cost = 0
+            total_npl_amount = 0
             for material_line in material:
                 if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
                     if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(self.company_id).property_stock_account_input_categ_id:
                         raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho trong danh mực sản phẩm của %s") % material_line.product_id.name)
                     if material_line.price_unit > 0:
-                        pbo = material_line.price_unit * r.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty
+                        pbo = material_line.price_unit * move.quantity_done * material_line.production_line_product_qty / material_line.production_order_product_qty
                         debit_cp = (0, 0, {
                             'sequence': 99991,
                             'account_id': material_line.product_id.categ_id.with_company(self.company_id).property_stock_account_input_categ_id.id,
@@ -332,31 +330,33 @@ class StockPicking(models.Model):
                             'debit': pbo,
                             'credit': 0,
                         })
-                        cost_labor_internal_costs.append(debit_cp)
+                        invoice_line_ids.append(debit_cp)
                         credit_cost += pbo
                 else:
                     #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                     if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
                         if material_line.product_id.standard_price > 0:
+                            value = ((move.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price)
                             #xử lý phân bổ nguyên vật liệu
                             debit_allowcation_npl = (0, 0, {
                                 'sequence': 1,
-                                'product_id': move.product_id.id,
+                                'product_id': material_line.product_id.id,
                                 'account_id': account_export_production_order.id, #tiennq
                                 'name': item.product_id.name,
-                                'debit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                'debit': value,
                                 'credit': 0,
                             })
-
+                            list_allowcation_npls.append(debit_allowcation_npl)
                             credit_allowcation_npl = (0, 0, {
                                 'sequence': 2,
                                 'product_id': move.product_id.id,
                                 'account_id': account_1561,
                                 'name': account_export_production_order.name,
                                 'debit': 0,
-                                'credit': ((r.quantity_done / item.product_qty * material_line.product_qty) * material_line.product_id.standard_price),
+                                'credit': value,
                             })
-                            list_allowcation_npls.extend([debit_allowcation_npl, credit_allowcation_npl])
+                            list_allowcation_npls.append(credit_allowcation_npl)
+                            total_npl_amount += value
             if credit_cost > 0:
                 credit_cp = (0, 0, {
                     'sequence': 9,
@@ -367,32 +367,18 @@ class StockPicking(models.Model):
                     'debit': 0,
                     'credit': credit_cost,
                 })
-                cost_labor_internal_costs.append(credit_cp)
-                separated_lists = {}
-                invoice_line_ids = []
-                target_items = item.product_id.name
-                for lines_new in cost_labor_internal_costs:
-                    text_check_cp_normal = lines_new[2]['text_check_cp_normal']
-                    if text_check_cp_normal in target_items:
-                        if text_check_cp_normal in separated_lists:
-                            separated_lists[text_check_cp_normal].append(lines_new)
-                        else:
-                            separated_lists[text_check_cp_normal] = [lines_new]
-                new_lines_cp_after_tax = [lines for text_check, lines in separated_lists.items()]
-                for sublist_lines_cp_after_tax in new_lines_cp_after_tax:
-                    invoice_line_ids.extend(sublist_lines_cp_after_tax)
+                invoice_line_ids.append(credit_cp)
 
-                svl_values = []
-                svl_values.append((0, 0, {
+                svl_values = (0, 0, {
                     'value': - credit_cost,
                     'unit_cost': credit_cost / qty_po_done,
                     'quantity': 0,
                     'remaining_qty': 0,
                     'description': f"{self.name} - {item.product_id.name}",
                     'product_id': move.product_id.id,
-                    'company_id': self.env.company.id,
+                    'company_id': move.company_id.id,
                     'stock_move_id': move.id
-                }))
+                })
                 if move.product_id.cost_method == 'average':
                     self.add_cost_product(move.product_id, -credit_cost)
                 entry_cp = self.env['account.move'].create({
@@ -413,38 +399,17 @@ class StockPicking(models.Model):
                 })
                 entry_cp._post()
 
-        if list_allowcation_npls:
-            merged_records_allowcation_npl = {}
-            total_npl_amount = 0
-            for allowcation_npl in list_allowcation_npls:
-                key = (
-                allowcation_npl[2]['account_id'], allowcation_npl[2]['name'], allowcation_npl[2]['sequence'])
-                if key in merged_records_allowcation_npl:
-                    merged_records_allowcation_npl[key]['debit'] += allowcation_npl[2]['debit']
-                    merged_records_allowcation_npl[key]['credit'] += allowcation_npl[2]['credit']
-                else:
-                    merged_records_allowcation_npl[key] = {
-                        'sequence': allowcation_npl[2]['sequence'],
-                        'product_id': allowcation_npl[2]['product_id'],
-                        'account_id': allowcation_npl[2]['account_id'],
-                        'name': allowcation_npl[2]['name'],
-                        'debit': allowcation_npl[2]['debit'],
-                        'credit': allowcation_npl[2]['credit'],
-                    }
-                total_npl_amount += allowcation_npl[2]['debit']
-            merged_records_list_allowcation_npl = [(0, 0, record) for record in merged_records_allowcation_npl.values()]
-            if merged_records_list_allowcation_npl:
-                svl_allowcation_values = []
-                svl_allowcation_values.append((0, 0, {
+            if list_allowcation_npls:
+                svl_allowcation_values = (0, 0, {
                     'value': -total_npl_amount,
                     'unit_cost': total_npl_amount / qty_po_done,
                     'quantity': 0,
                     'remaining_qty': 0,
                     'description': f"{self.name} - {item.product_id.name}",
                     'product_id': move.product_id.id,
-                    'company_id': self.env.company.id,
+                    'company_id': move.company_id.id,
                     'stock_move_id': move.id
-                }))
+                })
                 if move.product_id.cost_method == 'average':
                     self.add_cost_product(move.product_id, -total_npl_amount)
                 entry_allowcation_npls = self.env['account.move'].create({
@@ -458,7 +423,7 @@ class StockPicking(models.Model):
                     'date': datetime.now(),
                     'invoice_payment_term_id': po.payment_term_id.id,
                     'invoice_date_due': po.date_planned,
-                    'invoice_line_ids': merged_records_list_allowcation_npl,
+                    'invoice_line_ids': list_allowcation_npls,
                     'restrict_mode_hash_table': False,
                     'stock_move_id': move.id,
                     'stock_valuation_layer_ids': svl_allowcation_values

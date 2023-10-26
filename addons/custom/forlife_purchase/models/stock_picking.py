@@ -414,7 +414,7 @@ class StockPicking(models.Model):
                         'remaining_qty': 0,
                         'description': f"{self.name} - {item.product_id.name}",
                         'product_id': item.product_id.id,
-                        'company_id': self.env.company.id,
+                        'company_id': r.company_id.id,
                         'stock_move_id': r.id
                     }))
                     if item.product_id.cost_method == 'average':
@@ -446,7 +446,7 @@ class StockPicking(models.Model):
                         'remaining_qty': 0,
                         'description': f"{self.name} - {item.product_id.name}",
                         'product_id': item.product_id.id,
-                        'company_id': self.env.company.id,
+                        'company_id': r.company_id.id,
                         'stock_move_id': r.id
                     }))
                     if item.product_id.cost_method == 'average':
