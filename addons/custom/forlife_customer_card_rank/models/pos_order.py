@@ -13,10 +13,10 @@ class PosOrder(models.Model):
     order_status_tokyolife = fields.Boolean('Order Status Tokyolife')
     plus_point_coefficient = fields.Integer('Plus Point Coefficient', compute='_compute_plus_point', store=True)
 
-    def action_pos_order_paid(self):
-        res = super(PosOrder, self).action_pos_order_paid()
-        for order in self:
-            order.update_partner_card_rank()
+    def _process_payment_lines(self, pos_order, order, pos_session, draft):
+        res = super(PosOrder, self)._process_payment_lines(pos_order, order, pos_session, draft)
+        for o in order:
+            o.update_partner_card_rank()
         return res
 
     def update_partner_card_rank(self):
