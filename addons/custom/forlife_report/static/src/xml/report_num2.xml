@@ -14,7 +14,7 @@
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-foreach="options.data" t-as="line">
-                    <tr class="line_stock_detail" t-att-id="line.product_id">
+                    <tr class="line_stock_detail" style="cursor: pointer;" t-att-id="line.product_id">
                         <td class="column_nowrap"><t t-esc="line.product_barcode"/></td>
                         <td class="product_name"><t t-esc="line.product_name"/></td>
                         <td><t t-esc="line.product_size"/></td>

@@ -13,7 +13,7 @@
                 <tbody>
                     <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                     <t t-foreach="options.data" t-as="line">
-                        <tr class="show-detail" t-att-id="line.stt - 1">
+                        <tr class="show-detail" style="cursor: pointer;" t-att-id="line.stt - 1">
                             <td class="index-report"><t t-esc="line.stt"/></td>
                             <td><t t-esc="line.ma_cn"/></td>
                             <td><t t-esc="line.ten_cn"/></td>

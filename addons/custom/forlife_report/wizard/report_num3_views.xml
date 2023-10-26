@@ -36,7 +36,7 @@
                                options="{'no_create': True}" context="{'report_ctx': 'report.num3,product.category,product_line_ids'}"/>
                         <field name="texture_ids" widget="many2many_tags" domain="[('parent_id', '=', product_line_ids), ('parent_id', '!=', False)]"
                                options="{'no_create': True}" context="{'report_ctx': 'report.num3,product.category,texture_ids'}"/>
-                        <field name="collection"/>
+                        <field name="collection" class="oe_inline"/>
                     </group>
                 </sheet>
             </form>

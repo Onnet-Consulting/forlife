@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.addons.forlife_report.wizard.report_base import ReportBase
 
 TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi']
 COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25]
@@ -15,7 +16,7 @@ class ReportNum2(models.TransientModel):
     product_group_ids = fields.Many2many('product.category', 'report_num2_group_rel', string='Level 2')
     product_line_ids = fields.Many2many('product.category', 'report_num2_line_rel', string='Level 3')
     texture_ids = fields.Many2many('product.category', 'report_num2_texture_rel', string='Level 4')
-    collection = fields.Char('Collection')
+    collection = fields.Selection(string='Collection', selection=ReportBase.get_collection)
     warehouse_ids = fields.Many2many('stock.warehouse', 'report_num2_warehouse_rel', string='Warehouse')
 
     @api.onchange('product_brand_id')
