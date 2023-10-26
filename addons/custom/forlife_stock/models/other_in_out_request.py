@@ -175,7 +175,7 @@ class ForlifeOtherInOutRequest(models.Model):
                         'is_production_order': item.reason_to_id.is_work_order,
                         'location_id': item.reason_to_id.id if record.type_other == 'other_import' else item.whs_from_id.id,
                         'location_dest_id': item.whs_to_id.id if record.type_other == 'other_import' else item.reason_from_id.id,
-                        'amount_total': item.amount_total or item.product_id.standard_price,
+                        'amount_total': item.product_id.standard_price * item.quantity if not item.reason_to_id.is_price_unit else item.amount_total,
                         'occasion_code_id': item.occasion_id.id,
                         'work_production': item.production_id.id,
                         'account_analytic_id': item.cost_center.id,
