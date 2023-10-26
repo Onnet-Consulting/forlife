@@ -4,6 +4,7 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
     var {PosGlobalState, Orderline, Order} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
     const {useState} = owl;
+    const {Gui} = require('point_of_sale.Gui');
 
 
     const PosCustomPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
@@ -11,7 +12,7 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
         constructor(obj, options) {
             super(...arguments);
             this.employeeSelected = useState({
-                employeeID: {}
+                employeeID: null
             })
         }
         async _processData(loadedData) {
@@ -71,9 +72,14 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
 
     const OrderAssignEmployee = (Order) => class extends Order {
         add_orderline(line) {
-            console.log(line.pos.employeeSelected.employeeID, 'line.pos.employeeSelected.employeeID')
-            if (!_.isEmpty(line.pos.employeeSelected)) {
-                console.log(line.pos.employeeSelected.employeeID, 'passs')
+            if (!line.employee_id && !line.pos.employeeSelected.employeeID) {
+                Gui.showPopup('ErrorPopup', {
+                    'title': 'Lỗi thêm sản phẩm',
+                    'body': 'Vui lòng điền thông tin nhân viên trước khi thêm sản phẩm',
+                });
+                return false;
+            }
+            if (line.pos.employeeSelected.employeeID) {
                 line.set_employee(line.pos.employeeSelected.employeeID)
             }
             super.add_orderline(...arguments);
