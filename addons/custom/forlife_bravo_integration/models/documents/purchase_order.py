@@ -279,7 +279,7 @@ class AccountMovePurchaseProduct(models.Model):
 
     def bravo_get_invoice_trade_discount_value(self, employee_code):
         self.ensure_one()
-        origin_po = self.env['purchase.order'].browse(self.e_in_check)
+        origin_invoice = self.env['account.move'].browse(self.e_in_check)
         product_line = self.line_ids.filtered(lambda l: l.product_id)
         product_line = product_line and product_line[0]
         if product_line.debit > 0:
@@ -287,7 +287,7 @@ class AccountMovePurchaseProduct(models.Model):
             credit_lines = self.line_ids - product_line - tax_line
             credit_line = credit_lines and credit_lines[0]
             debit_line = product_line
-            credit_acc3 = origin_po.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
+            credit_acc3 = origin_invoice.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
             tax_line = tax_line and tax_line[0]
             debit_acc3 = tax_line.account_id.code or None
         else:
@@ -297,14 +297,14 @@ class AccountMovePurchaseProduct(models.Model):
             credit_line = product_line
             tax_line = tax_line and tax_line[0]
             credit_acc3 = tax_line.account_id.code or None
-            debit_acc3 = origin_po.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
+            debit_acc3 = origin_invoice.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
 
         partner = self.partner_id
         exchange_rate = self.exchange_rate
         job_code = self.line_ids.occasion_code_id and self.line_ids.occasion_code_id[0]
         doc_no = self.line_ids.production_order and self.line_ids.production_order[0] or self.line_ids.work_order and self.line_ids.work_order[0]
         dept_code = self.line_ids.account_analytic_id and self.line_ids.account_analytic_id[0] or self.line_ids.analytic_account_id and self.line_ids.analytic_account_id[0]
-        tax_code = origin_po.trade_tax_id.code or None
+        tax_code = origin_invoice.trade_tax_id.code or None
 
         value = {
             "CompanyCode": self.company_id.code or None,
