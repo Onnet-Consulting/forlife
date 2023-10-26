@@ -50,7 +50,15 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
                     self.env.pos.setDefaultEmployee(employee_id);
                 }
                 else {
-                    this.selectedOrderline.set_employee(employee_id);
+                    let order_line = await this.selectedOrderline
+                    if (_.isEmpty(order_line)) {
+                        this.showPopup('ErrorPopup', {
+                            'title': 'Lỗi gán nhân viên',
+                            'body': 'Chưa có sản phẩm không thể gán nhân viên',
+                        });
+                        return false;
+                    }
+                    order_line.set_employee(employee_id);
                 }
 
             }

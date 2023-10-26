@@ -88,14 +88,14 @@ class PurchaseOrder(models.Model):
                         'location_id': self.location_id.id,
                         'location_dest_id': self.partner_id.property_stock_supplier.id,
                         'x_is_check_return': True,
-                        'origin': val.get('origin', '') + _(' Return')
+                        'origin': val.get('origin', '')
                     })
             else:
                 vals.update({
                     'location_id': self.location_id.id,
                     'location_dest_id': self.partner_id.property_stock_supplier.id,
                     'x_is_check_return': True,
-                    'origin': vals.get('origin', '') + _(' Return')
+                    'origin': vals.get('origin', '')
                 })
         return vals
 
