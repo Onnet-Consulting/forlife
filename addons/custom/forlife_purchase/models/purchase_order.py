@@ -800,7 +800,7 @@ class PurchaseOrder(models.Model):
     @api.depends('company_id', 'currency_id')
     def _compute_active_manual_currency_rate(self):
         for rec in self:
-            if rec.company_id or rec.currency_id and rec.company_id.currency_id != rec.currency_id:
+            if rec.company_id.currency_id != rec.currency_id:
                 rec.active_manual_currency_rate = True
             else:
                 rec.active_manual_currency_rate = False
