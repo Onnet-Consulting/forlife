@@ -163,6 +163,7 @@ from employee_list employee
 """
         return sql
 
+    @api.model
     def get_title_with_view_type(self, from_date, to_date, view_type):
         format_date, day, month = ('%d/%m/%Y', 1, 0) if view_type == 'by_day' else ('%m/%Y', 0, 1)
         title = []

@@ -29,10 +29,9 @@ class ReportBase(models.AbstractModel):
 
     @api.model
     def get_collection(self):
-        self._cr.execute('''select json_agg(value) as value from (select distinct collection as value
+        self._cr.execute('''select json_agg(array[value, value]) as value from (select distinct collection as value
              from product_template where collection notnull order by value) as x''')
-        value = (self._cr.dictfetchone() or {}).get('value') or []
-        return [(i, i) for i in value]
+        return (self._cr.dictfetchone() or {}).get('value') or []
 
     @api.model
     def get_default_name(self):

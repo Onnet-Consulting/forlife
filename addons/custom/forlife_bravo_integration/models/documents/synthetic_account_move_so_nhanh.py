@@ -79,14 +79,39 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
                         "CreditAccount3": account.code,
                     })
                 values.append(value_line)
+
+            discounts = {}
+            for d in line.line_discount_ids:
+                tax = d.tax_ids.ids or ['']
+                x_price_unit = d.price_unit if d.promotion_type == 'customer_shipping_fee' else 0
+                x_amount_total = d.amount_total if d.promotion_type == 'customer_shipping_fee' else 0
+                key = f"{d.promotion_type}~{tax[0]}~{x_price_unit}"
+                old_val = discounts.get(key) or {}
+                promotion_type = old_val.get('promotion_type') or d.promotion_type
+                price_unit = (old_val.get('price_unit') or 0) or x_price_unit
+                amount_total = (old_val.get('amount_total') or 0) + x_amount_total
+                tax_amount = old_val.get('tax_amount') or (d.tax_ids.mapped('amount') or [0])[0]
+                tax_code = old_val.get('tax_code') or (d.tax_ids.mapped('code') or [''])[0]
+                account = old_val.get('account') or (d.tax_ids.invoice_repartition_line_ids.account_id.mapped('code') or [''])[0]
+                discounts.update({
+                    key: {
+                        'promotion_type': promotion_type,
+                        'price_unit': price_unit,
+                        'amount_total': amount_total,
+                        'tax_amount': tax_amount,
+                        'tax_code': tax_code,
+                        'account': account,
+                    }
+                })
+
             products = self.env['product.product'].search([('barcode', 'in', ('DIEM', 'THE', 'SHIP'))])
-            for idx, detail in enumerate(line.line_discount_ids, start=idx + 1):
+            for idx, detail in enumerate(discounts.values(), start=idx + 1):
                 value_line = copy.copy(value)
-                item_code = {'out_point': 'DIEM', 'vip_amount': 'THE', 'customer_shipping_fee': 'SHIP'}.get(detail.promotion_type) or ''
+                promotion_type = detail.get('promotion_type') or ''
+                item_code = {'out_point': 'DIEM', 'vip_amount': 'THE', 'customer_shipping_fee': 'SHIP'}.get(promotion_type) or ''
                 product = products.filtered(lambda p: p.barcode == item_code)
                 account_income = product.with_company(company).categ_id.property_account_income_categ_id.code or None
-                tax_id = detail.tax_ids
-                amount = detail.amount_total / (1 + (tax_id and tax_id[0].amount/100 or 0))
+                amount = (detail.get('amount_total') or 0) / (1 + ((detail.get('tax_amount') or 0) / 100))
                 value_line.update({
                     'BuiltinOrder': idx,
                     "ItemCode": item_code,
@@ -96,23 +121,21 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
                     "Quantity9": 1 if item_code == 'SHIP' else 0,
                     "ConvertRate9": 1,
                     "Quantity": 1 if item_code == 'SHIP' else 0,
-                    "PriceUnit": abs(detail.price_unit) if item_code == 'SHIP' else 0,
-                    "OriginalUnitPrice": abs(detail.price_unit) if item_code == 'SHIP' else 0,
-                    'UnitPrice': abs(detail.price_unit) * exchange_rate if item_code == 'SHIP' else 0,
+                    "PriceUnit": detail.get('price_unit') or 0,
+                    "OriginalUnitPrice": detail.get('price_unit') or 0,
+                    'UnitPrice': (detail.get('price_unit') or 0) * exchange_rate,
                     'OriginalAmount2': amount if item_code == 'SHIP' else 0,
                     'Amount2': amount * exchange_rate if item_code == 'SHIP' else 0,
-                    "RowId": detail.id,
+                    "RowId": None,
                     "EinvoiceItemType": 2,
                 })
-                if tax_id:
-                    tax_line = tax_id and tax_id[0]
-                    account = tax_id.invoice_repartition_line_ids.account_id and tax_id.invoice_repartition_line_ids.account_id[0]
+                if detail.get('tax_code'):
                     value_line.update({
-                        "TaxCode": tax_line.code,
+                        "TaxCode": detail.get('tax_code'),
                         "OriginalAmount3": 0,
                         "Amount3": 0,
                         "DebitAccount3": account_receivable,
-                        "CreditAccount3": account.code,
+                        "CreditAccount3": detail.get('account') or None,
                     })
                 if item_code in ('THE', 'DIEM'):
                     value_line.update({
