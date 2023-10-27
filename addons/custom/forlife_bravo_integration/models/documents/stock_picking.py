@@ -84,7 +84,7 @@ class StockPicking(models.Model):
             return self.filtered(lambda m: m.origin and m.transfer_id and m.transfer_id.exists_bkav and m.origin == m.transfer_id.name and not m.other_export and not m.other_import)
         if picking_data == PICKING_ORDER_BKAV:
             initial_records = self.env[self._name]
-            for picking in self:
+            for picking in self.filtered(lambda f: f.picking_type_id.code == 'outgoing'):
                 if picking.sale_id:
                     order = picking.sale_id
                     customer_location = self.env.ref('stock.stock_location_customers')
