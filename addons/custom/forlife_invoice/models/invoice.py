@@ -750,6 +750,7 @@ class AccountMove(models.Model):
             invoice_db = self.create({
                 'e_in_check': self.id,
                 'journal_id': journal_id.id,
+                'purchase_order_product_id': self.purchase_order_product_id,
                 'is_check_invoice_tnk': True,
                 'invoice_date': self.invoice_date,
                 'invoice_description': f"Thuế tiêu thụ đặc biệt",
@@ -761,6 +762,7 @@ class AccountMove(models.Model):
             invoice_tnk = self.create({
                 'e_in_check': self.id,
                 'journal_id': journal_id.id,
+                'purchase_order_product_id': self.purchase_order_product_id,
                 'is_check_invoice_tnk': True,
                 'invoice_date': self.invoice_date,
                 'invoice_description': "Thuế nhập khẩu",
@@ -824,6 +826,7 @@ class AccountMove(models.Model):
                 'e_in_check': self.id,
                 'journal_id': journal_id.id,
                 'is_check_invoice_tnk': True,
+                'purchase_order_product_id': self.purchase_order_product_id,
                 'invoice_date': self.invoice_date,
                 'invoice_description': "Thuế giá trị gia tăng VAT (Nhập khẩu)",
                 'line_ids': merged_records_list_vat,
