@@ -112,16 +112,20 @@ class CalculateFinalValueInherit(models.Model):
                     aa.id account_stock_id,
                     aml.account_id account_source_id,
                     aml.debit debit,
-                    0 debit,
-                    po.id purchase_id
-                from 
-                account_move_line aml 
+                    0 credit,
+                    case 
+                        when po.origin_purchase_id is not null 
+                        then po.origin_purchase_id 
+                        else po.id 
+                    end purchase_id
+			    from
+                account_move_line aml
                 join account_move am on aml.move_id = am.id
                 join product_product pp on aml.product_id = pp.id
                 join stock_move sm on am.stock_move_id = sm.id
                 join stock_move_line sml on sm.id = sml.move_id 
-                join purchase_order_line pol on sm.purchase_line_id = pol.id
-                join purchase_order po on pol.order_id = po.id
+                left join purchase_order_line pol on sm.purchase_line_id = pol.id
+                left join purchase_order po on pol.order_id = po.id
                 join product_template pt on pp.product_tmpl_id = pt.id
                 join product_category pc on pt.categ_id = pc.id
                 join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
@@ -136,16 +140,17 @@ class CalculateFinalValueInherit(models.Model):
                 and am.state = 'posted'
                 and am.payment_state != 'reversed'
                 and am.date >= '{from_date}' and am.date <= '{to_date}'
+
                 
                 union all
                 
                 select 
-                pp.id product_id,
-                aa.id account_stock_id,
-                aml2.account_id account_source_id,
-                aml2.debit debit,
-                0 credit,
-                po.id purchase_id
+                    pp.id product_id,
+                    aa.id account_stock_id,
+                    aml2.account_id account_source_id,
+                    aml2.debit debit,
+                    0 credit,
+                    po.id purchase_id
                 from account_move am
                 join account_move am2 on am2.e_in_check = am.id
                 join account_move_line aml2 on aml2.move_id = am2.id
@@ -165,37 +170,39 @@ class CalculateFinalValueInherit(models.Model):
                 and aml2.account_id != aa.id
                 and am.state = 'posted'
                 and am.date >= '{from_date}' and am.date <= '{to_date}'
+                and am.id not in (select reversed_entry_id from account_move where reversed_entry_id is not null)
             
                 union all
                 
                 select
-                    pp.id product_id,
-                    aa.id account_stock_id,
-                    aml.account_id account_source_id,
-                    0 debit,
-                    aml.credit credit,
-                    case when po2.id is not null then po2.id else po.id end purchase_id
-                from
-                    account_move_line aml
-                join account_move am on aml.move_id = am.id
-                join product_product pp on pp.id = aml.product_id
-                join product_template pt on pp.product_tmpl_id = pt.id
-                join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
-                and ip."name" = 'property_stock_valuation_account_id' 
-                and ip.company_id = {company_id}
-                join account_account aa on 'account.account,' || aa.id = ip.value_reference
-                left join stock_move sm on am.stock_move_id = sm.id
-                left join purchase_order_line pol on pol.id = sm.purchase_line_id
-                left join purchase_order po on pol.order_id = po.id
-                left join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
-                left join purchase_order po2 on ampor.purchase_order_id = po2.id
-                where
-                    am.company_id = {company_id} 
-                    and aml.credit > 0 
-                    and aml.account_id != aa.id
-                    and am.state = 'posted'
-                    and am.payment_state != 'reversed'
-                    and am.date >= '{from_date}' and am.date <= '{to_date}'
+				    pp.id product_id,
+				    aa.id account_stock_id,
+				    aml.account_id account_source_id,
+				    0 debit,
+				    (aml.credit) credit,
+				    case when po2.id is not null then po2.id else po.id end purchase_id
+				from
+				    account_move_line aml
+				join account_move am on aml.move_id = am.id
+				join product_product pp on pp.id = aml.product_id
+				join product_template pt on pp.product_tmpl_id = pt.id
+				join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
+				and ip."name" = 'property_stock_valuation_account_id' 
+				and ip.company_id = {company_id}
+				join account_account aa on 'account.account,' || aa.id = ip.value_reference
+				left join stock_move sm on am.stock_move_id = sm.id
+				left join purchase_order_line pol on pol.id = sm.purchase_line_id
+				left join purchase_order po on pol.order_id = po.id
+				left join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+				left join purchase_order po2 on ampor.purchase_order_id = po2.id
+				where
+				    am.company_id = {company_id} 
+				    and aml.credit > 0 
+				    and aml.account_id != aa.id
+				    and am.state = 'posted'
+				    and am.payment_state != 'reversed'
+				    and am.reversed_entry_id is null
+				    and am.date >= '{from_date}' and am.date <= '{to_date}'
             )
             
             select 
