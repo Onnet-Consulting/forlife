@@ -3,6 +3,7 @@ odoo.define('forlife_pos_assign_employee.ProductScreen', function (require) {
 
     const ProductScreen = require('point_of_sale.ProductScreen');
     const Registries = require('point_of_sale.Registries');
+    const ReceiptScreen = require('point_of_sale.ReceiptScreen');
 
     const EmployeeProductScreen = ProductScreen => class extends ProductScreen {
         async _onClickPay() {
@@ -37,7 +38,15 @@ odoo.define('forlife_pos_assign_employee.ProductScreen', function (require) {
         }
     };
 
+    const ReceiptScreenExtend = ReceiptScreen => class extends ReceiptScreen {
+        orderDone() {
+            super.orderDone();
+            this.env.pos.employeeSelected.employeeID = null;
+        }
+    }
+
     Registries.Component.extend(ProductScreen, EmployeeProductScreen);
+    Registries.Component.extend(ReceiptScreen, ReceiptScreenExtend);
 
     return ProductScreen;
 
