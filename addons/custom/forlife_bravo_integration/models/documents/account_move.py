@@ -113,7 +113,7 @@ class AccountMove(models.Model):
             for move in self.filtered(lambda m: m.purchase_type == 'product'):
                 if move.invoice_type == "increase":
                     initial_records |= move
-                if not move.reversed_entry_id and move.invoice_line_ids.mapped('purchase_order_id').filtered(
+                if move.invoice_type != "decrease" and not move.reversed_entry_id and move.invoice_line_ids.mapped('purchase_order_id').filtered(
                         lambda o: not o.is_return):
                     initial_records |= move
                 if move.reversed_entry_id and move.reversed_entry_id.invoice_line_ids.mapped(
