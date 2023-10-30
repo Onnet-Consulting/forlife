@@ -38,6 +38,8 @@ def _compute_tax_key(self):
             line.tax_key = frozendict({'id': line.id})
 
 
+# Update hàm _compute_all_tax ở bản cập nhật mới nhất của version 16
+# Hàm override từ Odoo base, tính lại giá tính thuế bằng cách trừ tiền giảm x_cart_discount_fixed_price
 def _compute_all_tax(self):
     for line in self:
         sign = line.move_id.direction_sign
@@ -47,6 +49,10 @@ def _compute_all_tax(self):
             continue
         if line.display_type == 'product' and line.move_id.is_invoice(True):
             amount_currency = sign * line.price_unit * (1 - line.discount / 100)
+            if line.x_cart_discount_fixed_price and line.quantity:
+                discount_price_unit = line.x_cart_discount_fixed_price > 0 and line.x_cart_discount_fixed_price / line.quantity or 0
+                if discount_price_unit:
+                    amount_currency -= discount_price_unit * sign
             handle_price_include = True
             quantity = line.quantity
         else:
