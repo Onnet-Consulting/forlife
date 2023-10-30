@@ -419,7 +419,7 @@ class StockPicking(models.Model):
                     }))
                     if item.product_id.cost_method == 'average':
                         self.add_cost_product(item.product_id, debit_cost)
-                    entry_cp = self.env['account.move'].create({
+                    entry_cp = self.env['account.move'].with_context(not_compute_account_id=True).create({
                         'ref': f"{record.name}",
                         'purchase_type': po.purchase_type,
                         'move_type': 'entry',
@@ -452,7 +452,7 @@ class StockPicking(models.Model):
                     }))
                     if item.product_id.cost_method == 'average':
                         self.add_cost_product(item.product_id, total_npl_amount)
-                    entry_allowcation_npls = self.env['account.move'].create({
+                    entry_allowcation_npls = self.env['account.move'].with_context(not_compute_account_id=True).create({
                         'ref': f"{record.name}",
                         'purchase_type': po.purchase_type,
                         'move_type': 'entry',
