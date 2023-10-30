@@ -562,7 +562,7 @@ class AccountMove(models.Model):
                         total_price_unit = 0
                         indx = 1
                         for invoice_line in invoice_lines:
-                            rate = round(invoice_line.price_subtotal / sum_price, 2)
+                            rate = round(invoice_line.price_subtotal / sum_price, 2) if sum_price else 0
                             price_unit = round(rate * sum_price_subtotal_back, 2)
                             total_price_unit += price_unit
                             if indx == len(invoice_lines):
