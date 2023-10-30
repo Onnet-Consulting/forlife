@@ -280,23 +280,23 @@ class AccountMovePurchaseProduct(models.Model):
     def bravo_get_invoice_trade_discount_value(self, employee_code):
         self.ensure_one()
         origin_invoice = self.env['account.move'].browse(self.e_in_check)
-        product_line = self.line_ids.filtered(lambda l: l.product_id)
-        product_line = product_line and product_line[0]
-        if product_line.debit > 0:
-            tax_line = (self.line_ids - product_line).filtered(lambda f: f.debit > 0)
-            credit_lines = self.line_ids - product_line - tax_line
-            credit_line = credit_lines and credit_lines[0]
-            debit_line = product_line
-            credit_acc3 = origin_invoice.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
-            tax_line = tax_line and tax_line[0]
-            debit_acc3 = tax_line.account_id.code or None
-        else:
-            tax_line = (self.line_ids - product_line).filtered(lambda f: f.credit > 0)
-            debit_lines = self.line_ids - product_line - tax_line
+        product_lines = self.line_ids.filtered(lambda l: l.product_id)
+        product_line = product_lines and product_lines[0]
+        if product_line.credit > 0:
+            tax_lines = (self.line_ids - product_lines).filtered(lambda f: f.credit > 0)
+            debit_lines = self.line_ids - product_lines - tax_lines
             debit_line = debit_lines and debit_lines[0]
             credit_line = product_line
-            tax_line = tax_line and tax_line[0]
-            credit_acc3 = tax_line.account_id.code or None
+            tax_line = tax_lines and tax_lines[0]
+            credit_acc3 = origin_invoice.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
+            debit_acc3 = debit_line.account_id.code or None
+        else:
+            tax_lines = (self.line_ids - product_lines).filtered(lambda f: f.debit > 0)
+            credit_lines = self.line_ids - product_lines - tax_lines
+            credit_line = credit_lines and credit_lines[0]
+            debit_line = product_line
+            tax_line = tax_lines and tax_lines[0]
+            credit_acc3 = credit_line.account_id.code or None
             debit_acc3 = origin_invoice.trade_tax_id.invoice_repartition_line_ids.account_id.code or None
 
         partner = self.partner_id
