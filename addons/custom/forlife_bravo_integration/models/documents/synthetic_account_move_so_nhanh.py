@@ -85,14 +85,15 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
                 tax = d.tax_ids.ids or ['']
                 x_price_unit = d.price_unit if d.promotion_type == 'customer_shipping_fee' else 0
                 x_amount_total = d.amount_total if d.promotion_type == 'customer_shipping_fee' else 0
-                key = f"{d.promotion_type}~{tax[0]}~{x_price_unit}"
+                key = f"{d.promotion_type}~{tax[0]}"
                 old_val = discounts.get(key) or {}
                 promotion_type = old_val.get('promotion_type') or d.promotion_type
-                price_unit = (old_val.get('price_unit') or 0) or x_price_unit
+                price_unit = (old_val.get('price_unit') or 0) + x_price_unit
                 amount_total = (old_val.get('amount_total') or 0) + x_amount_total
                 tax_amount = old_val.get('tax_amount') or (d.tax_ids.mapped('amount') or [0])[0]
                 tax_code = old_val.get('tax_code') or (d.tax_ids.mapped('code') or [''])[0]
                 account = old_val.get('account') or (d.tax_ids.invoice_repartition_line_ids.account_id.mapped('code') or [''])[0]
+                original_amount3 = (old_val.get('original_amount3') or 0) + d.tax_amount
                 discounts.update({
                     key: {
                         'promotion_type': promotion_type,
@@ -101,6 +102,7 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
                         'tax_amount': tax_amount,
                         'tax_code': tax_code,
                         'account': account,
+                        'original_amount3': original_amount3,
                     }
                 })
 
@@ -112,6 +114,7 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
                 product = products.filtered(lambda p: p.barcode == item_code)
                 account_income = product.with_company(company).categ_id.property_account_income_categ_id.code or None
                 amount = (detail.get('amount_total') or 0) / (1 + ((detail.get('tax_amount') or 0) / 100))
+                hs = 1 if item_code == 'SHIP' else -1
                 value_line.update({
                     'BuiltinOrder': idx,
                     "ItemCode": item_code,
@@ -128,12 +131,12 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
                     'Amount2': amount * exchange_rate if item_code == 'SHIP' else 0,
                     "RowId": None,
                     "EinvoiceItemType": 2,
+                    "OriginalAmount3": (detail.get('original_amount3') or 0) * hs,
+                    "Amount3": (detail.get('original_amount3') or 0) * exchange_rate * hs,
                 })
                 if detail.get('tax_code'):
                     value_line.update({
                         "TaxCode": detail.get('tax_code'),
-                        "OriginalAmount3": 0,
-                        "Amount3": 0,
                         "DebitAccount3": account_receivable,
                         "CreditAccount3": detail.get('account') or None,
                     })

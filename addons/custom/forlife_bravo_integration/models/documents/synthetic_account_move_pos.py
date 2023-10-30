@@ -102,6 +102,8 @@ class BravoSyntheticAccountMovePos(models.Model):
                     "EinvoiceItemType": 2,
                     "Amount4": abs(detail.price_unit),
                     "OriginalAmount4": abs(detail.price_unit) * exchange_rate,
+                    "OriginalAmount3": detail.tax_amount,
+                    "Amount3": detail.tax_amount * exchange_rate,
                 })
                 tax_id = detail.tax_ids
                 if tax_id:
@@ -109,8 +111,6 @@ class BravoSyntheticAccountMovePos(models.Model):
                     account = tax_id.invoice_repartition_line_ids.account_id and tax_id.invoice_repartition_line_ids.account_id[0]
                     value_line.update({
                         "TaxCode": tax_line.code,
-                        "OriginalAmount3": 0,
-                        "Amount3": 0,
                         "DebitAccount3": account_receivable,
                         "CreditAccount3": account.code,
                     })
