@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="paperformat_print_employee_code" model="report.paperformat">
+            <field name="name">(A6) In mã nhân viên</field>
+            <field name="default" eval="True"/>
+            <field name="format">A6</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">2</field>
+            <field name="margin_bottom">2</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="disable_shrinking" eval="True"/>
+            <field name="dpi">96</field>
+        </record>
+
+        <record id="action_print_employee_code" model="ir.actions.report">
+            <field name="name">In mã nhân viên</field>
+            <field name="model">print.employee.code.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">forlife_pos_assign_employee.print_employee_code_template</field>
+            <field name="report_file">forlife_pos_assign_employee.print_employee_code_template</field>
+            <field name="print_report_name">'Mã nhân viên'</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="forlife_pos_assign_employee.paperformat_print_employee_code"/>
+        </record>
+
+        <template id="print_employee_code_template">
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <t t-foreach="docs" t-as="o">
+                        <h3 align="center">
+                            <t t-esc="o.x_employee_name"/>
+                        </h3>
+                        <p align="center" style="padding-top: 5px;">
+                            <img t-att-src="'/report/barcode/Code128/'+o.x_employee_code" alt="Barcode"/>
+                        </p>
+                        <div align="center">
+                            <t t-esc="o.x_employee_code"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </template>
+    </data>
+
+    <data>
+        <record id="print_employee_code_wizard_view_form" model="ir.ui.view">
+            <field name="name">print_employee_code_wizard_view_form</field>
+            <field name="model">print.employee.code.wizard</field>
+            <field name="arch" type="xml">
+                <form string="print_employee_code_wizard_form">
+                    <sheet>
+                        <h1>Nhập mã nhân viên:
+                            <field name="employee_code"/>
+                        </h1>
+                    </sheet>
+                    <footer>
+                        <button string="Hủy" special="cancel" data-hotkey="z" class="btn-secondary"/>
+                        <button string="In" type="object" name="print_pdf" class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="print_employee_code_wizard_action" model="ir.actions.act_window">
+            <field name="name">In mã nhân viên</field>
+            <field name="res_model">print.employee.code.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="print_employee_code_wizard_menu" parent="point_of_sale.pos_config_menu_catalog" action="print_employee_code_wizard_action" sequence="1090"/>
+
+    </data>
+</odoo>
