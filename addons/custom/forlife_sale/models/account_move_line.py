@@ -21,16 +21,33 @@ class AccountMoveLine(models.Model):
         rslt = super(AccountMoveLine, self.with_context(x_cart_discount_fixed_price=x_cart_discount_fixed_price))._convert_to_tax_base_line_dict()
         return rslt
 
+    # Hàm override từ Odoo base, tính lại giá tính thuế bằng cách trừ tiền giảm x_cart_discount_fixed_price
     @api.depends('quantity', 'discount', 'price_unit', 'tax_ids', 'currency_id')
     def _compute_totals(self):
-        rslt = super(AccountMoveLine, self)._compute_totals()
         for line in self:
-            x_cart_discount_fixed_price = 0
-            check = bool(line.x_cart_discount_fixed_price == line.price_unit * line.discount * line.quantity / 100)
-            if check:
-                x_cart_discount_fixed_price = 0
-            if line.discount == 0:
-                x_cart_discount_fixed_price = line.x_cart_discount_fixed_price
-            line.price_subtotal = line.price_subtotal - x_cart_discount_fixed_price
-            line.price_total = line.price_subtotal - x_cart_discount_fixed_price
-        return rslt
+            if line.display_type != 'product':
+                line.price_total = line.price_subtotal = False
+            # Compute 'price_subtotal'.
+            line_discount_price_unit = line.price_unit * (1 - (line.discount / 100.0))
+            # Compute price after discounting by fix amount
+            if line.x_cart_discount_fixed_price and line.quantity:
+                discount_price_unit = line.x_cart_discount_fixed_price > 0 and line.x_cart_discount_fixed_price / line.quantity or 0
+                if discount_price_unit:
+                    line_discount_price_unit -= discount_price_unit
+
+            subtotal = line.quantity * line_discount_price_unit
+
+            # Compute 'price_total'.
+            if line.tax_ids:
+                taxes_res = line.tax_ids.compute_all(
+                    line_discount_price_unit,
+                    quantity=line.quantity,
+                    currency=line.currency_id,
+                    product=line.product_id,
+                    partner=line.partner_id,
+                    is_refund=line.is_refund,
+                )
+                line.price_subtotal = taxes_res['total_excluded']
+                line.price_total = taxes_res['total_included']
+            else:
+                line.price_total = line.price_subtotal = subtotal
