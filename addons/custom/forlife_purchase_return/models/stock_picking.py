@@ -283,6 +283,7 @@ class StockPicking(models.Model):
             'amount_total': material_line_id.production_line_price_unit * product_plan_qty,
             'reason_type_id': npl_location_id.reason_type_id.id or False,
             'reason_id': npl_location_id.id,
+            'purchase_line_id': material_line_id.purchase_order_line_id.id,
             'include_move_id': move.id
         })
     
