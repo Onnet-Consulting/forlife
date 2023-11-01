@@ -3,7 +3,7 @@
     <t t-name="forlife_pos_assign_employee.AssignEmployeeButton" owl="1">
         <div class="control-button">
             <i class="fa fa-male" role="img" aria-label="Employee" title="Employee"/>
-            Employee
+            <t t-esc="currentEmployeeName"/>
         </div>
     </t>
 </templates>
