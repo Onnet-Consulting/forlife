@@ -3,14 +3,14 @@
     <data>
 
         <record id="paperformat_print_employee_code" model="report.paperformat">
-            <field name="name">(A6) In mã nhân viên</field>
+            <field name="name">(A7) In mã nhân viên</field>
             <field name="default" eval="True"/>
-            <field name="format">A6</field>
+            <field name="format">A7</field>
             <field name="page_height">0</field>
             <field name="page_width">0</field>
             <field name="orientation">Landscape</field>
-            <field name="margin_top">2</field>
-            <field name="margin_bottom">2</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">5</field>
             <field name="margin_left">0</field>
             <field name="margin_right">0</field>
             <field name="disable_shrinking" eval="True"/>
@@ -38,7 +38,7 @@
                             <t t-esc="o.x_employee_name"/>
                         </h3>
                         <p align="center" style="padding-top: 5px;">
-                            <img t-att-src="'/report/barcode/Code128/'+o.x_employee_code" alt="Barcode"/>
+                            <img t-att-src="'/report/barcode/Code128/'+o.x_employee_code" style="width:100%;" alt="Barcode"/>
                         </p>
                         <div align="center">
                             <t t-esc="o.x_employee_code"/>
