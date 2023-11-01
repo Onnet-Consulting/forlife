@@ -4,8 +4,24 @@ odoo.define('forlife_pos_assign_employee.ProductScreen', function (require) {
     const ProductScreen = require('point_of_sale.ProductScreen');
     const Registries = require('point_of_sale.Registries');
     const ReceiptScreen = require('point_of_sale.ReceiptScreen');
+    const { useBarcodeReader } = require('point_of_sale.custom_hooks');
+
 
     const EmployeeProductScreen = ProductScreen => class extends ProductScreen {
+        setup() {
+            super.setup();
+            useBarcodeReader({employee: this._barcodeEmployeeAction});
+        }
+
+        _barcodeEmployeeAction(code) {
+            const employee_id = this.env.pos.assignable_employee_by_barcode[code.code];
+            if (employee_id) {
+                this.env.pos.setDefaultEmployee(employee_id);
+                return true;
+            }
+            this._barcodeErrorAction(code);
+            return false;
+        }
         async _onClickPay() {
             if (this.currentOrder.get_orderlines().length === 0) {
                 this.showPopup('ErrorPopup', {

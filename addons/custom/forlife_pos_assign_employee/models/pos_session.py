@@ -19,6 +19,8 @@ class PosSession(models.Model):
         assignable_employees = self._get_assignable_employees()
         loaded_data['assignable_employees'] = assignable_employees
         loaded_data['assignable_employee_by_id'] = {employee['id']: employee['name'] for employee in assignable_employees}
+        prefix = self.env['barcode.rule'].get_prefix_by_type('employee')
+        loaded_data['assignable_employee_by_barcode'] = {f"{prefix}{employee['code'] or ''}": employee['id'] for employee in assignable_employees}
 
     def _get_assignable_employees(self):
         """Get assignable employees for PoS order line"""

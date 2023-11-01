@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 assign_employee_order_line_wizard,assign_employee_order_line_wizard,model_assign_employee_order_line_wizard,base.group_user,1,1,1,1
+access_print_employee_code_wizard,print_employee_code_wizard,model_print_employee_code_wizard,base.group_user,1,1,1,1

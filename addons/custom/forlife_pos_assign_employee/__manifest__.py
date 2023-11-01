@@ -25,6 +25,7 @@
         'data/mail_templates.xml',
         'views/pos_order_views.xml',
         'wizard/assign_employee_order_line_wizard_views.xml',
+        'wizard/print_employee_code_wizard_view.xml',
         'views/pos_order_templates.xml',
     ],
     'assets': {
