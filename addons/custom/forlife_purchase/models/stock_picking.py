@@ -167,7 +167,7 @@ class StockPicking(models.Model):
                 'date': (self.date_done + timedelta(hours=7)).date(),
                 'invoice_payment_term_id': po.payment_term_id.id,
                 'invoice_date_due': po.date_planned,
-                'restrict_mode_hash_table': False,
+                'restrict_mode_hash_table': False
             }
             svl_values = []
             move_lines = [(0, 0, {
@@ -177,7 +177,8 @@ class StockPicking(models.Model):
                 'name': product_tax.name,
                 'text_check_cp_normal': line.product_id.name,
                 'credit': round((amount / qty_po_origin) * qty_po_done),
-                'debit': 0
+                'debit': 0,
+                'purchase_line_id': line.id
             })]
             if move.product_id.type in ('product', 'consu'):
                 svl_values.append((0, 0, {
@@ -204,6 +205,7 @@ class StockPicking(models.Model):
                     'text_check_cp_normal': line.product_id.name,
                     'credit': 0.0,
                     'debit': round((amount / qty_po_origin) * qty_po_done),
+                    'purchase_line_id': line.id
                 })]
 
             move_value.update({
