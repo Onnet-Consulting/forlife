@@ -748,10 +748,9 @@ class AccountMove(models.Model):
         if not journal_id:
             raise ValidationError("Các bút toán 'Thuế tiêu thụ đặc biệt', 'Thuế nhập khẩu' đang hạch toán vào sổ nhật ký có mã 'EX03'. Hiện tại không thấy trong hệ thống, vui lòng cấu hình thêm trong phân hệ Kế toán!")
         if merged_records_list_db:
-            invoice_db = self.with_context(not_compute_account_id=True).create({
+            invoice_db = self.create({
                 'e_in_check': self.id,
                 'journal_id': journal_id.id,
-                'purchase_order_product_id': self.purchase_order_product_id,
                 'is_check_invoice_tnk': True,
                 'invoice_date': self.invoice_date,
                 'invoice_description': f"Thuế tiêu thụ đặc biệt",
@@ -760,10 +759,9 @@ class AccountMove(models.Model):
             })
             invoice_db.action_post()
         if merged_records_list_tnk:
-            invoice_tnk = self.with_context(not_compute_account_id=True).create({
+            invoice_tnk = self.create({
                 'e_in_check': self.id,
                 'journal_id': journal_id.id,
-                'purchase_order_product_id': self.purchase_order_product_id,
                 'is_check_invoice_tnk': True,
                 'invoice_date': self.invoice_date,
                 'invoice_description': "Thuế nhập khẩu",
