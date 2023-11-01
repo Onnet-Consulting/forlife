@@ -320,7 +320,7 @@ class StockPicking(models.Model):
                     if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(self.company_id).property_stock_account_input_categ_id:
                         raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho trong danh mực sản phẩm của %s") % material_line.product_id.name)
                     if material_line.price_unit > 0:
-                        pbo = material_line.price_unit * move.quantity_done * material_line.product_qty / material_line.production_order_product_qty
+                        pbo = material_line.price_unit * move.quantity_done
                         debit_cp = (0, 0, {
                             'sequence': 99991,
                             'account_id': material_line.product_id.categ_id.with_company(self.company_id).property_stock_account_input_categ_id.id,
