@@ -10,3 +10,8 @@
 .padding-form-custom {
     padding: 0 0.5em;
 }
+
+.o_required_modifier .o_input,.o_radio_item {
+    background-color: #D2D2FF !important;
+    border-radius: 3px;
+}

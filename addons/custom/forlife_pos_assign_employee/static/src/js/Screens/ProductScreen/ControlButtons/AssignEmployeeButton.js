@@ -27,6 +27,12 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
             return this.env.pos.get_order().get_orderlines();
         }
 
+        get currentEmployeeName(){
+            let employeeId = this.env.pos.employeeSelected.employeeID;
+            let employeeName = this.env.pos.assignable_employee_by_id[employeeId];
+            return  employeeName ? employeeName : this.env._t('Nhân viên');
+        }
+
         async onClick() {
             const selectedOrderLine = this.selectedOrderline;
             const self = this
