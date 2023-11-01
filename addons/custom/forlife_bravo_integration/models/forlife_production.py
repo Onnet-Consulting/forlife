@@ -37,9 +37,9 @@ class ForLifeProduction(models.Model):
         values = []
         if bravo_table == BravoTableDetail:
             column_names = [
-                'StatsDocId', 'ItemCode', 'ItemName', 'UnitCode', 'NormQuantityUnit', 'NormAmountUnit',
+                'StatsDocId', 'ItemCode', 'ItemName', 'UnitCode', 'NormQuantityUnit', 'NormAmountUnit', 'NormQuantityUnit9',
                 'NormQuantity', 'LossRate', 'Quantity9', 'Quantity', 'NormAmount', 'CustomerCode', 'DebitAccount',
-                'CreditAccount', 'DeptCode', 'ExpenseCagId', 'JobCode', 'CustomFieldCode', 'DueDate', 'Remark'
+                'CreditAccount', 'DeptCode', 'ExpenseCatgCode', 'JobCode', 'CustomFieldCode', 'DueDate', 'Remark', 'NormQuantity9',
             ]
 
             for record in self:
