@@ -542,8 +542,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (oldPartner !== this.get_partner() && isNewOrder) {
             await this.get_history_program_usages();
             await this.update_surprising_program();
-        };
-        if (isNewOrder) {
             await this.load_promotion_valid_new_partner();
             // Đặt lại và gán pricelist_item vào các order_line
             this.assign_pricelist_item_to_orderline();

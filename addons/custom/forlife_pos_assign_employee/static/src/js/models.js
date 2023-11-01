@@ -23,7 +23,8 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
         }
 
         setDefaultEmployee(employee_id) {
-            this.employeeSelected.employeeID = employee_id
+            this.employeeSelected.employeeID = employee_id;
+            Gui.showNotification(_.str.sprintf(`${this.env.pos.assignable_employee_by_id[employee_id]} được gán là nhân viên mặc định`), 5000);
         }
 
         getDefaultEmployee() {
