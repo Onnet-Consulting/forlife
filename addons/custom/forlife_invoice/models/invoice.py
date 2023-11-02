@@ -670,7 +670,7 @@ class AccountMove(models.Model):
             if item.amount_tax > 0:
                 account_credit_tnk = (0, 0, {
                     'sequence': 99991,
-                    'product_id': item.product_id.id,
+                    'product_id': self.env.ref('forlife_purchase.product_import_tax_default').id,
                     'account_id': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
                         self.company_id).property_account_expense_id.id,
                     'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
@@ -692,7 +692,7 @@ class AccountMove(models.Model):
             if item.special_consumption_tax_amount > 0:
                 account_credit_db = (0, 0, {
                     'sequence': 99991,
-                    'product_id': item.product_id.id,
+                    'product_id': self.env.ref('forlife_purchase.product_excise_tax_default').id,
                     'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
                         self.company_id).property_account_expense_id.id,
                     'name': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(

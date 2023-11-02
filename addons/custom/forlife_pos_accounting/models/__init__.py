@@ -48,7 +48,8 @@ def _compute_all_tax(self):
             line.compute_all_tax_dirty = False
             continue
         if line.display_type == 'product' and line.move_id.is_invoice(True):
-            amount_currency = sign * line.price_unit * (1 - line.discount / 100)
+            # amount_currency = sign * line.price_unit * (1 - line.discount / 100)
+            amount_currency = sign * line.price_unit
             if line.x_cart_discount_fixed_price and line.quantity:
                 discount_price_unit = line.x_cart_discount_fixed_price > 0 and line.x_cart_discount_fixed_price / line.quantity or 0
                 if discount_price_unit:

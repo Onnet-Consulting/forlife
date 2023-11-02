@@ -28,7 +28,8 @@ class AccountMoveLine(models.Model):
             if line.display_type != 'product':
                 line.price_total = line.price_subtotal = False
             # Compute 'price_subtotal'.
-            line_discount_price_unit = line.price_unit * (1 - (line.discount / 100.0))
+            # line_discount_price_unit = line.price_unit * (1 - (line.discount / 100.0))
+            line_discount_price_unit = line.price_unit
             # Compute price after discounting by fix amount
             if line.x_cart_discount_fixed_price and line.quantity:
                 discount_price_unit = line.x_cart_discount_fixed_price > 0 and line.x_cart_discount_fixed_price / line.quantity or 0
