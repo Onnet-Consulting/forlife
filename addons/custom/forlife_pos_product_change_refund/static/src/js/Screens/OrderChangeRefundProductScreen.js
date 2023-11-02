@@ -674,7 +674,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 })
             })
             return {
-                quantity: 0,
+                quantity: -1,
                 price: orderline.price,
                 quantity_canbe_refund: orderline.quantity_canbe_refund,
                 expire_change_refund_date: orderline.expire_change_refund_date,
