@@ -222,6 +222,7 @@ class StockPicking(models.Model):
         domain = ['|', ('move_id', 'in', (self.move_ids).stock_valuation_layer_ids.mapped('account_move_id').ids), ('move_id.stock_move_id', 'in', self.move_ids.ids)]
         return dict(action, domain=domain)
 
+    # bút toán chi phí
     def create_expense_entries(self, po):
         self.ensure_one()
         results = self.env['account.move']
@@ -369,6 +370,7 @@ class StockPicking(models.Model):
                             'product_uom_qty': r.quantity_done / item.product_qty * material_line.product_qty,
                             'quantity_done': r.quantity_done / item.product_qty * material_line.product_qty,
                             'amount_total': material_line.price_unit * material_line.product_qty,
+                            'fl_purchase_line_id': material_line.purchase_order_line_id.id,
                             'reason_id': export_production_order.id,
                         }))
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
@@ -453,14 +455,13 @@ class StockPicking(models.Model):
                     }))
                     if item.product_id.cost_method == 'average':
                         self.add_cost_product(item.product_id, total_npl_amount)
-                    entry_allowcation_npls = self.env['account.move'].with_context(not_compute_account_id=True).create({
+                    entry_allowcation_npls = self.env['account.move'].create({
                         'ref': f"{record.name}",
                         'purchase_type': po.purchase_type,
                         'move_type': 'entry',
                         'journal_id': journal_id,
                         'x_entry_types': 'entry_material',
                         'reference': po.name,
-                        'purchase_order_product_id': [(6, 0, po.ids)],
                         'exchange_rate': po.exchange_rate,
                         'date': (record.date_done + timedelta(hours=7)).date(),
                         'invoice_payment_term_id': po.payment_term_id.id,

@@ -85,6 +85,7 @@ class CalculateFinalValueInherit(models.Model):
                 aa.id account_stock_id,
                 pp.id product_id,
                 am.id move_id
+                
             from account_move_line aml 
             join account_move am on aml.move_id = am.id
             join purchase_order_line pol on pol.id = aml.purchase_line_id 
@@ -100,6 +101,7 @@ class CalculateFinalValueInherit(models.Model):
             am."date" between '{from_date}' and '{to_date}'
             and am.state = 'posted'
             and am.company_id = {company_id}
+            and am.stock_move_id is null
             
             group by 
                 po.id,
@@ -110,21 +112,19 @@ class CalculateFinalValueInherit(models.Model):
             ),
             tax as (
             select distinct 
-                aml2.debit debit,
-                aml2.credit credit,
+                aml.debit debit,
+                aml.credit credit,
                 po.id purchase_id,
-                aml2.account_id account_source_id,
+                aml.account_id account_source_id,
                 aa.id account_stock_id,
                 pp.id product_id,
-                am2.id move_id
+                am.id move_id
                 
             from account_move_line aml 
             join account_move am on aml.move_id = am.id
-            join account_move am2 on am.id = am2.e_in_check
-            join account_move_line aml2 on am2.id = aml2.move_id
             join purchase_order_line pol on pol.id = aml.purchase_line_id 
             join purchase_order po on pol.order_id = po.id
-            join product_product pp on aml2.product_id = pp.id
+            join product_product pp on aml.product_id = pp.id
             join product_template pt on pp.product_tmpl_id = pt.id
             join product_category pc on pt.categ_id = pc.id
             join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
@@ -140,15 +140,12 @@ class CalculateFinalValueInherit(models.Model):
             select 
                 sum(debit) debit,
                 sum(credit) credit,
-                case 
-                    when po.origin_purchase_id is not null 
-                    then po.origin_purchase_id 
-                    else po.id
-                end purchase_id,
+                po.id purchase_id,
                 aml.account_id account_source_id,
                 aa.id account_stock_id,
                 pp.id product_id,
                 am.id move_id
+                
             from account_move_line aml 
             join account_move am on aml.move_id = am.id
             join stock_move sm on am.stock_move_id = sm.id
@@ -174,24 +171,22 @@ class CalculateFinalValueInherit(models.Model):
                 am.id
             ),
             material as (
-            select 
+            select distinct
                 sum(debit) debit,
                 sum(credit) credit,
-                case 
-                    when po.origin_purchase_id is not null 
-                    then po.origin_purchase_id 
-                    else po.id
-                end purchase_id,
+                po.id purchase_id,
                 aml.account_id account_source_id,
                 aa.id account_stock_id,
                 pp.id product_id,
                 am.id move_id
+                
             from account_move_line aml 
             join account_move am on aml.move_id = am.id
             join stock_move sm on am.stock_move_id = sm.id
             join stock_picking sp on sm.picking_id = sp.id
             join stock_picking sp2 on sp.id = sp2.picking_xk_id 
-            join purchase_order po on sp.origin = po.name
+            join purchase_order_line pol on sm.fl_purchase_line_id = pol.id 
+            join purchase_order po on po.id = pol.order_id
             join product_product pp on aml.product_id = pp.id
             join product_template pt on pp.product_tmpl_id = pt.id
             join product_category pc on pt.categ_id = pc.id
@@ -211,7 +206,43 @@ class CalculateFinalValueInherit(models.Model):
                 aa.id,
                 pp.id,
                 am.id
-            )
+            ),
+            entry_end_period as (
+                select
+                    sum(debit) debit,
+                    sum(credit) credit,
+                    po.id purchase_id,
+                    aml.account_id account_source_id,
+                    aa.id account_stock_id,
+                    pp.id product_id,
+                    am.id move_id
+                    
+                from account_move_line aml 
+                join account_move am on aml.move_id = am.id
+                join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+                join purchase_order po on ampor.purchase_order_id = po.id
+                join product_product pp on aml.product_id = pp.id
+                join product_template pt on pp.product_tmpl_id = pt.id
+                join product_category pc on pt.categ_id = pc.id
+                join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
+                and ip."name" = 'property_stock_valuation_account_id' 
+                and ip.company_id = {company_id}
+                join account_account aa on 'account.account,' || aa.id = ip.value_reference
+                
+                where 
+                 am."date" between '{from_date}' and '{to_date}'
+                and am.state = 'posted'
+                and am.company_id = {company_id}
+                and am.end_period_entry is true
+                
+                group by 
+                    po.id,
+                    aml.account_id,
+                    aa.id,
+                    pp.id,
+                    am.id
+                    
+                )
             select 
                 {parent_id} parent_id,
                 product_id,
@@ -233,9 +264,11 @@ class CalculateFinalValueInherit(models.Model):
                 from material t3
                 union
                 select *
-                from tax t4
+	            from entry_end_period t4
             ) mt
+            
             {where}
+            
             group by 
                 product_id,
                 account_stock_id,
@@ -291,12 +324,13 @@ class CalculateFinalValueInherit(models.Model):
                     'journal_id': journal_up_id.id if line.diff > 0 else journal_down_id.id,
                     'auto_post': 'no',
                     'x_root': 'other',
+                    'purchase_order_product_id': [(6, 0, purchase.ids)],
                     'end_period_entry': True,
                     'line_ids': [
                         (0, 0, {
                             'name': self.name,
                             'product_id': line.product_id.id,
-                            'purchase_line_id': line.purchase_line_id.id,
+                            # 'purchase_line_id': line.purchase_line_id.id,
                             'quantity': 0,
                             'credit': line.diff if line.diff > 0 else -line.diff,
                             'account_id': line.account_source_id.id if line.diff > 0 else line.account_stock_id.id
@@ -304,7 +338,7 @@ class CalculateFinalValueInherit(models.Model):
                         (0, 0, {
                             'name': self.name,
                             'product_id': line.product_id.id,
-                            'purchase_line_id': line.purchase_line_id.id,
+                            # 'purchase_line_id': line.purchase_line_id.id,
                             'quantity': 0,
                             'debit': line.diff if line.diff > 0 else -line.diff,
                             'account_id': line.account_stock_id.id if line.diff > 0 else line.account_source_id.id
@@ -343,14 +377,12 @@ class AccountingDifferenceLine(models.Model):
     parent_id = fields.Many2one('accounting.difference', string='Phiếu hạch toán', ondelete='cascade')
     account_source_id = fields.Many2one('account.account', string='Tài khoản nguồn')
     purchase_id = fields.Many2one('purchase.order', string='Đơn mua')
-    purchase_line_id = fields.Many2one('purchase.order.line', string='Chi tiết đơn mua')
     product_id = fields.Many2one('product.product', string='Sản phẩm')
     account_stock_id = fields.Many2one('account.account', string='Tài khoản kho')
     debit = fields.Float(string='Phát sinh nợ')
     credit = fields.Float(string='Phát sinh có')
     diff = fields.Float(string='Chênh lệch')
     diff_rate = fields.Float(string='Tỉ lệ chênh lệch', compute='_compute_diff_rate')
-    stock_move_id = fields.Many2one('stock.move', string='Chi tiết điều chuyển')
 
     def _compute_diff_rate(self):
         for rec in self:

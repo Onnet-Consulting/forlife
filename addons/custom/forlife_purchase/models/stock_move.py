@@ -62,6 +62,10 @@ class StockMove(models.Model):
     qty_to_invoice = fields.Float('Qty to invoice', copy=False)
     qty_invoiced = fields.Float('Qty Invoiced', copy=False)
     qty_refunded = fields.Float('Qty refunded', copy=False)
+    fl_purchase_line_id = fields.Many2one('purchase.order.line',
+                                          string='Chi tiết đơn mua',
+                                          help='Sử dụng để lưu thông tin đơn mua khi tạo picking npl',
+                                          ondelete='cascade')
 
     def _get_price_unit(self):
         """ Returns the unit price for the move"""
