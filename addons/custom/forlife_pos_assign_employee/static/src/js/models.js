@@ -19,10 +19,12 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
             await super._processData(...arguments);
             this.assignable_employees = loadedData['assignable_employees'];
             this.assignable_employee_by_id = loadedData['assignable_employee_by_id'];
+            this.assignable_employee_by_barcode = loadedData['assignable_employee_by_barcode'];
         }
 
         setDefaultEmployee(employee_id) {
-            this.employeeSelected.employeeID = employee_id
+            this.employeeSelected.employeeID = employee_id;
+            Gui.showNotification(_.str.sprintf(`${this.env.pos.assignable_employee_by_id[employee_id]} được gán là nhân viên mặc định`), 5000);
         }
 
         getDefaultEmployee() {

@@ -53,6 +53,11 @@ class StockPicking(models.Model):
                         "description": promotion_id.description,
                         "tax_id": [(6, 0, promotion_id.tax_id.ids)],
                     }))
+            # Thêm giảm giá cố định khi trả hàng
+            cart_discount_fixed_price = 0
+            if line.sale_line_id.x_cart_discount_fixed_price and line.sale_line_id.product_uom_qty:
+                rate_per_quantity = line.sale_line_id.x_cart_discount_fixed_price/line.sale_line_id.product_uom_qty
+                cart_discount_fixed_price = round(rate_per_quantity * line.product_uom_qty)
             invoice_line = {
                 'product_id': line.product_id.id,
                 'name': line.product_id.name,
@@ -68,6 +73,7 @@ class StockPicking(models.Model):
                 'warehouse': line.location_id.id,
                 'tax_ids': [(6, 0, line.sale_line_id.tax_id.ids)],
                 'discount': line.sale_line_id.discount,
+                'x_cart_discount_fixed_price': cart_discount_fixed_price,
                 'account_analytic_id': line.account_analytic_id.id,
                 'work_order': line.sale_line_id.x_manufacture_order_code_id.id,
                 'sale_line_ids': [(4, line.sale_line_id.id)]

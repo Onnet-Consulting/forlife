@@ -353,11 +353,11 @@ class ForlifeProduction(models.Model):
             else:
                 self.selected_product_ids = False
 
-    @api.constrains('forlife_production_finished_product_ids')
-    def constrains_forlife_production_finished_product_ids(self):
-        for item in self:
-            if not item.forlife_production_finished_product_ids:
-                raise ValidationError("Bạn chưa nhập sản phẩm cho lệnh sản xuất!")
+    # @api.constrains('forlife_production_finished_product_ids')
+    # def constrains_forlife_production_finished_product_ids(self):
+    #     for item in self:
+    #         if not item.forlife_production_finished_product_ids:
+    #             raise ValidationError("Bạn chưa nhập sản phẩm cho lệnh sản xuất!")
 
     @api.constrains('code')
     def constrains_code(self):
