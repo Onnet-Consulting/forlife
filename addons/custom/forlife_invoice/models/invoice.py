@@ -677,6 +677,7 @@ class AccountMove(models.Model):
                         self.company_id).property_account_expense_id.name,
                     'debit': 0 if is_in else round(item.amount_tax),
                     'credit': round(item.amount_tax) if is_in else 0.0,
+                    'purchase_line_id': item.purchase_line_id.id
                 })
                 account_debit_tnk = (0, 0, {
                     'sequence': 9,
@@ -686,6 +687,7 @@ class AccountMove(models.Model):
                     'name': item.product_id.name,
                     'debit': round(item.amount_tax) if is_in else 0.0,
                     'credit': 0 if is_in else round(item.amount_tax),
+                    'purchase_line_id': item.purchase_line_id.id
                 })
                 lines_tnk = [account_debit_tnk, account_credit_tnk]
                 account_tnk.extend(lines_tnk)
@@ -699,6 +701,7 @@ class AccountMove(models.Model):
                         self.company_id).property_account_expense_id.name,
                     'debit': 0 if is_in else round(item.special_consumption_tax_amount),
                     'credit': round(item.special_consumption_tax_amount) if is_in else 0,
+                    'purchase_line_id': item.purchase_line_id.id
                 })
                 account_debit_db = (0, 0, {
                     'sequence': 9,
@@ -707,6 +710,7 @@ class AccountMove(models.Model):
                     'name': item.product_id.name,
                     'debit': round(item.special_consumption_tax_amount) if is_in else 0,
                     'credit': 0 if is_in else round(item.special_consumption_tax_amount),
+                    'purchase_line_id': item.purchase_line_id.id
                 })
                 lines_db = [account_debit_db, account_credit_db]
                 account_db.extend(lines_db)
@@ -725,6 +729,7 @@ class AccountMove(models.Model):
                         'name': tnk[2]['name'],
                         'debit': tnk[2]['debit'],
                         'credit': tnk[2]['credit'],
+                        'purchase_line_id': tnk[2]['purchase_line_id'],
                     }
             for db in account_db:
                 key = (db[2]['account_id'], db[2]['name'], db[2]['sequence'])
@@ -739,6 +744,7 @@ class AccountMove(models.Model):
                         'name': db[2]['name'],
                         'debit': db[2]['debit'],
                         'credit': db[2]['credit'],
+                        'purchase_line_id': db[2]['purchase_line_id'],
                     }
             # Chuyển đổi từ điển thành danh sách bản ghi
         merged_records_list_tnk = [(0, 0, record) for record in merged_records_tnk.values()]
