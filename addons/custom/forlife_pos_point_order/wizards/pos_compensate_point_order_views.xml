@@ -40,6 +40,60 @@
         <field name="res_model">pos.compensate.point.order</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+        <field name="view_id" ref="view_pos_compensate_point_order"/>
     </record>
+
+    <data>
+        <record id="view_pos_compensate_point_order_filter" model="ir.ui.view">
+            <field name="name">view.pos.compensate.point.order.filter</field>
+            <field name="model">pos.compensate.point.order</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form string="Tích điểm bù">
+                    <header>
+                        <button name="remove_all_customer_selected" type="object" class="btn-primary" string="Gỡ hết khách hàng"/>
+                        <button name="remove_all_po_name" type="object" class="btn-primary" string="Gỡ hết tham chiếu ĐH"/>
+                    </header>
+                    <p class="alert alert-success">
+                        Lọc đơn hàng và kiểm tra chúng trước khi thực hiện tích điểm bù
+                    </p>
+                    <group>
+                        <group>
+                            <field name="brand_id"/>
+                            <field name="from_date" class="oe_inline" widget="daterange" options="{'related_end_date': 'to_date'}"/>
+                            <field name="to_date" class="oe_inline" widget="daterange" options="{'related_start_date': 'from_date'}"/>
+                        </group>
+                        <group>
+                            <div colspan="2" class="alert alert-success">Tệp có 1 cột chứa tham chiếu đơn hàng</div>
+                            <field name="import_file" filename="import_file_name"/>
+                            <field name="import_file_name" invisible="1"/>
+                            <field name="is_header"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="customer_ids" widget="many2many_tags"/>
+                        <field name="po_name"/>
+                    </group>
+                    <separator string="Đơn hàng được tìm thấy"/>
+                    <field name="po_domain" widget="domain" options="{'model': 'pos.order', 'in_dialog': True}"/>
+                    <footer>
+                        <button name="import_excel" type="object" string="Nhập từ excel" class="btn-danger" data-hotkey="x"/>
+                        <button name="validate_order" type="object" string="Kiểm tra đơn hàng" class="btn-primary" data-hotkey="q"/>
+                        <button string="Hủy" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="compensate_point_order_filter_action" model="ir.actions.act_window">
+            <field name="name">Lọc đơn và tích điểm bù</field>
+            <field name="res_model">pos.compensate.point.order</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_pos_compensate_point_order_filter"/>
+        </record>
+
+        <menuitem id="compensate_point_order_filter_menu" parent="point_of_sale.menu_point_of_sale" action="compensate_point_order_filter_action" sequence="1010"/>
+    </data>
 
 </odoo>
