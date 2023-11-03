@@ -185,8 +185,7 @@ class CalculateFinalValueInherit(models.Model):
             join stock_move sm on am.stock_move_id = sm.id
             join stock_picking sp on sm.picking_id = sp.id
             join stock_picking sp2 on sp.id = sp2.picking_xk_id 
-            join purchase_order_line pol on sm.fl_purchase_line_id = pol.id 
-            join purchase_order po on po.id = pol.order_id
+            join purchase_order po on po.name = sp2.origin
             join product_product pp on aml.product_id = pp.id
             join product_template pt on pp.product_tmpl_id = pt.id
             join product_category pc on pt.categ_id = pc.id
