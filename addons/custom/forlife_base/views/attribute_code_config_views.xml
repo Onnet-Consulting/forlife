@@ -12,6 +12,10 @@
                         <separator string="Danh sách key-value mã thuộc tính"/>
                         <field name="attr_code_config" widget="ace" options="{'mode': 'python'}"/>
                     </div>
+                    <div class="o_setting_containers padding-setting-custom">
+                        <separator string="Thứ tự thuộc tính trong tập tin mẫu"/>
+                        <field name="attr_sequence_config" widget="ace" options="{'mode': 'python'}"/>
+                    </div>
                 </form>
             </field>
         </record>

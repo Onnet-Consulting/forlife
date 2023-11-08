@@ -41,3 +41,12 @@
 .title-change-refund .set-width-gg{
     width: 20%;
 }
+
+.pos .order .orderline.selected{
+    background: rgba($primary, 0.2);
+    -webkit-transition: background 250ms ease-in-out;
+    -moz-transition: background 250ms ease-in-out;
+    transition: background 250ms ease-in-out;
+    cursor: default;
+    padding-top: 50px !important;
+}

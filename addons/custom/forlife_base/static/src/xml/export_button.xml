@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="export.template.product.buttons" t-inherit="web.ListView.Buttons" t-inherit-mode="extension" owl="1">
+        <xpath expr="//*[@class='btn btn-secondary fa fa-download o_list_export_xlsx']" position="after">
+            <button type="object" t-if="props.resModel === 'product.product' || props.resModel === 'product.template'"
+                    class="btn btn-primary fa fa-file-excel-o"
+                    t-ref="action"
+                    action="forlife_base.export_template_product_action"
+                    style="margin-left:10px;" t-on-click="buttonImport">
+                Tải tập tin mẫu
+            </button>
+        </xpath>
+    </t>
+</templates>

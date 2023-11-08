@@ -4,6 +4,8 @@ from odoo import api, fields, models, _
 from odoo.tools.misc import xlsxwriter
 import copy
 import io
+import base64
+import openpyxl
 
 
 class ReportBase(models.AbstractModel):
@@ -12,10 +14,12 @@ class ReportBase(models.AbstractModel):
 
     def print_xlsx(self):
         filename = self.get_filename_standardized(self.get_filename())
+        att_xml_id = self._context.get('att_xml_id')
+        attachment_id = self.env.ref(att_xml_id).id if att_xml_id else 0
         return {
             'type': 'ir.actions.act_url',
             'name': self._description,
-            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (filename, self._name, self.id, self._context.get('allowed_company_ids', [])),
+            'url': f"/custom/download/xlsx/{filename}/{self._name}/{self.id if hasattr(self, 'id') else 0}/{self._context.get('allowed_company_ids') or []}/{attachment_id}",
             'target': 'current'
 
         }
@@ -41,13 +45,21 @@ class ReportBase(models.AbstractModel):
         ...
 
     @api.model
-    def get_xlsx(self, allowed_company):
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {
-            'in_memory': True,
-            'strings_to_formulas': False,
-        })
+    def get_xlsx(self, allowed_company, attachment_id):
+        if attachment_id:
+            attachment = self.env['ir.attachment'].browse(attachment_id)
+            file_data = base64.b64decode(attachment.datas)
+            output = io.BytesIO(file_data)
+            workbook = openpyxl.load_workbook(output)
+        else:
+            output = io.BytesIO()
+            workbook = xlsxwriter.Workbook(output, {
+                'in_memory': True,
+                'strings_to_formulas': False,
+            })
         self.generate_xlsx_report(workbook, allowed_company)
+        if attachment_id:
+            workbook.save(output)
         workbook.close()
         output.seek(0)
         generated_file = output.read()

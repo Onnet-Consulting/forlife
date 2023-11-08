@@ -37,3 +37,4 @@ from . import odoo_app_logging
 from . import stock_location
 from . import ir_actions
 from . import hr_employee
+from . import export_template_product
