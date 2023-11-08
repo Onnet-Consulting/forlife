@@ -19,7 +19,7 @@ class ReportBase(models.AbstractModel):
         return {
             'type': 'ir.actions.act_url',
             'name': self._description,
-            'url': '/custom/download/xlsx/%s/%s/%d/%s/%d' % (filename, self._name, self.id, self._context.get('allowed_company_ids', []), attachment_id),
+            'url': f"/custom/download/xlsx/{filename}/{self._name}/{self.id if hasattr(self, 'id') else 0}/{self._context.get('allowed_company_ids') or []}/{attachment_id}",
             'target': 'current'
 
         }

@@ -55,7 +55,6 @@ select (select json_object_agg(name, model) from x_model) as model_by_name,
         users = result.get('users') or {}
 
         sheet5 = workbook.worksheets[4]
-        sheet5.cell(2, 1).value = 'PQ001'
         i = 2
         for name, model in model_by_name.items():
             sheet5.cell(i, 1).value = model

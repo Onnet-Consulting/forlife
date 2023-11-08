@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="template_import_product" model="ir.attachment">
+            <field name="name">Mẫu nhập sản phẩm.xlsx</field>
+            <field name="datas" type="base64" file="forlife_base/static/src/xlsx/template_product.xlsx"/>
+            <field name="company_id" eval="False"/>
+            <field name="public" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

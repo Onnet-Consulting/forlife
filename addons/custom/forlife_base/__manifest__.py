@@ -31,6 +31,7 @@
         'data/product_category_data.xml',
         'data/stock_warehouse_data.xml',
         'data/forlife_app_api_link_data.xml',
+        'data/ir_attachment_data.xml',
 
         'views/uom_uom_view.xml',
         'views/account_tax_view.xml',
@@ -51,6 +52,7 @@
         'views/res_ward_views.xml',
         'views/forlife_app_api_link_views.xml',
         'views/attribute_code_config_views.xml',
+        'views/export_template_product_action_view.xml',
         'views/menu_item.xml',
 
         'views/ir_ui_menu_view.xml',
@@ -61,6 +63,7 @@
         'web.assets_backend': [
             'forlife_base/static/src/css/**/*',
             'forlife_base/static/src/js/**/*',
+            'forlife_base/static/src/xml/**/*',
         ]
     },
 }

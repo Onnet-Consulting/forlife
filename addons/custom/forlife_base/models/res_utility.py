@@ -80,6 +80,10 @@ class ResUtility(models.AbstractModel):
         return ast.literal_eval(self.env['ir.config_parameter'].sudo().get_param('attr_code_config') or '{}')
 
     @api.model
+    def get_attribute_sequence_config(self):
+        return ast.literal_eval(self.env['ir.config_parameter'].sudo().get_param('attr_sequence_config') or '[]')
+
+    @api.model
     def get_attribute_value_by_product_id(self, product_ids, lang='vi_VN'):
         self._cr.execute(f"""
         select json_object_agg(product_id, attrs) as attrs_data
