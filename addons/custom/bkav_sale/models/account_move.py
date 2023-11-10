@@ -51,7 +51,11 @@ class AccountMoveBKAV(models.Model):
 
     origin_move_id = fields.Many2one('account.move', 'Hóa đơn gốc')
     po_source_id = fields.Many2one('purchase.order', 'Purchase Order', readonly=True)
-
+    refund_method = fields.Selection([
+        ('refund', 'Hoàn tiền 1 phần'),
+        ('cancel', 'Hoàn tiền toàn bộ'),
+        ('modify', 'Hoàn toàn bộ và tạo hóa đơn mới')
+    ], string='Phương thức trả hóa')
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
