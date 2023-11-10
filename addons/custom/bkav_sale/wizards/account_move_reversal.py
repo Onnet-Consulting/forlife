@@ -10,6 +10,7 @@ class AccountMoveReversal(models.TransientModel):
         res.update({
             'origin_move_id': move.id,
             'issue_invoice_type': 'adjust',
+            'refund_method': self.refund_method,
         })
         return res
     
