@@ -158,371 +158,109 @@ class ProductInventory(models.Model):
                     group by sml.product_id
                 ),
                 amount_period as (
-                    select product_id, sum(amount) amount from (
-                        select
-                            pp.id product_id,
-                            sum(aml.debit) - sum(aml.credit) amount
-                        
-                        from account_move am
-                        join account_move_line aml on
-                        am.id = aml.move_id
-                        join product_product pp on
-                        aml.product_id = pp.id
-                        join product_template pt on
-                        pp.product_tmpl_id = pt.id
-                        join account_account aa on aml.account_id = aa.id
-                        join product_category pc on
-                            pt.categ_id = pc.id
-                        join ir_property ip on
-                            ip.res_id = 'product.category,' || pt.categ_id
-                            and ip."name" = 'property_stock_valuation_account_id'
-                            and ip.company_id = {company_id}
-                            and ip.value_reference = 'account.account,' || aa.id
-                        
-                        where 
-                        am.invoice_type in ('increase', 'decrease') 
-                        and aa.code like '3319%' 
-                        and am.state = 'posted'
-                        and am.payment_state != 'reversed'
-                        and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
-                        and am.company_id = {company_id}
-                        
-                        group by
-                        pp.id
-                    
-                        union
-                        select
-                            product_id,
-                            sum(amount)
-                        from
-                            (
-                            select
-                                pp.id product_id,
-                                aml.debit amount,
-                                am.name
-                            from
-                                stock_move sm
-                            join stock_picking sp on
-                                sm.picking_id = sp.id
-                            join stock_location sl on
-                                sm.location_dest_id = sl.id
-                            join account_move am on
-                                sm.id = am.stock_move_id
-                            join account_move_line aml on
-                                am.id = aml.move_id
-                            join product_product pp on
-                                aml.product_id = pp.id
-                            join product_template pt on
-                                pp.product_tmpl_id = pt.id
-                            join account_account aa on aml.account_id = aa.id
-                            join product_category pc on
-                                pt.categ_id = pc.id
-                            join ir_property ip on
-                                ip.res_id = 'product.category,' || pt.categ_id
-                                and ip."name" = 'property_stock_valuation_account_id'
-                                and ip.company_id = {company_id}
-                                and ip.value_reference = 'account.account,' || aa.id
-                    
-                            where
-                                am.state = 'posted'
-                                and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
-                                and am.company_id = {company_id}
-                    
-                        
-                            union 
-                            
-                            select
-                                pp.id product_id,
-                                - aml.credit amount,
-                                am.name
-                            from
-                                stock_move sm
-                            join stock_picking sp on
-                                sm.picking_id = sp.id
-                            join account_move am on
-                                sm.id = am.stock_move_id
-                            join stock_location sl on
-                                sm.location_id = sl.id
-                            join account_move_line aml on
-                                am.id = aml.move_id
-                            join product_product pp on
-                                aml.product_id = pp.id
-                            join product_template pt on
-                                pp.product_tmpl_id = pt.id
-                            join account_account aa on aml.account_id = aa.id
-                            join product_category pc on
-                                pt.categ_id = pc.id
-                            join ir_property ip on
-                                ip.res_id = 'product.category,' || pt.categ_id
-                                and ip."name" = 'property_stock_valuation_account_id'
-                                and ip.company_id = {company_id}
-                                and ip.value_reference = 'account.account,' || aa.id
-                            join stock_move sm2 on sm.origin_returned_move_id = sm2.id
-                            
-                            where
-                                am.state = 'posted'
-                                and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
-                                and am.company_id = {company_id}
-                                
-                        ) as mt
-                        group by mt.product_id
-                        
-                        union 
-                        
-                        select product_id, sum(amount) amount from (
-                            select
-                                pp.id product_id,
-                                sum(aml.debit) - sum(aml.credit) amount
-                    
-                        
-                            from account_move am
-                            join account_journal aj on am.journal_id = aj.id
-                            join account_move_line aml on
-                            am.id = aml.move_id
-                            join product_product pp on
-                            aml.product_id = pp.id
-                            join product_template pt on
-                            pp.product_tmpl_id = pt.id
-                            join account_account aa on
-                            aml.account_id = aa.id
-                            left join purchase_order_line pol on aml.purchase_line_id = pol.id
-                            left join purchase_order po on pol.order_id = po.id and (po.is_return is null or po.is_return is false)
-                            
-                            where 
-                            (aa.code like '1562%' or aa.code like '3319%') 
-                            and am.state = 'posted'
-                            and am.payment_state != 'reversed'
-                            and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
-                            and am.company_id = {company_id}
-                            and am.stock_move_id is null
-                            and am.id not in (
-                            select am2.id from account_move am 
-                                join account_move_line aml on am.id = aml.move_id 
-                                join purchase_order_line pol on pol.id = aml.purchase_line_id 
-                                join purchase_order po on po.id = pol.order_id 
-                                join account_move am2 on am.name = split_part(am2.ref, ' - ', 1)
-                            where po.is_return is true 
-                            and aml.company_id = {company_id}
-                            and aml.date >= '{from_date}' and aml.date <= '{to_date} 23:59:59'
-                            )
-                            group by
-                            pp.id
-                        
-                        union 
-                        
-                            select
-                            pp.id product_id,
-                            - (sum(aml.credit) - sum(aml.debit)) amount
-                            
-                            from account_move am
-                            join account_journal aj on am.journal_id = aj.id
-                            join account_move_line aml on
-                            am.id = aml.move_id
-                            join product_product pp on
-                            aml.product_id = pp.id
-                            join product_template pt on
-                            pp.product_tmpl_id = pt.id
-                            join account_account aa on
-                            aml.account_id = aa.id
-                            join stock_move sm on sm.id = am.stock_move_id 
-                            join stock_picking sp on sm.picking_id = sp.id
-                            
-                            where 
-                            (aa.code like '1562%' or aa.code like '3319%') 
-                            and am.state = 'posted'
-                            and am.payment_state != 'reversed'
-                            and am.date >= '{from_date}' and am.date <= '{to_date} 23:59:59'
-                            and am.company_id = {company_id}
-                            and am.x_entry_types != 'entry_material'
-                            
-                            group by
-                            pp.id
-                        )
-                        mt group by product_id
+                	select product_id, sum(amount) amount from (
+	                    select 
+	                    pp.id product_id,
+	                    sum(debit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                        
+	                    where 
+	                    am.date >= '{from_date}'
+                        and am.date <= '{to_date} 23:59:59'
+	                    
+	                    group by pp.id
+	                    
+	                    union all
+	                    
+	                    select 
+	                    pp.id product_id,
+	                    - sum(credit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done' and sm.origin_returned_move_id is not null 
+	                    join stock_picking sp on sm.picking_id = sp.id and sp.x_is_check_return is true
+	                    
+	                    where 
+	                    am.date >= '{from_date}'
+                        and am.date <= '{to_date} 23:59:59'
+	                    
+	                    group by pp.id
+
                     ) amount_period group by product_id
                 ),
                 amount_first as (
-                    select product_id, sum(amount) amount from (
-                        select
-                            pp.id product_id,
-                            sum(aml.debit) - sum(aml.credit) amount
-                        
-                        from account_move am
-                        join account_move_line aml on
-                        am.id = aml.move_id
-                        join product_product pp on
-                        aml.product_id = pp.id
-                        join product_template pt on
-                        pp.product_tmpl_id = pt.id
-                        join account_account aa on aml.account_id = aa.id
-                        join product_category pc on
-                            pt.categ_id = pc.id
-                        join ir_property ip on
-                            ip.res_id = 'product.category,' || pt.categ_id
-                            and ip."name" = 'property_stock_valuation_account_id'
-                            and ip.company_id = {company_id}
-                            and ip.value_reference = 'account.account,' || aa.id
-                        
-                        where 
-                        am.invoice_type in ('increase', 'decrease') 
-                        and aa.code like '3319%' 
-                        and am.state = 'posted'
-                        and am.payment_state != 'reversed'
-                        and am.date < '{from_date}'
-                        and am.company_id = {company_id}
-                        
-                        group by
-                        pp.id
-                    
-                        union
-                        select
-                            product_id,
-                            sum(amount)
-                        from
-                            (
-                            select
-                                pp.id product_id,
-                                aml.debit amount,
-                                am.name
-                            from
-                                stock_move sm
-                            join stock_picking sp on
-                                sm.picking_id = sp.id
-                            join stock_location sl on
-                                sm.location_dest_id = sl.id
-                            join account_move am on
-                                sm.id = am.stock_move_id
-                            join account_move_line aml on
-                                am.id = aml.move_id
-                            join product_product pp on
-                                aml.product_id = pp.id
-                            join product_template pt on
-                                pp.product_tmpl_id = pt.id
-                            join account_account aa on aml.account_id = aa.id
-                            join product_category pc on
-                                pt.categ_id = pc.id
-                            join ir_property ip on
-                                ip.res_id = 'product.category,' || pt.categ_id
-                                and ip."name" = 'property_stock_valuation_account_id'
-                                and ip.company_id = {company_id}
-                                and ip.value_reference = 'account.account,' || aa.id
-                    
-                            where
-                                am.state = 'posted'
-                                and am.date < '{from_date}'
-                                and am.company_id = {company_id}
-                    
-                        
-                            union 
-                            
-                            select
-                                pp.id product_id,
-                                - aml.credit amount,
-                                am.name
-                            from
-                                stock_move sm
-                            join stock_picking sp on
-                                sm.picking_id = sp.id
-                            join account_move am on
-                                sm.id = am.stock_move_id
-                            join stock_location sl on
-                                sm.location_id = sl.id
-                            join account_move_line aml on
-                                am.id = aml.move_id
-                            join product_product pp on
-                                aml.product_id = pp.id
-                            join product_template pt on
-                                pp.product_tmpl_id = pt.id
-                            join account_account aa on aml.account_id = aa.id
-                            join product_category pc on
-                                pt.categ_id = pc.id
-                            join ir_property ip on
-                                ip.res_id = 'product.category,' || pt.categ_id
-                                and ip."name" = 'property_stock_valuation_account_id'
-                                and ip.company_id = {company_id}
-                                and ip.value_reference = 'account.account,' || aa.id
-                            join stock_move sm2 on sm.origin_returned_move_id = sm2.id
-                            
-                            where
-                                am.state = 'posted'
-                                and am.date < '{from_date}'
-                                and am.company_id = {company_id}
-                                
-                        ) as mt
-                        group by mt.product_id
-                        
-                        union 
-                        
-                        select product_id, sum(amount) amount from (
-                            select
-                                pp.id product_id,
-                                sum(aml.debit) - sum(aml.credit) amount
-                    
-                        
-                            from account_move am
-                            join account_journal aj on am.journal_id = aj.id
-                            join account_move_line aml on
-                            am.id = aml.move_id
-                            join product_product pp on
-                            aml.product_id = pp.id
-                            join product_template pt on
-                            pp.product_tmpl_id = pt.id
-                            join account_account aa on
-                            aml.account_id = aa.id
-                            left join purchase_order_line pol on aml.purchase_line_id = pol.id
-                            left join purchase_order po on pol.order_id = po.id and (po.is_return is null or po.is_return is false)
-                            
-                            where 
-                            (aa.code like '1562%' or aa.code like '3319%') 
-                            and am.state = 'posted'
-                            and am.payment_state != 'reversed'
-                            and am.date < '{from_date}'
-                            and am.company_id = {company_id}
-                            and am.stock_move_id is null
-                            and am.id not in (
-                            select am2.id from account_move am 
-                                join account_move_line aml on am.id = aml.move_id 
-                                join purchase_order_line pol on pol.id = aml.purchase_line_id 
-                                join purchase_order po on po.id = pol.order_id 
-                                join account_move am2 on am.name = split_part(am2.ref, ' - ', 1)
-                            where po.is_return is true 
-                            and aml.company_id = {company_id}
-                            and am.date < '{from_date}'
-                            )
-                            group by
-                            pp.id
-                        
-                        union 
-                        
-                            select
-                            pp.id product_id,
-                            - (sum(aml.credit) - sum(aml.debit)) amount
-                            
-                            from account_move am
-                            join account_journal aj on am.journal_id = aj.id
-                            join account_move_line aml on
-                            am.id = aml.move_id
-                            join product_product pp on
-                            aml.product_id = pp.id
-                            join product_template pt on
-                            pp.product_tmpl_id = pt.id
-                            join account_account aa on
-                            aml.account_id = aa.id
-                            join stock_move sm on sm.id = am.stock_move_id 
-                            join stock_picking sp on sm.picking_id = sp.id
-                            
-                            where 
-                            (aa.code like '1562%' or aa.code like '3319%') 
-                            and am.state = 'posted'
-                            and am.payment_state != 'reversed'
-                            and am.date < '{from_date}'
-                            and am.company_id = {company_id}
-                            and am.x_entry_types != 'entry_material'
-                            
-                            group by
-                            pp.id
-                        )
-                        mt group by product_id
+                	select product_id, sum(amount) amount from (
+	                    select 
+	                    pp.id product_id,
+	                    sum(debit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                        
+	                    where 
+	                    am.date <= '{from_date}'
+	
+	                    group by pp.id
+	                    
+	                    union all
+	                    
+	                    select 
+	                    pp.id product_id,
+	                    - sum(credit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done' and sm.origin_returned_move_id is not null 
+	                    join stock_picking sp on sm.picking_id = sp.id and sp.x_is_check_return is true
+	                    
+	                    where 
+	                    am.date <= '{from_date}'
+	                    
+	                    group by pp.id
+
                     ) amount_first group by product_id
                 )
                 
@@ -530,8 +268,8 @@ class ProductInventory(models.Model):
                     {parent_id} parent_id,
                     pp.id product_id,
                     qif.qty_done qty_begin_period,
-                    qiip.qty_done qty_in_period,
-                    qiop.qty_done qty_out_period,
+                    (qiip.qty_done - rip.qty_done) qty_in_period,
+                    (qiop.qty_done - rip.qty_done) qty_out_period,
                     ap.amount amount_period,
                     af.amount amount_begin_period
                     

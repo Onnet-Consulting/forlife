@@ -11,19 +11,48 @@ class CalculateFinalValue(models.Model):
 
     def _sql_product_inv_line_str(self):
         return """
-            with product_begin as (
-                select 
-                    pp.id,
-                    pibpl.qty_product,
-                    pibpl.amount_product
+            with quantity_inventory_first as (
+                select product_id, sum(qty_done) qty_done from (
+                    select
+                        sml.product_id,
+                        sum(qty_done) as qty_done
+                    from
+                        stock_move_line sml
+                    join stock_move sm on
+                        sm.id = sml.move_id
+                    join stock_location sl on
+                        sml.location_dest_id = sl.id
+                    join stock_picking sp on
+                        sm.picking_id = sp.id
+                    where
+                        sm.date + interval '7 hours' < '{from_date}'
+                        and sl."usage" = 'internal'
+                        and sp.transfer_id is null
+                        and sm.state = 'done'
+                        and sm.company_id = {company_id}
+                    group by sml.product_id
+                union
+                    select
+                        sml.product_id,
+                        - sum(qty_done) qty_done
+                    from
+                        stock_move_line sml
+                    join stock_move sm on
+                        sm.id = sml.move_id
+                    join stock_location sl on
+                        sml.location_id = sl.id
+                    join stock_picking sp on
+                        sm.picking_id = sp.id
+                    where
+                        sm.date + interval '7 hours' < '{from_date}'
+                        and sl."usage" = 'internal'
+                        and sp.transfer_id is null
+                        and sm.state = 'done'
+                        and sm.company_id = {company_id}
+                    group by sml.product_id
                     
-                from product_product pp 
-                join product_template pt on pp.product_tmpl_id = pt.id
-                join product_category pc on pt.categ_id = pc.id
-                join product_category_type cpt on pc.category_type_id = cpt.id
-                join product_inventory_by_period_line pibpl on pp.id = pibpl.product_id and pibpl.date = '{from_date_begin}'
+                ) master group by product_id
                 
-                where cpt.code = {category_type} and pibpl.company_id = {company_id}
                 ),
                 quantity_inventory_in_period as (
                     select
@@ -46,16 +75,182 @@ class CalculateFinalValue(models.Model):
                         and sm.company_id = {company_id}
                     group by sml.product_id
                 
+                ), 
+                quantity_inventory_out_period as (
+                    select
+                        sml.product_id,
+                        sum(qty_done) qty_done
+                    from
+                        stock_move_line sml
+                    join stock_move sm on
+                        sm.id = sml.move_id
+                    join stock_location sl on
+                        sml.location_id = sl.id
+                    join stock_picking sp on
+                        sm.picking_id = sp.id
+                    where
+                        sm.date + interval '7 hours' >= '{from_date}'
+                        and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
+                        and sl."usage" = 'internal'
+                        and sp.transfer_id is null
+                        and sm.state = 'done'
+                        and sm.company_id = {company_id}
+                    group by sml.product_id
+                
+                ),
+                return_in_period as (
+                
+                    select
+                        sml.product_id,
+                        sum(qty_done) qty_done
+                    from
+                        stock_move_line sml
+                    join stock_move sm on
+                        sm.id = sml.move_id
+                    join stock_location sl on
+                        sml.location_id = sl.id
+                    join stock_picking sp on
+                        sm.picking_id = sp.id
+                    where
+                        sm.date + interval '7 hours' >= '{from_date}'
+                        and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
+                        and sm.state = 'done'
+                        and sl."usage" = 'internal'
+                        and sp.transfer_id is null
+                        and sp.x_is_check_return is true
+                        and sm.origin_returned_move_id is not null
+                        and sm.company_id = {company_id}
+                    group by sml.product_id
+                ),
+                amount_period as (
+                	select product_id, sum(amount) amount from (
+	                    select 
+	                    pp.id product_id,
+	                    sum(debit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                        
+	                    where 
+	                    am.date >= '{from_date}'
+                        and am.date <= '{to_date} 23:59:59'
+	                    
+	                    group by pp.id
+	                    
+	                    union all
+	                    
+	                    select 
+	                    pp.id product_id,
+	                    - sum(credit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done' and sm.origin_returned_move_id is not null 
+	                    join stock_picking sp on sm.picking_id = sp.id and sp.x_is_check_return is true
+	                    
+	                    where 
+	                    am.date >= '{from_date}'
+                        and am.date <= '{to_date} 23:59:59'
+	                    
+	                    group by pp.id
+
+                    ) amount_period group by product_id
+                ),
+                amount_first as (
+                	select product_id, sum(amount) amount from (
+	                    select 
+	                    pp.id product_id,
+	                    sum(debit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                        
+	                    where 
+	                    am.date <= '{from_date}'
+	
+	                    group by pp.id
+	                    
+	                    union all
+	                    
+	                    select 
+	                    pp.id product_id,
+	                    - sum(credit) amount
+	                    
+	                    from account_move_line aml 
+	                    join account_move am on aml.move_id = am.id
+	                    join product_product pp on aml.product_id = pp.id
+	                    join product_template pt on pp.product_tmpl_id = pt.id
+	                    join account_account aa on aml.account_id = aa.id
+	                    join product_category pc on
+	                        pt.categ_id = pc.id
+	                    join ir_property ip on
+	                        ip.res_id = 'product.category,' || pt.categ_id
+	                        and ip."name" = 'property_stock_valuation_account_id'
+	                        and ip.company_id = {company_id}
+	                        and ip.value_reference = 'account.account,' || aa.id
+	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done' and sm.origin_returned_move_id is not null 
+	                    join stock_picking sp on sm.picking_id = sp.id and sp.x_is_check_return is true
+	                    
+	                    where 
+	                    am.date <= '{from_date}'
+	                    
+	                    group by pp.id
+                    ) amount_first group by product_id
                 )
                 
                 select 
                     {parent_id} parent_id,
-                    pb.id product_id,
-                    pb.qty_product qty_begin_period,
-                    pb.amount_product amount_begin_period,
-                    qiip.qty_done qty_in_period
-                from product_begin pb left join quantity_inventory_in_period qiip on 
-                pb.id = qiip.product_id
+                    pp.id product_id,
+                    qif.qty_done qty_begin_period,
+                    (qiip.qty_done - rip.qty_done) qty_in_period,
+                    ap.amount amount_period,
+                    af.amount amount_begin_period
+                    
+                from product_product pp 
+                left join product_template pt on pp.product_tmpl_id = pt.id
+                left join quantity_inventory_first qif on
+                    pp.id = qif.product_id
+                left join quantity_inventory_in_period qiip on
+                    pp.id = qiip.product_id
+                left join quantity_inventory_out_period qiop on
+                    pp.id = qiop.product_id
+                left join return_in_period rip on
+                    pp.id = rip.product_id
+                left join amount_period ap on
+                    pp.id = ap.product_id
+                left join amount_first af on
+                    pp.id = af.product_id
+                where pt.detailed_type = 'product'
         
         """
 
@@ -85,7 +280,7 @@ class CalculateFinalValue(models.Model):
             "res_model": "product.inventory.by.calculate.final",
             "domain": [('id', 'in', move_ids)],
             "context": {"create": False},
-            "name": _("Bút toán chênh lệch"),
+            "name": _("Đơn giá tồn cuối kỳ"),
             'view_mode': 'tree',
         }
         return result
@@ -103,5 +298,14 @@ class ProductInventoryLine(models.Model):
     qty_in_period = fields.Float(string='Nhập trong kỳ')
     amount_begin_period = fields.Float(string='Giá trị đầu kỳ', digits=(16, 2))
     amount_period = fields.Float(string='Giá trị nhập trong kỳ', digits=(16, 2))
-    amount_product = fields.Float(string='Đơn giá bình quân cuối kỳ')
+    amount_product = fields.Float(string='Đơn giá bình quân cuối kỳ', compute='_compute_amount_product', store=True, digits=(16, 2))
     date = fields.Date(string='Ngày chốt tồn', related='parent_id.to_date', store=True)
+
+    @api.depends('qty_begin_period', 'qty_in_period', 'amount_begin_period', 'amount_period')
+    def _compute_amount_product(self):
+        for rec in self:
+            if (rec.qty_begin_period + rec.qty_in_period) != 0:
+                rec.amount_product = (rec.amount_period + rec.amount_begin_period) / (
+                            rec.qty_begin_period + rec.qty_in_period)
+            else:
+                rec.amount_product = 0

@@ -2,6 +2,21 @@
 <odoo>
     <data>
 
+        <record id="product_inventory_by_calculate_final_view_tree" model="ir.ui.view">
+            <field name="name">product_inventory_by_calculate_final_view_tree</field>
+            <field name="model">product.inventory.by.calculate.final</field>
+            <field name="arch" type="xml">
+                <tree string="product_inventory_by_calculate_final_view_tree">
+                    <field name="product_id"/>
+                    <field name="qty_begin_period"/>
+                    <field name="qty_in_period"/>
+                    <field name="amount_begin_period"/>
+                    <field name="amount_period"/>
+                    <field name="amount_product"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="calculate_final_value_view_tree" model="ir.ui.view">
             <field name="name">calculate_final_value_view_tree</field>
             <field name="model">calculate.final.value</field>
