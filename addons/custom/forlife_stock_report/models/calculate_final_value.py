@@ -27,13 +27,19 @@ class CalculateFinalValue(models.Model):
         'account.move',
         'calculate_final_entry1_move_rel', 'cf_id', 'move_id',
         string='Bút toán chênh lệch')
-    entry1_count = fields.Float(string='Số lượng hóa đơn')
+    entry1_count = fields.Float(string='Số lượng hóa đơn', compute='entry_count')
 
     entry2_ids = fields.Many2many(
         'account.move',
         'calculate_final_entry2_move_rel', 'cf_id', 'move_id',
         string='Bút toán chênh lệch')
-    entry2_count = fields.Float(string='Số lượng hóa đơn')
+    entry2_count = fields.Float(string='Số lượng hóa đơn', compute='entry_count')
+
+    @api.depends('entry1_ids', 'entry2_ids')
+    def entry_count(self):
+        for rec in self:
+            rec.entry1_count = len(rec.entry1_ids)
+            rec.entry2_count = len(rec.entry2_ids)
 
     def first_and_last_day_of_month(self, year, month):
         # Tạo một ngày đầu tiên của tháng
@@ -162,9 +168,11 @@ class CalculateFinalValue(models.Model):
                 }})
         move_vals = self.prepare_value_by_diff(data=products)
         moves = self.env['account.move'].create(move_vals)
+        # cập nhật lại giá vốn
+        for svl in moves.stock_valuation_layer_ids:
+            self.env['stock.move'].update_standard_price_product(svl.product_id)
         self.write({
             'entry1_ids': [(6, 0, moves.ids)],
-            'entry2_count': len(moves),
             'state': 'step3'
         })
 
@@ -196,9 +204,11 @@ class CalculateFinalValue(models.Model):
         move_vals = self.prepare_value_by_diff(data=products)
         moves = self.env['account.move'].create(move_vals)
 
+        # cập nhật lại giá vốn
+        for svl in moves.stock_valuation_layer_ids:
+            self.env['stock.move'].update_standard_price_product(svl.product_id)
         self.write({
             'entry2_ids': [(6, 0, moves.ids)],
-            'entry2_count': len(moves),
             'state': 'step4'
         })
 
@@ -210,7 +220,7 @@ class CalculateFinalValue(models.Model):
             "res_model": "account.move",
             "domain": [('id', 'in', move_ids)],
             "context": {"create": False},
-            "name": _("Bút toán chênh lệch"),
+            "name": _("Bút toán chênh lệch sản phẩm nguồn"),
             'view_mode': 'tree,form',
         }
         return result
@@ -223,7 +233,7 @@ class CalculateFinalValue(models.Model):
             "res_model": "account.move",
             "domain": [('id', 'in', move_ids)],
             "context": {"create": False},
-            "name": _("Bút toán chênh lệch"),
+            "name": _("Bút toán chênh lệch sản phẩm đích"),
             'view_mode': 'tree,form',
         }
         return result

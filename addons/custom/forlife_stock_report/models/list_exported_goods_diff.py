@@ -8,6 +8,12 @@ class CalculateFinalValue(models.Model):
     _description = 'Tính giá trị cuối kỳ'
 
     goods_diff_lines = fields.One2many('list.exported.goods.diff', 'parent_id', string='Bảng kê chênh lệch')
+    goods_diff_count = fields.Float(compute='compute_goods_diff_lines')
+
+    @api.depends('goods_diff_lines')
+    def compute_goods_diff_lines(self):
+        for rec in self:
+            rec.goods_diff_count = len(rec.goods_diff_lines)
 
     def _sql_string_good_diff(self):
         return """
@@ -17,28 +23,33 @@ class CalculateFinalValue(models.Model):
                     pp.id product_id,
                     aa.id account_id,
                     '' production_code,
-                    oc.code occasion_code,
-                    aaa.code account_analytic,
-                    aa2.code asset_code,
+                    case when oc.code is not null then concat('[', oc.code, '] ', oc.name) else '' end occasion_code,
+                    case when aaa.code is not null then concat('[', aaa.code, '] ', aaa.name->>'vi_VN') else '' end account_analytic,
+                    case when aa2.code is not null then concat('[', aa2.code, '] ', aa2.name) else '' end asset_code,
                     spls.product_split_id product_end_id,
-                    sm.quantity_done qty,
+                    case 
+                        when (pibpl.qty_product > 0) then sm.quantity_done
+                        when (pibpl.qty_product = 0 and (sp.x_is_check_return is false or sp.x_is_check_return is null)) then sm.quantity_done
+                        when pibpl.qty_product = 0 and sp.x_is_check_return is true then 0
+                        else sm.quantity_done
+                    end qty,
                     aml.debit amount_export
                 from stock_move sm 
-
-                left join stock_picking sp on sm.picking_id = sp.id 
+                join account_move am on am.stock_move_id = sm.id and (am.end_period_entry is null or am.end_period_entry is false)
+                join account_move_line aml on am.id = aml.move_id 
+                join product_product pp on pp.id = aml.product_id 
+                join product_template pt on pp.product_tmpl_id = pt.id
+                join product_category pc on pt.categ_id = pc.id
+                join product_category_type cpt on pc.category_type_id = cpt.id
+                join account_account aa on aml.account_id = aa.id
+                join stock_picking sp on sm.picking_id = sp.id
+                join stock_location sl on sm.location_id = sl.id and sl."usage" = 'internal'
                 left join split_product sp2 on sp.split_product_id = sp2.id
                 left join split_product_line_sub spls on sp2.id = spls.parent_id 
-                left join stock_location sl on sl.id = sm.location_id and sl."usage" = 'internal'
-                left join product_product pp on sm.product_id = pp.id
-                left join product_template pt on pp.product_tmpl_id = pt.id
-                left join product_category pc on pt.categ_id = pc.id
-                left join product_category_type cpt on pc.category_type_id = cpt.id
-                left join account_move am on sm.id = am.stock_move_id and (am.end_period_entry is null or am.end_period_entry is false)
-                left join account_move_line aml on aml.move_id = am.id
-                left join account_account aa on aml.account_id = aa.id
                 left join occasion_code oc on oc.id = sm.occasion_code_id 
                 left join account_analytic_account aaa on sm.account_analytic_id = aaa.id
                 left join assets_assets aa2 on aa2.id = sm.ref_asset
+                left join product_inventory_by_period_line pibpl on pp.id = pibpl.product_id and pibpl.date = '{date_inv}'
                 
                 where 
                 aml.debit > 0 
@@ -48,16 +59,16 @@ class CalculateFinalValue(models.Model):
                 and (sp.x_is_check_return is false or sp.x_is_check_return is null)
                 and cpt.code = {category_type}
 
-                union 
+                union all
 
                 select
                     {parent_id} parent_id,
                     pp.id product_id,
                     aa.id account_id,
                     fp.code production_code,
-                    oc.code occasion_code,
-                    aaa.code account_analytic,
-                    aa2.code asset_code,
+                    case when oc.code is not null then concat('[', oc.code, '] ', oc.name) else '' end occasion_code,
+                    case when aaa.code is not null then concat('[', aaa.code, '] ', aaa.name->>'vi_VN') else '' end account_analytic,
+                    case when aa2.code is not null then concat('[', aa2.code, '] ', aa2.name) else '' end asset_code,
                     fpm.product_id product_end_id,
                     (fpm.total * sm.quantity_done) qty,
                     (sm2.price_unit * sm.quantity_done) amount_export
@@ -66,7 +77,7 @@ class CalculateFinalValue(models.Model):
                 join stock_picking sp on sm.picking_id = sp.id
                 join stock_picking sp2 on sp.picking_outgoing_id = sp2.id
                 join stock_move sm2 on sp2.id = sm2.picking_id 
-                join forlife_production fp on sm2.work_production = fp.id
+                join forlife_production fp on sm2.work_production = fp.id or sm2.work_to = fp.id
                 join forlife_production_finished_product fpfp on fpfp.forlife_production_id = fp.id
                 join forlife_production_material fpm on fpfp.id = fpm.forlife_production_id 
                 join account_move am on sm.id = am.stock_move_id and (am.end_period_entry is null or am.end_period_entry is false)
@@ -100,10 +111,13 @@ class CalculateFinalValue(models.Model):
             lp.product_end_id product_end_id,
             sum(lp.qty) qty,
             sum(lp.amount_export) amount_export,
-            sum(pibcf.amount_product) amount_avg,
-            (sum(lp.amount_export) - sum(pibcf.amount_product)) amount_diff
+            round(max(pibcf.amount_product) * sum(lp.qty)) amount_avg,
+            round(sum(lp.amount_export) - (max(pibcf.amount_product) * sum(lp.qty))) amount_diff
             from list_product lp left join product_inventory_by_calculate_final pibcf on 
             lp.product_id = pibcf.product_id and pibcf.parent_id = {parent_id}
+            
+            where lp.qty <> 0
+            
             group by
             lp.parent_id, 
             lp.product_id, 
@@ -116,13 +130,14 @@ class CalculateFinalValue(models.Model):
         """
 
     def get_data_diff_value(self):
-        if self.state != 'step1':
+        if self.state not in ('step1', 'step2'):
             raise ValidationError('Bản chỉ có thể thực hiện khi hoàn thành tính đơn giá bình quân sản phẩm')
         self.goods_diff_lines.unlink()
         query = self._sql_string_good_diff().format(
             company_id=self.env.company.id,
             from_date=self.from_date,
             to_date=self.to_date,
+            date_inv=self.from_date - timedelta(days=1),
             parent_id=self.id,
             category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
         )

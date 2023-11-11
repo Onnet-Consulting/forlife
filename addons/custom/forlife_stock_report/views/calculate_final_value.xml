@@ -2,6 +2,41 @@
 <odoo>
     <data>
 
+        <record id="product_inventory_by_calculate_final_view_tree" model="ir.ui.view">
+            <field name="name">product_inventory_by_calculate_final_view_tree</field>
+            <field name="model">product.inventory.by.calculate.final</field>
+            <field name="arch" type="xml">
+                <tree string="product_inventory_by_calculate_final_view_tree">
+                    <field name="product_id"/>
+                    <field name="qty_begin_period"/>
+                    <field name="qty_in_period"/>
+                    <field name="amount_begin_period"/>
+                    <field name="amount_period"/>
+                    <field name="amount_product"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="list_exported_goods_diff_view_tree" model="ir.ui.view">
+            <field name="name">list_exported_goods_diff_view_tree</field>
+            <field name="model">list.exported.goods.diff</field>
+            <field name="arch" type="xml">
+                <tree string="list_exported_goods_diff_view_tree">
+                    <field name="product_id"/>
+                    <field name="account_id"/>
+                    <field name="production_code"/>
+                    <field name="occasion_code"/>
+                    <field name="account_analytic"/>
+                    <field name="asset_code"/>
+                    <field name="product_end_id"/>
+                    <field name="qty"/>
+                    <field name="amount_export"/>
+                    <field name="amount_avg"/>
+                    <field name="amount_diff"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="calculate_final_value_view_tree" model="ir.ui.view">
             <field name="name">calculate_final_value_view_tree</field>
             <field name="model">calculate.final.value</field>
@@ -28,24 +63,31 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button type="object" name="action_view_pinv" class="oe_stat_button"
-                                    icon="fa-pencil-square-o">
+                                    icon="fa-truck">
                                 <div class="o_stat_info">
                                     <field name="product_inv_count" class="o_stat_value" readonly="1"/>
                                     <span class="o_stat_text">Tồn cuối kỳ</span>
+                                </div>
+                            </button>
+                            <button type="object" name="list_diff_amount" class="oe_stat_button"
+                                    icon="fa-list-ul">
+                                <div class="o_stat_info">
+                                    <field name="goods_diff_count" class="o_stat_value" readonly="1"/>
+                                    <span class="o_stat_text">Bảng kê chênh lệch</span>
                                 </div>
                             </button>
                             <button type="object" name="action_view_entry1" class="oe_stat_button"
                                     icon="fa-pencil-square-o">
                                 <div class="o_stat_info">
                                     <field name="entry1_count" class="o_stat_value" readonly="1"/>
-                                    <span class="o_stat_text">Bút toán lần 1</span>
+                                    <span class="o_stat_text">Bút toán chênh lệch sản phẩm nguồn</span>
                                 </div>
                             </button>
                             <button type="object" name="action_view_entry2" class="oe_stat_button"
                                     icon="fa-pencil-square-o">
                                 <div class="o_stat_info">
                                     <field name="entry2_count" class="o_stat_value" readonly="1"/>
-                                    <span class="o_stat_text">Bút toán lần 2</span>
+                                    <span class="o_stat_text">Bút toán chênh lệch sản phẩm đích</span>
                                 </div>
                             </button>
                         </div>
@@ -70,10 +112,10 @@
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
                             <button name="get_data_diff_value" string="Tính bảng kê chênh lệch" type="object"/>
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
-                            <button name="create_invoice_diff_entry1" string="Hạch toán chênh lệch lần 1"
+                            <button name="create_invoice_diff_entry1" string="Hạch toán chênh sản phẩm nguồn"
                                     type="object"/>
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
-                            <button name="create_invoice_diff_entry2" string="Hạch toán chênh lệch lần 2"
+                            <button name="create_invoice_diff_entry2" string="Hạch toán chênh lệch sản phẩm đích"
                                     type="object"/>
                         </div>
 

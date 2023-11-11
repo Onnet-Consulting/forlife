@@ -653,4 +653,9 @@ class SaleOrderLine(models.Model):
             rule = self._search_rule(self.x_location_id)
             res['warehouse_id'] = self.x_location_id.warehouse_id or False
             res['route_ids'] = rule.route_id
+        res['x_product_code_id'] = self.x_product_code_id.id
+        res['x_account_analytic_id'] = self.order_id.x_account_analytic_id.id
+        res['x_occasion_code_id'] = self.order_id.x_occasion_code_id.id
+        res['x_manufacture_order_code_id'] = self.order_id.x_manufacture_order_code_id.id
+        res['free_good'] = self.x_free_good
         return res

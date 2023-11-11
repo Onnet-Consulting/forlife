@@ -155,6 +155,7 @@ class StockMove(models.Model):
             'analytic_account_id': self.account_analytic_id.id or False,
             'account_analytic_id': self.account_analytic_id.id or False,
             'asset_code': self.ref_asset.id or False,
+            'is_check_promotions': self.free_good,
         })
         rslt['debit_line_vals'].update({
             'occasion_code_id': self.occasion_code_id.id or False,
@@ -163,6 +164,7 @@ class StockMove(models.Model):
             'analytic_account_id': self.account_analytic_id.id or False,
             'account_analytic_id': self.account_analytic_id.id or False,
             'asset_code': self.ref_asset.id or False,
+            'is_check_promotions': self.free_good,
         })
         return rslt
 
