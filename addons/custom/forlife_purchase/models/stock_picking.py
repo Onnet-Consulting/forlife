@@ -192,7 +192,7 @@ class StockPicking(models.Model):
                     'stock_move_id': move.id
                 }))
                 if move.product_id.cost_method == 'average':
-                    self.add_cost_product(move.product_id, round((amount / qty_po_origin) * qty_po_done))
+                    self.add_cost_product(move.product_id)
 
                 if not move.product_id.categ_id.property_stock_valuation_account_id:
                     raise ValidationError("Bạn chưa cấu hình tài khoản nhập kho trong danh mục nhóm sản phẩm của sản phẩm %s" % move.product_id.display_name)
@@ -301,15 +301,19 @@ class StockPicking(models.Model):
                             debit = line[-1]['debit'] - round(line[-1]['debit'])
                             line[-1]['debit'] = round(line[-1]['debit'])
                 if move.product_id.cost_method == 'average':
-                    self.add_cost_product(move.product_id, round(unit_cost * sp_total_qty))
+                    self.add_cost_product(move.product_id)
         results = results.create(entries_values)
         results._post()
         return results
     
     #TienNQ add recompute standard_price in product
-    def add_cost_product(self, product, cost):
+    def add_cost_product(self, product):
+        product = product.with_company(self.company_id)
         if not float_is_zero(product.quantity_svl, precision_rounding=product.uom_id.rounding):
-            product.with_company(self.company_id).sudo().with_context(disable_auto_svl=True).standard_price += cost / product.quantity_svl
+            product.sudo().with_context(disable_auto_svl=True).write(
+                {'standard_price': product.value_svl / product.quantity_svl})
+        # if not float_is_zero(product.quantity_svl, precision_rounding=product.uom_id.rounding):
+        #     product.with_company(self.company_id).sudo().with_context(disable_auto_svl=True).standard_price += cost / product.quantity_svl
 
 
     # Xử lý nhập kho sinh bút toán ở tab npl po theo số lượng nhập kho + sinh bút toán cho chi phí nhân công nội địa
@@ -420,8 +424,7 @@ class StockPicking(models.Model):
                         'company_id': r.company_id.id,
                         'stock_move_id': r.id
                     }))
-                    if item.product_id.cost_method == 'average':
-                        self.add_cost_product(item.product_id, debit_cost)
+
                     entry_cp = self.env['account.move'].create({
                         'ref': f"{record.name}",
                         'purchase_type': po.purchase_type,
@@ -438,6 +441,8 @@ class StockPicking(models.Model):
                         'restrict_mode_hash_table': False,
                         'stock_valuation_layer_ids': svl_values
                     })
+                    if item.product_id.cost_method == 'average':
+                        self.add_cost_product(item.product_id)
                     entry_cp._post()
 
                 if list_allowcation_npls:
@@ -452,8 +457,6 @@ class StockPicking(models.Model):
                         'company_id': r.company_id.id,
                         'stock_move_id': r.id
                     }))
-                    if item.product_id.cost_method == 'average':
-                        self.add_cost_product(item.product_id, total_npl_amount)
                     entry_allowcation_npls = self.env['account.move'].create({
                         'ref': f"{record.name}",
                         'purchase_type': po.purchase_type,
@@ -471,6 +474,8 @@ class StockPicking(models.Model):
                         'stock_valuation_layer_ids': svl_allowcation_values
                     })
                     entry_allowcation_npls._post()
+                    if item.product_id.cost_method == 'average':
+                        self.add_cost_product(item.product_id)
 
             # tạo phiếu xuất NPL
             if list_line_xk:

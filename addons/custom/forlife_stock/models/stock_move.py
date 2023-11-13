@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.tools import float_is_zero
 
 
 class StockMove(models.Model):
@@ -106,11 +107,21 @@ class StockMove(models.Model):
         if not self.reason_id.is_price_unit:
             self.amount_total = self.product_id.standard_price * self.product_uom_qty
 
+    # tính lại giá vốn
+    def update_standard_price_product(self, product):
+        product = product.with_company(self.company_id)
+        if product.product_tmpl_id.cost_method == 'average':
+            if not float_is_zero(product.quantity_svl, precision_rounding=product.uom_id.rounding):
+                product.sudo().with_context(disable_auto_svl=True).write({'standard_price': product.value_svl / product.quantity_svl})
+
     def _account_entry_move(self, qty, description, svl_id, cost):
         res = super(StockMove, self)._account_entry_move(qty, description, svl_id, cost)
         for item in res:
             if 'date' in item and self.picking_id.date_done:
                 item['date'] = fields.Datetime.context_timestamp(self, self.picking_id.date_done).date()
+        # Nếu trả lại hàng từ phiếu nhập thì cập nhật lại standard_price của sản phẩm
+        if self._is_out() and self._is_returned(valued_type='out') and self.origin_returned_move_id:
+            self.update_standard_price_product(product=self.product_id)
         if self.picking_id.picking_type_id.code != 'incoming':
             return res
         return res
@@ -144,6 +155,7 @@ class StockMove(models.Model):
             'analytic_account_id': self.account_analytic_id.id or False,
             'account_analytic_id': self.account_analytic_id.id or False,
             'asset_code': self.ref_asset.id or False,
+            'is_check_promotions': self.free_good,
         })
         rslt['debit_line_vals'].update({
             'occasion_code_id': self.occasion_code_id.id or False,
@@ -152,6 +164,7 @@ class StockMove(models.Model):
             'analytic_account_id': self.account_analytic_id.id or False,
             'account_analytic_id': self.account_analytic_id.id or False,
             'asset_code': self.ref_asset.id or False,
+            'is_check_promotions': self.free_good,
         })
         return rslt
 

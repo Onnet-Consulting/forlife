@@ -71,6 +71,11 @@ class StockPicking(models.Model):
         moves = self.env['account.move'].create(move_values)
         if moves:
             moves._post()
+        for svl in moves.stock_valuation_layer_ids:
+            # move._post()
+            if (svl.product_id.cost_method == 'average' and svl.stock_move_id._is_returned(valued_type='out')
+                    and svl.stock_move_id.origin_returned_move_id):
+                self.add_cost_product(svl.product_id)
 
     def prepare_move_values(self, line, amount, product_tax):
         qty_po_origin = line.product_qty
@@ -116,8 +121,8 @@ class StockPicking(models.Model):
                     'company_id': self.env.company.id,
                     'stock_move_id': move.id
                 }))
-                if move.product_id.cost_method == 'average':
-                    self.add_cost_product(move.product_id, -abs((amount / qty_po_origin) * qty_po_done))
+                # if move.product_id.cost_method == 'average':
+                #     self.add_cost_product(move.product_id, -abs((amount / qty_po_origin) * qty_po_done))
                 move_lines += [(0, 0, {
                     'sequence': 2,
                     'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
@@ -209,8 +214,8 @@ class StockPicking(models.Model):
                         else:
                             credit = line[-1]['credit'] - round(line[-1]['credit'])
                             line[-1]['credit'] = round(line[-1]['credit'])
-                if move.product_id.cost_method == 'average':
-                    self.add_cost_product(move.product_id, round(unit_cost * sp_total_qty))
+                # if move.product_id.cost_method == 'average':
+                #     self.add_cost_product(move.product_id, round(unit_cost * sp_total_qty))
         return entries_values
 
     def _get_picking_info_return(self, po):
@@ -379,8 +384,7 @@ class StockPicking(models.Model):
                     'company_id': move.company_id.id,
                     'stock_move_id': move.id
                 })]
-                if move.product_id.cost_method == 'average':
-                    self.add_cost_product(move.product_id, -credit_cost)
+
                 entry_cp = self.env['account.move'].create({
                     'ref': f"{self.name}",
                     'purchase_type': po.purchase_type,
@@ -398,6 +402,8 @@ class StockPicking(models.Model):
                     'stock_valuation_layer_ids': svl_values
                 })
                 entry_cp._post()
+                if move.product_id.cost_method == 'average' and move._is_returned(valued_type='out') and move.origin_returned_move_id:
+                    self.add_cost_product(move.product_id)
 
             if list_allowcation_npls:
                 svl_allowcation_values = [(0, 0, {
@@ -410,8 +416,7 @@ class StockPicking(models.Model):
                     'company_id': move.company_id.id,
                     'stock_move_id': move.id
                 })]
-                if move.product_id.cost_method == 'average':
-                    self.add_cost_product(move.product_id, -total_npl_amount)
+
                 entry_allowcation_npls = self.env['account.move'].create({
                     'ref': f"{self.name} - Phân bổ nguyên phụ liệu",
                     'purchase_type': po.purchase_type,
@@ -429,3 +434,6 @@ class StockPicking(models.Model):
                     'stock_valuation_layer_ids': svl_allowcation_values
                 })
                 entry_allowcation_npls._post()
+
+                if move.product_id.cost_method == 'average' and move._is_returned(valued_type='out') and move.origin_returned_move_id:
+                    self.add_cost_product(move.product_id)
