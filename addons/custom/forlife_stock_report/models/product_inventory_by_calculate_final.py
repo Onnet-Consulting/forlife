@@ -238,19 +238,17 @@ class CalculateFinalValue(models.Model):
                     
                 from product_product pp 
                 left join product_template pt on pp.product_tmpl_id = pt.id
-                left join quantity_inventory_first qif on
-                    pp.id = qif.product_id
-                left join quantity_inventory_in_period qiip on
-                    pp.id = qiip.product_id
-                left join quantity_inventory_out_period qiop on
-                    pp.id = qiop.product_id
-                left join return_in_period rip on
-                    pp.id = rip.product_id
-                left join amount_period ap on
-                    pp.id = ap.product_id
-                left join amount_first af on
-                    pp.id = af.product_id
-                where pt.detailed_type = 'product'
+                left join quantity_inventory_first qif on pp.id = qif.product_id
+                left join quantity_inventory_in_period qiip on pp.id = qiip.product_id
+                left join quantity_inventory_out_period qiop on pp.id = qiop.product_id
+                left join return_in_period rip on pp.id = rip.product_id
+                left join amount_period ap on pp.id = ap.product_id
+                left join amount_first af on pp.id = af.product_id
+                join product_category pc on pt.categ_id = pc.id
+                join product_category_type pct on pc.category_type_id = pct.id
+                where pt.detailed_type = 'product' 
+                and pct.code = {category_type} 
+                and (qif.qty_done > 0 or qiip.qty_done > 0 or rip.qty_done > 0)
         
         """
 
@@ -285,6 +283,18 @@ class CalculateFinalValue(models.Model):
         }
         return result
 
+    def list_diff_amount(self):
+        self.ensure_one()
+        diff_line = self.goods_diff_lines.ids
+        result = {
+            "type": "ir.actions.act_window",
+            "res_model": "list.exported.goods.diff",
+            "domain": [('id', 'in', diff_line)],
+            "context": {"create": False},
+            "name": _("Bảng kê chênh lệch"),
+            'view_mode': 'tree',
+        }
+        return result
 
 class ProductInventoryLine(models.Model):
     _name = 'product.inventory.by.calculate.final'

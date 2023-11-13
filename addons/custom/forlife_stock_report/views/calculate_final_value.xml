@@ -17,6 +17,26 @@
             </field>
         </record>
 
+        <record id="list_exported_goods_diff_view_tree" model="ir.ui.view">
+            <field name="name">list_exported_goods_diff_view_tree</field>
+            <field name="model">list.exported.goods.diff</field>
+            <field name="arch" type="xml">
+                <tree string="list_exported_goods_diff_view_tree">
+                    <field name="product_id"/>
+                    <field name="account_id"/>
+                    <field name="production_code"/>
+                    <field name="occasion_code"/>
+                    <field name="account_analytic"/>
+                    <field name="asset_code"/>
+                    <field name="product_end_id"/>
+                    <field name="qty"/>
+                    <field name="amount_export"/>
+                    <field name="amount_avg"/>
+                    <field name="amount_diff"/>
+                </tree>
+            </field>
+        </record>
+
         <record id="calculate_final_value_view_tree" model="ir.ui.view">
             <field name="name">calculate_final_value_view_tree</field>
             <field name="model">calculate.final.value</field>
@@ -47,6 +67,13 @@
                                 <div class="o_stat_info">
                                     <field name="product_inv_count" class="o_stat_value" readonly="1"/>
                                     <span class="o_stat_text">Tồn cuối kỳ</span>
+                                </div>
+                            </button>
+                            <button type="object" name="list_diff_amount" class="oe_stat_button"
+                                    icon="fa-pencil-square-o">
+                                <div class="o_stat_info">
+                                    <field name="goods_diff_count" class="o_stat_value" readonly="1"/>
+                                    <span class="o_stat_text">Bảng kê chênh lệch</span>
                                 </div>
                             </button>
                             <button type="object" name="action_view_entry1" class="oe_stat_button"

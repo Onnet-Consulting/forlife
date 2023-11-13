@@ -162,6 +162,9 @@ class CalculateFinalValue(models.Model):
                 }})
         move_vals = self.prepare_value_by_diff(data=products)
         moves = self.env['account.move'].create(move_vals)
+        # cập nhật lại giá vốn
+        for svl in moves.stock_valuation_layer_ids:
+            self.env['stock.move'].update_standard_price_product(svl.product_id)
         self.write({
             'entry1_ids': [(6, 0, moves.ids)],
             'entry2_count': len(moves),
@@ -196,6 +199,9 @@ class CalculateFinalValue(models.Model):
         move_vals = self.prepare_value_by_diff(data=products)
         moves = self.env['account.move'].create(move_vals)
 
+        # cập nhật lại giá vốn
+        for svl in moves.stock_valuation_layer_ids:
+            self.env['stock.move'].update_standard_price_product(svl.product_id)
         self.write({
             'entry2_ids': [(6, 0, moves.ids)],
             'entry2_count': len(moves),
