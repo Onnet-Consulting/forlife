@@ -22,6 +22,7 @@ class PermissionReportImport(models.TransientModel):
 
     @api.model
     def generate_xlsx_report(self, workbook, allowed_company, **kwargs):
+        formats = self.get_format_workbook(workbook)
         self._cr.execute("""
 with x_model as (select coalesce(name::json ->> 'vi_VN',
                                  name::json ->> 'en_US') as name,
@@ -54,28 +55,97 @@ select (select json_object_agg(name, model) from x_model) as model_by_name,
         field_by_model = result.get('field_by_model') or {}
         users = result.get('users') or {}
 
-        sheet5 = workbook.worksheets[4]
-        i = 2
+        sheet1 = workbook.add_worksheet('Nhóm quyền')
+        sheet1.freeze_panes(1, 0)
+        sheet1.set_row(0, 30)
+        sheet1.write(0, 0, 'Mã quyền', formats.get('title_format'))
+        sheet1.write(0, 1, 'Tên quyền', formats.get('title_format'))
+        sheet1.write(0, 2, 'Mã người dùng', formats.get('title_format'))
+        sheet1.write(1, 0, 'PQ001', formats.get('normal_format'))
+        sheet1.write(1, 1, 'Nhóm quyền siêu cấp promax', formats.get('normal_format'))
+        sheet1.write(1, 2, '100000', formats.get('normal_format'))
+        sheet1.set_column(0, 2, 20)
+
+        sheet2 = workbook.add_worksheet('Trường dữ liệu được phân quyền')
+        sheet2.freeze_panes(1, 0)
+        sheet2.set_row(0, 30)
+        sheet2.write(0, 0, 'STT', formats.get('title_format'))
+        sheet2.write(0, 1, 'Mã định danh', formats.get('title_format'))
+        sheet2.write(0, 2, 'Tên báo cáo', formats.get('title_format'))
+        sheet2.write(0, 3, 'Mã trường dữ liệu', formats.get('title_format'))
+        sheet2.write(0, 4, 'Tên trường dữ liệu', formats.get('title_format'))
+        sheet2.write(1, 0, '1', formats.get('normal_format'))
+        sheet2.write(1, 1, '1', formats.get('normal_format'))
+        sheet2.write(1, 2, 'Báo cáo X', formats.get('normal_format'))
+        sheet2.write(1, 3, 'field_x', formats.get('normal_format'))
+        sheet2.write(1, 4, 'X', formats.get('normal_format'))
+        sheet2.set_column(0, 4, 20)
+
+        sheet3 = workbook.add_worksheet('Khai báo dữ liệu chi tiết')
+        sheet3.freeze_panes(1, 0)
+        sheet3.set_row(0, 30)
+        sheet3.write(0, 0, 'STT', formats.get('title_format'))
+        sheet3.write(0, 1, 'Mã định danh', formats.get('title_format'))
+        sheet3.write(0, 2, 'Mã trường dữ liệu', formats.get('title_format'))
+        sheet3.write(0, 3, 'Dữ liệu', formats.get('title_format'))
+        sheet3.write(0, 4, 'Tên mô tả của trường mã dữ liệu', formats.get('title_format'))
+        sheet3.write(1, 0, '1', formats.get('normal_format'))
+        sheet3.write(1, 1, '1', formats.get('normal_format'))
+        sheet3.write(1, 2, 'field_x', formats.get('normal_format'))
+        sheet3.write(1, 3, 'K1', formats.get('normal_format'))
+        sheet3.write(1, 4, 'Kho K1', formats.get('normal_format'))
+        sheet3.set_column(0, 4, 20)
+
+        sheet4 = workbook.add_worksheet('Mapping nhóm quyền - báo cáo')
+        sheet4.freeze_panes(1, 0)
+        sheet4.set_row(0, 30)
+        sheet4.write(0, 0, 'STT', formats.get('title_format'))
+        sheet4.write(0, 1, 'Mã quyền', formats.get('title_format'))
+        sheet4.write(0, 2, 'Tên quyền', formats.get('title_format'))
+        sheet4.write(0, 3, 'Mã định danh', formats.get('title_format'))
+        sheet4.write(0, 4, 'Báo cáo', formats.get('title_format'))
+        sheet4.write(1, 0, '1', formats.get('normal_format'))
+        sheet4.write(1, 1, 'PQ001', formats.get('normal_format'))
+        sheet4.write(1, 2, 'Nhóm quyền siêu cấp promax', formats.get('normal_format'))
+        sheet4.write(1, 3, '1', formats.get('normal_format'))
+        sheet4.write(1, 4, 'Báo cáo X', formats.get('normal_format'))
+        sheet4.set_column(0, 4, 20)
+
+        sheet5 = workbook.add_worksheet('Master data Báo cáo')
+        sheet5.freeze_panes(1, 0)
+        sheet5.set_column(0, 1, 40)
+        sheet5.write(0, 0, 'Mã báo cáo', formats.get('title_format'))
+        sheet5.write(0, 1, 'Tên báo cáo', formats.get('title_format'))
+        i = 1
         for name, model in model_by_name.items():
-            sheet5.cell(i, 1).value = model
-            sheet5.cell(i, 2).value = name
+            sheet5.write(i, 0, model, formats.get('normal_format'))
+            sheet5.write(i, 1, name, formats.get('normal_format'))
             i += 1
 
-        sheet6 = workbook.worksheets[5]
-        i = 2
+        sheet6 = workbook.add_worksheet('Master data Trường dữ liệu')
+        sheet6.freeze_panes(1, 0)
+        sheet6.set_column(0, 2, 30)
+        sheet6.write(0, 0, 'Mã báo cáo', formats.get('title_format'))
+        sheet6.write(0, 1, 'Mã trường dữ liệu', formats.get('title_format'))
+        sheet6.write(0, 2, 'Tên trường dữ liệu', formats.get('title_format'))
+        i = 1
         for model, detail in field_by_model.items():
             for field, name in detail.items():
-                sheet6.cell(i, 1).value = model
-                sheet6.cell(i, 2).value = field
-                sheet6.cell(i, 3).value = name
+                sheet6.write(i, 0, model, formats.get('normal_format'))
+                sheet6.write(i, 1, field, formats.get('normal_format'))
+                sheet6.write(i, 2, name, formats.get('normal_format'))
                 i += 1
             i += 1
 
-        sheet7 = workbook.worksheets[6]
-        i = 2
+        sheet7 = workbook.add_worksheet('Master data Người dùng')
+        sheet7.freeze_panes(1, 0)
+        sheet7.set_column(0, 1, 30)
+        sheet7.write(0, 0, 'Mã người dùng', formats.get('title_format'))
+        sheet7.write(0, 1, 'Tên người dùng', formats.get('title_format'))
+        i = 1
         for login, name in users.items():
-            sheet7.cell(i, 1).value = login
-            sheet7.cell(i, 2).value = name
+            sheet7.write(i, 0, login, formats.get('normal_format'))
+            sheet7.write(i, 1, name, formats.get('normal_format'))
             i += 1
 
     def action_import(self):

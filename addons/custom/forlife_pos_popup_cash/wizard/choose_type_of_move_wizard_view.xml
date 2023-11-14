@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="choose_type_of_move_wizard_view_form" model="ir.ui.view">
+            <field name="name">choose_type_of_move_wizard_view_form</field>
+            <field name="model">choose.type.of.move.wizard</field>
+            <field name="arch" type="xml">
+                <form string="choose_type_of_move_wizard_form">
+                    <sheet>
+                        <group>
+                            <field name="type" widget="radio"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="Đồng ý" name="btn_apply" type="object" class="oe_highlight" data-hotkey="q"/>
+                        <button string="Từ chối" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="choose_type_of_move_wizard_action" model="ir.actions.act_window">
+            <field name="name">Chọn loại bút toán</field>
+            <field name="res_model">choose.type.of.move.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
