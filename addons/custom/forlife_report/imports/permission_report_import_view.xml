@@ -19,7 +19,7 @@
                     </sheet>
                     <footer>
                         <button special="cancel" string="Hủy"/>
-                        <button name="print_xlsx" type="object" string="Tải mẫu" class="oe_highlight" context="{'att_xml_id': 'forlife_report.template_import_permission_report'}"/>
+                        <button name="print_xlsx" type="object" string="Tải mẫu" class="oe_highlight"/>
                         <button name="action_import" type="object" string="Nhập" class="oe_highlight" attrs="{'invisible': [('import_file', '=', False)]}"/>
                     </footer>
                 </form>

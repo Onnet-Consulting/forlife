@@ -32,7 +32,6 @@
     'data': [
         'security/res_group_security.xml',
         'security/ir.model.access.csv',
-        'data/ir_attachment_data.xml',
 
         'wizard/report_base_actions.xml',
         'wizard/report_base_views.xml',
