@@ -28,8 +28,8 @@ class ExportTemplateProduct(models.AbstractModel):
             attr_value = attr_values.get(attr_code) or []
             for value in attr_value:
                 val = value.split('~') + ['', '']
-                sheet.cell(row, col).value = val[0]
-                sheet.cell(row, col + 1).value = val[1]
+                sheet.cell(row, col).value = val[1]
+                sheet.cell(row, col + 1).value = val[0]
                 row += 1
             col += 3
 

@@ -26,7 +26,8 @@
         'views/store.xml',
         'views/pos_expense_label_views.xml',
         'views/account_move_views.xml',
-        'views/view_bank_statement_line_tree_bank_rec_widget.xml'
+        'views/view_bank_statement_line_tree_bank_rec_widget.xml',
+        'wizard/choose_type_of_move_wizard_view.xml',
     ],
     'installable': True,
     'application': True,
