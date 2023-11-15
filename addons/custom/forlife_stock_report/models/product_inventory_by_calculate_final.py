@@ -118,7 +118,6 @@ class CalculateFinalValue(models.Model):
                         and sl."usage" = 'internal'
                         and sp.transfer_id is null
                         and sp.x_is_check_return is true
-                        and sm.origin_returned_move_id is not null
                         and sm.company_id = {company_id}
                     group by sml.product_id
                 ),
@@ -165,7 +164,7 @@ class CalculateFinalValue(models.Model):
 	                        and ip."name" = 'property_stock_valuation_account_id'
 	                        and ip.company_id = {company_id}
 	                        and ip.value_reference = 'account.account,' || aa.id
-	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done' and sm.origin_returned_move_id is not null 
+	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done'
 	                    join stock_picking sp on sm.picking_id = sp.id and sp.x_is_check_return is true
 	                    
 	                    where 
@@ -173,6 +172,34 @@ class CalculateFinalValue(models.Model):
                         and am.date <= '{to_date} 23:59:59'
 	                    
 	                    group by pp.id
+	                    
+	                    union all
+	                    
+	                    select
+                        pp.id product_id,
+                        -sum(credit) amount
+                        
+                        from account_move_line aml 
+                        join account_move am on aml.move_id = am.id
+                        join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+                        join purchase_order po on ampor.purchase_order_id = po.id
+                        join product_product pp on aml.product_id = pp.id
+                        join product_template pt on pp.product_tmpl_id = pt.id
+                        join product_category pc on pt.categ_id = pc.id
+                        join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
+                        and ip."name" = 'property_stock_valuation_account_id' 
+                        and ip.company_id = {company_id}
+                        join account_account aa on 'account.account,' || aa.id = ip.value_reference and aml.account_id = aa.id
+                        
+                        where 
+                        am.date >= '{from_date}'
+                        and am.date <= '{to_date} 23:59:59'
+                        and am.state = 'posted'
+                        and am.company_id = {company_id}
+                        and am.end_period_entry is true
+                        
+                        group by 
+                            pp.id
 
                     ) amount_period group by product_id
                 ),
@@ -218,13 +245,40 @@ class CalculateFinalValue(models.Model):
 	                        and ip."name" = 'property_stock_valuation_account_id'
 	                        and ip.company_id = {company_id}
 	                        and ip.value_reference = 'account.account,' || aa.id
-	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done' and sm.origin_returned_move_id is not null 
+	                    join stock_move sm on am.stock_move_id = sm.id and sm.state = 'done'
 	                    join stock_picking sp on sm.picking_id = sp.id and sp.x_is_check_return is true
 	                    
 	                    where 
 	                    am.date <= '{from_date}'
 	                    
 	                    group by pp.id
+	                    
+	                    union all
+	                    
+	                    select
+                        pp.id product_id,
+                        -sum(credit) amount
+                        
+                        from account_move_line aml 
+                        join account_move am on aml.move_id = am.id
+                        join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+                        join purchase_order po on ampor.purchase_order_id = po.id
+                        join product_product pp on aml.product_id = pp.id
+                        join product_template pt on pp.product_tmpl_id = pt.id
+                        join product_category pc on pt.categ_id = pc.id
+                        join ir_property ip on ip.res_id = 'product.category,' || pt.categ_id 
+                        and ip."name" = 'property_stock_valuation_account_id' 
+                        and ip.company_id = {company_id}
+                        join account_account aa on 'account.account,' || aa.id = ip.value_reference and aml.account_id = aa.id
+                        
+                        where 
+                        am.date <= '{from_date}'
+                        and am.state = 'posted'
+                        and am.company_id = {company_id}
+                        and am.end_period_entry is true
+                        
+                        group by 
+                            pp.id
                     ) amount_first group by product_id
                 )
                 
