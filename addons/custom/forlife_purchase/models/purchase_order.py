@@ -1962,7 +1962,7 @@ class PurchaseOrderLine(models.Model):
     billed = fields.Float(string='Đã có hóa đơn', compute='compute_billed')
     received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
-    description = fields.Char(related='product_id.name', store=True, required=False, string='Mô tả')
+    description = fields.Char(required=False, string='Mô tả')
     # Phục vụ import
     taxes_id = fields.Many2many('account.tax', string='Thuế(%)',
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
@@ -2009,6 +2009,12 @@ class PurchaseOrderLine(models.Model):
     manual_tax_amount = fields.Boolean(compute='_inverse_tax_amount')
     manual_special_consumption_tax_amount = fields.Boolean(compute='_inverse_special_consumption_tax_amount')
     manual_vat_tax_amount = fields.Boolean(compute='_inverse_vat_tax_amount')
+
+    @api.onchange('product_id')
+    def onchange_product_id_set_description(self):
+        for rec in self:
+            if rec.product_id:
+                rec.description = rec.product_id.name
 
     @api.constrains('discount_percent')
     def _constrains_discount_percent_and_discount(self):

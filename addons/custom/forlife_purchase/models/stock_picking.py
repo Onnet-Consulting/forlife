@@ -178,7 +178,14 @@ class StockPicking(models.Model):
                 'text_check_cp_normal': line.product_id.name,
                 'credit': round((amount / qty_po_origin) * qty_po_done),
                 'debit': 0,
-                'purchase_line_id': line.id
+                'purchase_line_id': line.id,
+                'occasion_code_id': move.occasion_code_id.id or False,
+                'production_order': move.work_production.id or False,
+                'work_order': move.work_production.id or False,
+                'analytic_account_id': move.account_analytic_id.id or False,
+                'account_analytic_id': move.account_analytic_id.id or False,
+                'asset_code': move.ref_asset.id or False,
+                'is_check_promotions': move.free_good,
             })]
             if move.product_id.type in ('product', 'consu'):
                 svl_values.append((0, 0, {
@@ -205,7 +212,14 @@ class StockPicking(models.Model):
                     'text_check_cp_normal': line.product_id.name,
                     'credit': 0.0,
                     'debit': round((amount / qty_po_origin) * qty_po_done),
-                    'purchase_line_id': line.id
+                    'purchase_line_id': line.id,
+                    'occasion_code_id': move.occasion_code_id.id or False,
+                    'production_order': move.work_production.id or False,
+                    'work_order': move.work_production.id or False,
+                    'analytic_account_id': move.account_analytic_id.id or False,
+                    'account_analytic_id': move.account_analytic_id.id or False,
+                    'asset_code': move.ref_asset.id or False,
+                    'is_check_promotions': move.free_good,
                 })]
 
             move_value.update({
@@ -279,16 +293,30 @@ class StockPicking(models.Model):
                         'name': expense.product_id.name,
                         'text_check_cp_normal': expense.product_id.name,
                         'credit': round(unit_cost * sp_total_qty),
-                        'debit': 0
+                        'debit': 0,
+                        'occasion_code_id': move.occasion_code_id.id or False,
+                        'production_order': move.work_production.id or False,
+                        'work_order': move.work_production.id or False,
+                        'analytic_account_id': move.account_analytic_id.id or False,
+                        'account_analytic_id': move.account_analytic_id.id or False,
+                        'asset_code': move.ref_asset.id or False,
+                        'is_check_promotions': move.free_good,
                     }),
                     (0, 0, {
-                         'sequence': 2,
-                         'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
-                         'product_id': move.product_id.id,
-                         'name': move.product_id.name,
-                         'text_check_cp_normal': move.product_id.name,
-                         'credit': 0,
-                         'debit': round(unit_cost * sp_total_qty)
+                        'sequence': 2,
+                        'account_id': move.product_id.categ_id.property_stock_valuation_account_id.id,
+                        'product_id': move.product_id.id,
+                        'name': move.product_id.name,
+                        'text_check_cp_normal': move.product_id.name,
+                        'credit': 0,
+                        'debit': round(unit_cost * sp_total_qty),
+                        'occasion_code_id': move.occasion_code_id.id or False,
+                        'production_order': move.work_production.id or False,
+                        'work_order': move.work_production.id or False,
+                        'analytic_account_id': move.account_analytic_id.id or False,
+                        'account_analytic_id': move.account_analytic_id.id or False,
+                        'asset_code': move.ref_asset.id or False,
+                        'is_check_promotions': move.free_good,
                     })],
                 }]
                 for value in entries_values:
