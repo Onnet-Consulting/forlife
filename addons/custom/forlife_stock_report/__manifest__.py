@@ -16,6 +16,7 @@
         'security/ir.model.access.csv',
         'reports/outgoing_value_diff_report.xml',
         'reports/stock_incoming_outgoing_report.xml',
+        'security/ir_rule.xml',
         'reports/stock_balance_difference_report_views.xml',
         'views/stock_quant_period.xml',
         'views/product_product.xml',

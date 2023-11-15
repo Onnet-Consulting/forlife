@@ -21,8 +21,8 @@ class ResUsers(models.Model):
     def name_get(self):
         result = []
         for user in self:
-            if user.department_default_id:
-                name = f'{user.name} - {user.department_default_id.name}'
+            if user.login:
+                name = f'{user.login} - {user.name}'
             else:
                 name = f'{user.name}'
             result.append((user.id, name))
