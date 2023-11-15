@@ -41,9 +41,9 @@ class AccountDocSale(models.Model):
 
         journal_value = {
             "CompanyCode": self.company_id.code or None,
-            'Stt': (self.is_post_bkav and self.invoine_no) or self.name or None,
+            'Stt': (self.is_post_bkav and self.invoice_no) or self.name or None,
             "DocCode": "H2",
-            "DocNo": (self.is_post_bkav and self.invoine_no) or self.name or None,
+            "DocNo": (self.is_post_bkav and self.invoice_no) or self.name or None,
             "DocDate": self.invoice_date or None,
             "CurrencyCode": self.currency_id.name or None,
             "ExchangeRate": exchange_rate,
@@ -155,6 +155,105 @@ class AccountDocSale(models.Model):
                     "CreditAccount3": journal_value_line.get('DebitAccount3'),
                     "Amount4": price_unit,
                     "OriginalAmount4": price_unit * exchange_rate,
+                })
+
+            values.append(journal_value_line)
+        return values
+
+    @api.model
+    def bravo_get_account_doc_sale_adjust_columns(self):
+        return [
+            'CompanyCode', 'Stt', 'DocCode', 'FormNo', 'DocNo', 'DocDate', 'CurrencyCode', 'ExchangeRate', 'CustomerCode', 'CustomerName', 'Address', 'TaxRegNo',
+            'Description', 'EmployeeCode', 'IsTransfer', 'DueDate', 'EInvoiceTransType', 'EInvoiceOriginNo', 'OriginFormNo', 'BuiltinOrder',
+            'DebitAccount2', 'CreditAccount2', 'ItemCode', 'ItemName', 'UnitCode', 'Quantity9', 'ConvertRate9', 'Quantity', 'OriginalUnitPrice', 'UnitPrice',
+            'PriceUnit', 'Disscount', 'OriginalAmount2', 'Amount2', 'OriginalAmount4', 'Amount4', 'DebitAccount4', 'CreditAccount4', 'TaxCode', 'OriginalAmount3',
+            'Amount3', 'DebitAccount3', 'CreditAccount3', 'DocNo_SO', 'JobCode', 'RowId', 'Assetcode', 'DepositCustomerCode', 'DocNo_WO', 'ProductCode', 'DeptCode', 'EinvoiceItemType'
+        ]
+
+    def bravo_get_sale_invoice_adjust_increase_values(self):
+        res = []
+        columns = self.bravo_get_account_doc_sale_adjust_columns()
+        employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
+        for record in self:
+            user_id = str(record.user_id.id or self._uid)
+            employee = employees.get(user_id) or {}
+            res.extend(record.bravo_get_sale_invoice_adjust_increase_value(employee.get('code')))
+        return columns, res
+
+    def bravo_get_sale_invoice_adjust_increase_value(self, employee_code):
+        self.ensure_one()
+        values = []
+        invoice_lines = self.invoice_line_ids
+        tax_lines = self.line_ids.filtered(lambda l: l.display_type == 'tax')
+        receivable_lines = self.line_ids - tax_lines - invoice_lines
+        receivable_lines = receivable_lines and receivable_lines[0]
+        receivable_account_code = receivable_lines.account_id.code or None
+        partner = self.partner_id
+        exchange_rate = self.exchange_rate
+
+        journal_value = {
+            "CompanyCode": self.company_id.code or None,
+            'Stt': (self.is_post_bkav and self.invoice_no) or None,
+            "DocCode": "HC",
+            "FormNo": self.invoice_form if (self.is_post_bkav and self.invoice_no) else None,
+            "DocNo": self.invoice_no or self.name or None,
+            "DocDate": self.invoice_date or None,
+            "CurrencyCode": self.currency_id.name or None,
+            "ExchangeRate": exchange_rate,
+            "CustomerCode": partner.ref or None,
+            "CustomerName": partner.name or None,
+            "Address": partner.contact_address_complete or None,
+            "TaxRegNo": partner.vat or None,
+            "Description": self.invoice_description or None,
+            "EmployeeCode": employee_code or None,
+            "IsTransfer": self.invoice_no and 1 or 0,
+            "DebitAccount2": receivable_account_code,
+            "PushDate": self.create_date or None,
+            "DueDate": self.invoice_date_due or None,
+            "EInvoiceTransType": 'adjustIncrease',
+            "EInvoiceOriginNo": self.debit_origin_id.invoice_no or self.debit_origin_id.name or None,
+            "OriginFormNo": self.debit_origin_id.invoice_form or None,
+        }
+
+        for idx, invoice_line in enumerate(invoice_lines, start=1):
+            product = invoice_line.product_id
+            journal_value_line = journal_value.copy()
+            journal_value_line.update({
+                'BuiltinOrder': idx,
+                "ItemCode": product.barcode or None,
+                "ItemName": product.name or None,
+                "UnitCode": product.uom_id.code or None,
+                "CreditAccount2": invoice_line.account_id.code or None,
+                "Quantity9": invoice_line.quantity,
+                "ConvertRate9": 1,
+                "Quantity": invoice_line.quantity,
+                "OriginalUnitPrice": invoice_line.quantity and (invoice_line.price_subtotal / invoice_line.quantity) or 0,
+                'UnitPrice': invoice_line.quantity and (invoice_line.price_subtotal / invoice_line.quantity * exchange_rate) or 0,
+                "PriceUnit": invoice_line.quantity and (invoice_line.price_subtotal / invoice_line.quantity) or 0,
+                'Disscount': 0,
+                'OriginalAmount2': invoice_line.price_subtotal,
+                'Amount2': invoice_line.price_subtotal * exchange_rate,
+                'OriginalAmount4': 0,
+                'Amount4': 0,
+                'JobCode': invoice_line.occasion_code_id.code or None,
+                "RowId": invoice_line.id,
+                "DeptCode": invoice_line.analytic_account_id.code or partner.property_account_cost_center_id.code or None,
+                "DepositCustomerCode": invoice_line.asset_code.code if (invoice_line.asset_code and invoice_line.asset_code.type in ("CCDC", "TSCD")) else None,
+                "DocNo_SO": self.invoice_origin or None,
+                "DocNo_WO": invoice_line.work_order.code or invoice_line.work_order.code or None,
+                "ProductCode": (invoice_line.asset_id.type == 'XDCB' and invoice_line.asset_id.code) or (invoice_line.asset_code.type == 'XDCB' and invoice_line.asset_code.code) or None,
+                "EinvoiceItemType": 3 if invoice_line.promotions else 1,
+            })
+            tax_line = invoice_line.tax_ids.invoice_repartition_line_ids.account_id
+            if tax_line:
+                tax_line = tax_line[0]
+                original_amount3 = invoice_line.price_subtotal * invoice_line.tax_ids[0].amount / 100
+                journal_value_line.update({
+                    "TaxCode": invoice_line.tax_ids[0].code,
+                    "OriginalAmount3": original_amount3,
+                    "Amount3": original_amount3 * exchange_rate,
+                    "DebitAccount3": receivable_account_code,
+                    "CreditAccount3": tax_line.code,
                 })
 
             values.append(journal_value_line)
