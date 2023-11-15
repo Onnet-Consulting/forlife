@@ -11,6 +11,10 @@ TITLES = [
     'Đơn vị gia công/xưởng sản xuất',
     'Mã thành phẩm',
     'Tên thành phẩm',
+    'Màu',
+    'Ánh màu',
+    'Màu cơ bản',
+    'Size',
     'Đơn vị tính',
     'Số lượng sản xuất kế hoạch',
     'Số lượng đã nhập kho',
@@ -37,6 +41,7 @@ class ReportNum36(models.TransientModel):
         self.ensure_one()
         tz_offset = self.tz_offset
         user_lang_code = self.env.user.lang
+        attr_value = self.env['res.utility'].get_attribute_code_config()
 
         query = f"""
             select
@@ -54,6 +59,10 @@ class ReportNum36(models.TransientModel):
                 fpfp.produce_qty as sl_sanxuat,
                 fpfp.stock_qty as sl_nhapkho,
                 (fpfp.produce_qty - fpfp.stock_qty) as sl_conlai
+                , attr.attrs->'{attr_value.get('mau_sac', '')}' ->> 0 AS mau
+                , attr.attrs->'{attr_value.get('anh_mau', '')}' ->> 0 AS anh_mau
+                , attr.attrs->'{attr_value.get('mau_co_ban', '')}' ->> 0 AS mau_co_ban
+                , attr.attrs->'{attr_value.get('size', '')}' ->> 0 AS size
             from
                 forlife_production fp
             join forlife_production_finished_product fpfp on
@@ -70,6 +79,29 @@ class ReportNum36(models.TransientModel):
                 pp.product_tmpl_id = pt.id
             left join uom_uom uu on
                 pt.uom_id = uu.id
+            left join (
+                SELECT
+                    product_id,
+                    json_object_agg(attrs_code, value) AS attrs
+                FROM (
+                    SELECT
+                        pp.id AS product_id,
+                        pa.attrs_code AS attrs_code,
+                        array_agg(COALESCE(pav.name::json -> 'vi_VN', pav.name::json -> 'en_US')) AS value
+                    FROM
+                        product_template_attribute_line ptal
+                    LEFT JOIN product_product pp ON pp.product_tmpl_id = ptal.product_tmpl_id
+                    LEFT JOIN product_attribute_value_product_template_attribute_line_rel rel ON rel.product_template_attribute_line_id = ptal.id
+                    LEFT JOIN product_attribute pa ON ptal.attribute_id = pa.id
+                    LEFT JOIN product_attribute_value pav ON pav.id = rel.product_attribute_value_id
+                    WHERE
+                        pa.attrs_code IS NOT NULL
+                    GROUP BY
+                        pp.id,
+                        pa.attrs_code
+                ) AS att
+                GROUP BY product_id
+            ) attr ON attr.product_id = pp.id
             where fp.active is true
         """
         if self.produce_id:
@@ -105,6 +137,10 @@ class ReportNum36(models.TransientModel):
                         'dv_giacong': '',
                         'ma_thanhpham': v['ma_thanhpham'],
                         'ten_thanhpham': v['ten_thanhpham'],
+                        'mau': v['mau'],
+                        'anh_mau': v['anh_mau'],
+                        'mau_co_ban': v['mau_co_ban'],
+                        'size': v['size'],
                         'dvt': v['dvt'],
                         'sl_sanxuat': v['sl_sanxuat'],
                         'sl_nhapkho': v['sl_nhapkho'],
@@ -164,13 +200,17 @@ class ReportNum36(models.TransientModel):
                 sheet.write(row, 3, value.get('dv_giacong'), formats.get('center_format'))
                 sheet.write(row, 4, value.get('ma_thanhpham'), formats.get('normal_format'))
                 sheet.write(row, 5, value.get('ten_thanhpham'), formats.get('normal_format'))
-                sheet.write(row, 6, value.get('dvt'), formats.get('normal_format'))
-                sheet.write(row, 7, value.get('sl_sanxuat'), formats.get('normal_format'))
-                sheet.write(row, 8, value.get('sl_nhapkho'), formats.get('normal_format'))
-                sheet.write(row, 9, value.get('sl_conlai'), formats.get('normal_format'))
+                sheet.write(row, 6, value.get('mau'), formats.get('normal_format'))
+                sheet.write(row, 7, value.get('anh_mau'), formats.get('normal_format'))
+                sheet.write(row, 8, value.get('mau_co_ban'), formats.get('normal_format'))
+                sheet.write(row, 9, value.get('size'), formats.get('normal_format'))
+                sheet.write(row, 10, value.get('dvt'), formats.get('normal_format'))
+                sheet.write(row, 11, value.get('sl_sanxuat'), formats.get('normal_format'))
+                sheet.write(row, 12, value.get('sl_nhapkho'), formats.get('normal_format'))
+                sheet.write(row, 13, value.get('sl_conlai'), formats.get('normal_format'))
             if value.get('lsx') == 'Tổng':
-                sheet.write(row, 6, value.get('lsx'), format_label)
-                sheet.write(row, 7, value.get('sl_sanxuat'), format_total)
-                sheet.write(row, 8, value.get('sl_nhapkho'), format_total)
-                sheet.write(row, 9, value.get('sl_conlai'), format_total)
+                sheet.write(row, 10, value.get('lsx'), format_label)
+                sheet.write(row, 11, value.get('sl_sanxuat'), format_total)
+                sheet.write(row, 12, value.get('sl_nhapkho'), format_total)
+                sheet.write(row, 13, value.get('sl_conlai'), format_total)
             row += 1

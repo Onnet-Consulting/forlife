@@ -32,7 +32,7 @@
                     <field name="is_return" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree/field[@name='billed']" position="after">
-                    <field name="qty_returned" attrs="{'column_invisible': ['|',('qty_returned', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
+                    <field name="qty_returned" sum="qty_returned" attrs="{'column_invisible': ['|',('qty_returned', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree/field[@name='received']" position="replace">
                     <field name="received"

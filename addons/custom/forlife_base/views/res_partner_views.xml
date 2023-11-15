@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <record id="view_users_tree_inherit_add_field" model="ir.ui.view">
+        <field name="name">view_users_tree_inherit_add_field</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="department_default_id"/>
+                <!-- Add new fields here -->
+            </xpath>
+
+        </field>
+    </record>
+
     <!-- Supplier Group -->
     <record id="view_partner_form_forlife_inherit" model="ir.ui.view">
         <field name="name">res.partner.form.forlife.inherit</field>

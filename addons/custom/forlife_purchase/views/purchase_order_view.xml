@@ -131,14 +131,14 @@
                                 <field name="company_currency" invisible="1"/>
                                 <field name="total_vnd_exchange" sum="total_vnd_exchange" readonly="1" widget="monetary" options="{'currency_field': 'company_currency'}" force_save="1"/>
                                 <field name="total_vnd_exchange_import" invisible="1"/>
-                                <field name="product_qty" readonly="1" string="Số lượng"/>
-                                <field name="import_tax"/>
+                                <field name="product_qty" readonly="1" string="Số lượng" sum="product_qty"/>
+                                <field name="import_tax" sum="import_tax"/>
                                 <field name="tax_amount" sum="tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="tax_amount_import" invisible="1"/>
-                                <field name="special_consumption_tax"/>
+                                <field name="special_consumption_tax" sum="special_consumption_tax"/>
                                 <field name="special_consumption_tax_amount" sum="special_consumption_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="special_consumption_tax_amount_import" invisible="1"/>
-                                <field name="vat_tax"/>
+                                <field name="vat_tax" sum="vat_tax"/>
                                 <field name="vat_tax_amount" sum="vat_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
                                 <field name="vat_tax_amount_import" invisible="1"/>
                                 <field name="total_tax_amount" sum="total_tax_amount" widget="monetary" options="{'currency_field': 'company_currency'}" readonly="1"/>
@@ -362,9 +362,10 @@
                         <field name="qty_received_manual" invisible="1"/>
                         <field name="qty_received_method" invisible="1"/>
                         <field name="received" string="Đã nhận"
+                               sum="received"
                                attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))], 'readonly': [('qty_received_method', '!=', 'manual')]}"
                                invisible="0"/>
-                        <field name="billed" string="Billed" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}" invisible="0"/>
+                        <field name="billed" sum="billed" string="Billed" attrs="{'column_invisible': [('parent.state', 'not in', ('purchase', 'done'))]}" invisible="0"/>
                         <button name="action_purchase_history" type="object" icon="fa-history" title="Purchase History" attrs="{'invisible': [('id', '=', False)]}"/>
                         <field name="price_total" invisible="1"/>
                         <field name="price_tax" invisible="1"/>

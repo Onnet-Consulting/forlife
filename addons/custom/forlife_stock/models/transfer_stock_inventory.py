@@ -245,10 +245,8 @@ class TransferStockInventory(models.Model):
             [('company_id', '=', self.env.company.id), ('code', '=', 'X0201')], limit=1)
         enter_inventory_balance = self.env['stock.location'].search(
             [('company_id', '=', self.env.company.id), ('code', '=', 'N0201')], limit=1)
-        export_inventory_balance_classify = self.env['stock.location'].search(
-            [('company_id', '=', self.env.company.id), ('code', '=', 'X0302')], limit=1)
-        import_inventory_balance_classify = self.env['stock.location'].search(
-            [('company_id', '=', self.env.company.id), ('code', '=', 'N0302')], limit=1)
+        export_inventory_balance_classify = export_inventory_balance
+        import_inventory_balance_classify = export_inventory_balance
         return export_inventory_balance, enter_inventory_balance, export_inventory_balance_classify, import_inventory_balance_classify
 
     def create_picking_and_move(self, item, data_ex_other):

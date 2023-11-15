@@ -12,11 +12,21 @@ class ResUsers(models.Model):
     brand_ids = fields.Many2many('res.brand', string='Branch')
     brand_default_id = fields.Many2one('res.brand', string='Branch Default', company_dependent=True)
     department_ids = fields.Many2many('hr.department', string='Department')
-    department_default_id = fields.Many2one('hr.department', string='Department Default', company_dependent=True)
+    department_default_id = fields.Many2one('hr.department', string='Phòng ban mặc định', company_dependent=True)
     team_ids = fields.Many2many('hr.team', string='Team')
     team_default_id = fields.Many2one('hr.team', string='Team Default', company_dependent=True)
     store_ids = fields.Many2many('store', string='Store')
     store_default_id = fields.Many2one('store', string='Store Default', company_dependent=True)
+
+    def name_get(self):
+        result = []
+        for user in self:
+            if user.department_default_id:
+                name = f'{user.name} - {user.department_default_id.name}'
+            else:
+                name = f'{user.name}'
+            result.append((user.id, name))
+        return result
 
     @api.model
     def get_department(self):
