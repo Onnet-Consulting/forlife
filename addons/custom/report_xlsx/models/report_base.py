@@ -46,20 +46,16 @@ class ReportBase(models.AbstractModel):
 
     @api.model
     def get_xlsx(self, allowed_company, attachment_id):
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {
+            'in_memory': True,
+            'strings_to_formulas': False,
+        })
+        template = False
         if attachment_id:
             attachment = self.env['ir.attachment'].browse(attachment_id)
-            file_data = base64.b64decode(attachment.datas)
-            output = io.BytesIO(file_data)
-            workbook = openpyxl.load_workbook(output)
-        else:
-            output = io.BytesIO()
-            workbook = xlsxwriter.Workbook(output, {
-                'in_memory': True,
-                'strings_to_formulas': False,
-            })
-        self.generate_xlsx_report(workbook, allowed_company)
-        if attachment_id:
-            workbook.save(output)
+            template = openpyxl.load_workbook(io.BytesIO(base64.b64decode(attachment.datas)))
+        self.generate_xlsx_report(workbook, allowed_company, template=template)
         workbook.close()
         output.seek(0)
         generated_file = output.read()
