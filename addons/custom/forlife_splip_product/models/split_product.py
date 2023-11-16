@@ -80,18 +80,19 @@ class SplitProduct(models.Model):
         self.ensure_one()
         Quant = self.env['stock.quant']
         list_line_invalid = []
+
         amount_total_split = 0
         amount_total_source = 0
         for rec in self.split_product_line_ids:
-            product_qty_split = 0
             amount_total_source += rec.product_id.lst_price * rec.product_quantity_out
+            product_qty_split = 0
             for r in self.split_product_line_sub_ids:
-                amount_total_split += r.split_product_id.lst_price * r.quantity
+                amount_total_split += r.product_split_id.lst_price * r.quantity
                 level = 2 if r.product_id.brand_id.code == 'TKL' else 4
                 if self.business_type == 'inv':
                     r.validate_product(level)
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
-                    r.product_split_id.standard_price = rec.product_id.standard_price
+                    # r.product_split_id.standard_price = rec.product_id.standard_price
                     product_qty_split += r.quantity
             if self.business_type != 'inv':
                 rec.product_quantity_out = product_qty_split
@@ -100,7 +101,7 @@ class SplitProduct(models.Model):
                 list_line_invalid.append(f"Sản phẩm chính {rec.product_id.name_get()[0][1]} có số lượng yêu cầu xuất lớn hơn số lượng tồn kho của kho {rec.warehouse_out_id.name_get()[0][1]}")
         if len(list_line_invalid) > 0:
             raise ValidationError(_('\n'.join(list_line_invalid)))
-        if amount_total_split != amount_total_source:
+        if amount_total_split != amount_total_source and self.business_type == 'inv':
             raise ValidationError(_('Giá trị của sản phẩm chính và sản phẩm phân tách không bằng nhau!.'))
         company_id = self.env.company
         pk_type_in = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'),('sequence_code','=','IN_OTHER')], limit=1)
