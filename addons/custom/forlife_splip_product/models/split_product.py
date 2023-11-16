@@ -84,10 +84,10 @@ class SplitProduct(models.Model):
         amount_total_split = 0
         amount_total_source = 0
         for rec in self.split_product_line_ids:
-            amount_total_split += rec.product_split_id.lst_price * rec.product_quantity_split
             amount_total_source += rec.product_id.lst_price * rec.product_quantity_out
             product_qty_split = 0
             for r in self.split_product_line_sub_ids:
+                amount_total_split += r.product_split_id.lst_price * r.quantity
                 level = 2 if r.product_id.brand_id.code == 'TKL' else 4
                 if self.business_type == 'inv':
                     r.validate_product(level)
