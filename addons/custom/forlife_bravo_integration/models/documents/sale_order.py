@@ -164,23 +164,23 @@ class AccountDocSale(models.Model):
     def bravo_get_account_doc_sale_adjust_columns(self):
         return [
             'CompanyCode', 'Stt', 'DocCode', 'FormNo', 'DocNo', 'DocDate', 'CurrencyCode', 'ExchangeRate', 'CustomerCode', 'CustomerName', 'Address', 'TaxRegNo',
-            'Description', 'EmployeeCode', 'IsTransfer', 'DueDate', 'EInvoiceTransType', 'EInvoiceOriginNo', 'OriginFormNo', 'BuiltinOrder',
+            'Description', 'EmployeeCode', 'IsTransfer', 'DueDate', 'EInvoiceTransType', 'EInvoiceOriginNo', 'OriginFormNo', 'BuiltinOrder', 'EinvoiceItemType',
             'DebitAccount2', 'CreditAccount2', 'ItemCode', 'ItemName', 'UnitCode', 'Quantity9', 'ConvertRate9', 'Quantity', 'OriginalUnitPrice', 'UnitPrice',
             'PriceUnit', 'Disscount', 'OriginalAmount2', 'Amount2', 'OriginalAmount4', 'Amount4', 'DebitAccount4', 'CreditAccount4', 'TaxCode', 'OriginalAmount3',
-            'Amount3', 'DebitAccount3', 'CreditAccount3', 'DocNo_SO', 'JobCode', 'RowId', 'Assetcode', 'DepositCustomerCode', 'DocNo_WO', 'ProductCode', 'DeptCode', 'EinvoiceItemType'
+            'Amount3', 'DebitAccount3', 'CreditAccount3', 'DocNo_SO', 'JobCode', 'RowId', 'Assetcode', 'DepositCustomerCode', 'DocNo_WO', 'ProductCode', 'DeptCode',
         ]
 
-    def bravo_get_sale_invoice_adjust_increase_values(self):
+    def bravo_get_sale_invoice_adjust_values(self, type=''):
         res = []
         columns = self.bravo_get_account_doc_sale_adjust_columns()
         employees = self.env['res.utility'].get_multi_employee_by_list_uid(self.user_id.ids + self.env.user.ids)
         for record in self:
             user_id = str(record.user_id.id or self._uid)
             employee = employees.get(user_id) or {}
-            res.extend(record.bravo_get_sale_invoice_adjust_increase_value(employee.get('code')))
+            res.extend(record.bravo_get_sale_invoice_adjust_value(employee.get('code'), type))
         return columns, res
 
-    def bravo_get_sale_invoice_adjust_increase_value(self, employee_code):
+    def bravo_get_sale_invoice_adjust_value(self, employee_code, type):
         self.ensure_one()
         values = []
         invoice_lines = self.invoice_line_ids
@@ -190,10 +190,22 @@ class AccountDocSale(models.Model):
         receivable_account_code = receivable_lines.account_id.code or None
         partner = self.partner_id
         exchange_rate = self.exchange_rate
+        value_by_type = {
+            'increase': {
+                'EInvoiceTransType': 'adjustIncrease',
+                'EInvoiceOriginNo': self.debit_origin_id.invoice_no or self.debit_origin_id.name or None,
+                'OriginFormNo': self.debit_origin_id.invoice_form or None,
+            },
+            'decrease': {
+                'EInvoiceTransType': 'adjustDecrease',
+                'EInvoiceOriginNo': self.origin_move_id.invoice_no or self.origin_move_id.name or None,
+                'OriginFormNo': self.origin_move_id.invoice_form or None,
+            },
+        }
 
         journal_value = {
             "CompanyCode": self.company_id.code or None,
-            'Stt': (self.is_post_bkav and self.invoice_no) or None,
+            'Stt': (self.is_post_bkav and self.invoice_no) or self.name or None,
             "DocCode": "HC",
             "FormNo": self.invoice_form if (self.is_post_bkav and self.invoice_no) else None,
             "DocNo": self.invoice_no or self.name or None,
@@ -207,12 +219,11 @@ class AccountDocSale(models.Model):
             "Description": self.invoice_description or None,
             "EmployeeCode": employee_code or None,
             "IsTransfer": self.invoice_no and 1 or 0,
-            "DebitAccount2": receivable_account_code,
             "PushDate": self.create_date or None,
             "DueDate": self.invoice_date_due or None,
-            "EInvoiceTransType": 'adjustIncrease',
-            "EInvoiceOriginNo": self.debit_origin_id.invoice_no or self.debit_origin_id.name or None,
-            "OriginFormNo": self.debit_origin_id.invoice_form or None,
+            "EInvoiceTransType": value_by_type[type]['EInvoiceTransType'],
+            "EInvoiceOriginNo": value_by_type[type]['EInvoiceOriginNo'],
+            "OriginFormNo": value_by_type[type]['OriginFormNo'],
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
@@ -223,7 +234,8 @@ class AccountDocSale(models.Model):
                 "ItemCode": product.barcode or None,
                 "ItemName": product.name or None,
                 "UnitCode": product.uom_id.code or None,
-                "CreditAccount2": invoice_line.account_id.code or None,
+                "CreditAccount2": (invoice_line.account_id.code if type == 'increase' else receivable_account_code) or None,
+                "DebitAccount2": (receivable_account_code if type == 'increase' else invoice_line.account_id.code) or None,
                 "Quantity9": invoice_line.quantity,
                 "ConvertRate9": 1,
                 "Quantity": invoice_line.quantity,
@@ -252,8 +264,8 @@ class AccountDocSale(models.Model):
                     "TaxCode": invoice_line.tax_ids[0].code,
                     "OriginalAmount3": original_amount3,
                     "Amount3": original_amount3 * exchange_rate,
-                    "DebitAccount3": receivable_account_code,
-                    "CreditAccount3": tax_line.code,
+                    "DebitAccount3": receivable_account_code if type == 'increase' else tax_line.code,
+                    "CreditAccount3": tax_line.code if type == 'increase' else receivable_account_code,
                 })
 
             values.append(journal_value_line)
