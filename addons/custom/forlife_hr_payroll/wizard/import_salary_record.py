@@ -328,9 +328,7 @@ class ImportSalaryRecord(models.TransientModel):
         return production_by_code, error_by_code
 
     def map_internal_order_data(self, data):
-        occasions = self.env['occasion.code'].search([
-            ('code', 'in', data), ('company_id', '=', self.company_id.id)
-        ])
+        occasions = self.env['occasion.code'].search([('code', 'in', data)])
         occasion_by_code = {oc.code: oc.id for oc in occasions}
         error_by_code = {}
         for code in data:

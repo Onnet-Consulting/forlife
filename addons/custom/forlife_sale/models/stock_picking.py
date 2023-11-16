@@ -88,6 +88,7 @@ class StockPicking(models.Model):
             'partner_id': self[0].partner_id.id,
             'move_type': 'out_refund',
             'invoice_line_ids': invoice_line_ids,
+            'ref': self.name,
             'promotion_ids': promotion_ids,
             'invoice_origin': line.sale_line_id.order_id.name,
         }
