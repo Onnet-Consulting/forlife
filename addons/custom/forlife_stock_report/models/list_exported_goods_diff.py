@@ -26,14 +26,17 @@ class CalculateFinalValue(models.Model):
                     case when oc.code is not null then concat('[', oc.code, '] ', oc.name) else '' end occasion_code,
                     case when aaa.code is not null then concat('[', aaa.code, '] ', aaa.name->>'vi_VN') else '' end account_analytic,
                     case when aa2.code is not null then concat('[', aa2.code, '] ', aa2.name) else '' end asset_code,
-                    spls.product_split_id product_end_id,
+                    case when sm.product_production_id is not null then sm.product_production_id
+                    else spls.product_split_id end product_end_id,
                     case 
+	                    when spls.quantity > 0 then spls.quantity
                         when (pibpl.qty_product > 0) then sm.quantity_done
                         when (pibpl.qty_product = 0 and (sp.x_is_check_return is false or sp.x_is_check_return is null)) then sm.quantity_done
                         when pibpl.qty_product = 0 and sp.x_is_check_return is true then 0
                         else sm.quantity_done
                     end qty,
-                    aml.debit amount_export
+                    case when spls.product_split_id is not null then (spls.quantity * aml.debit) / sm.quantity_done
+                    else aml.debit end amount_export
                 from stock_move sm 
                 join account_move am on am.stock_move_id = sm.id and (am.end_period_entry is null or am.end_period_entry is false)
                 join account_move_line aml on am.id = aml.move_id 
@@ -49,48 +52,9 @@ class CalculateFinalValue(models.Model):
                 left join occasion_code oc on oc.id = sm.occasion_code_id 
                 left join account_analytic_account aaa on sm.account_analytic_id = aaa.id
                 left join assets_assets aa2 on aa2.id = sm.ref_asset
+                left join forlife_production fp on sm.work_production = fp.id or sm.work_to = fp.id
                 left join product_inventory_by_period_line pibpl on pp.id = pibpl.product_id and pibpl.date = '{date_inv}'
                 
-                where 
-                aml.debit > 0 
-                and sm.company_id = {company_id} 
-                and sm.date + interval '7 hours' >= '{from_date}' and sm.date + interval '7 hours' <= '{to_date} 23:59:59'
-                and sm.state = 'done'
-                and (sp.x_is_check_return is false or sp.x_is_check_return is null)
-                and cpt.code = {category_type}
-
-                union all
-
-                select
-                    {parent_id} parent_id,
-                    pp.id product_id,
-                    aa.id account_id,
-                    fp.code production_code,
-                    case when oc.code is not null then concat('[', oc.code, '] ', oc.name) else '' end occasion_code,
-                    case when aaa.code is not null then concat('[', aaa.code, '] ', aaa.name->>'vi_VN') else '' end account_analytic,
-                    case when aa2.code is not null then concat('[', aa2.code, '] ', aa2.name) else '' end asset_code,
-                    fpm.product_id product_end_id,
-                    (fpm.total * sm.quantity_done) qty,
-                    (sm2.price_unit * sm.quantity_done) amount_export
-                from stock_move sm 
-
-                join stock_picking sp on sm.picking_id = sp.id
-                join stock_picking sp2 on sp.picking_outgoing_id = sp2.id
-                join stock_move sm2 on sp2.id = sm2.picking_id 
-                join forlife_production fp on sm2.work_production = fp.id or sm2.work_to = fp.id
-                join forlife_production_finished_product fpfp on fpfp.forlife_production_id = fp.id
-                join forlife_production_material fpm on fpfp.id = fpm.forlife_production_id 
-                join account_move am on sm.id = am.stock_move_id and (am.end_period_entry is null or am.end_period_entry is false)
-                join account_move_line aml on aml.move_id = am.id
-                join account_account aa on aml.account_id = aa.id
-                left join product_product pp on sm.product_id = pp.id
-                left join product_template pt on pp.product_tmpl_id = pt.id
-                left join product_category pc on pt.categ_id = pc.id
-                left join product_category_type cpt on pc.category_type_id = cpt.id
-                left join occasion_code oc on oc.id = sm.occasion_code_id 
-                left join account_analytic_account aaa on sm.account_analytic_id = aaa.id
-                left join assets_assets aa2 on aa2.id = sm.ref_asset
-
                 where 
                 aml.debit > 0 
                 and sm.company_id = {company_id} 
