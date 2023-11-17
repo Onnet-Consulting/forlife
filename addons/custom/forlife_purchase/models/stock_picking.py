@@ -403,6 +403,7 @@ class StockPicking(models.Model):
                             'quantity_done': r.quantity_done / item.product_qty * material_line.product_qty,
                             'amount_total': material_line.price_unit * material_line.product_qty,
                             'reason_id': export_production_order.id,
+                            'product_production_id': material_line.purchase_order_line_id.product_id.id
                         }))
                         #tạo bút toán npl ở bên bút toán sinh với khi nhập kho khác với phiếu xuất npl
                         if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
