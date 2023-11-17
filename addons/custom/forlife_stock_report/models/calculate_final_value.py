@@ -63,23 +63,22 @@ class CalculateFinalValue(models.Model):
     @api.constrains('category_type_id')
     def _constrains_category_type_id(self):
         for rec in self:
-            for rec in self:
-                record_valid = rec.search([('category_type_id', '=', 'npl_ccdc'), ('from_date', '=', rec.from_date),
-                                           ('to_date', '=', rec.to_date), ('state', '=', 'step4')])
-                if rec.category_type_id == 'npl_ccdc' and rec.product_type == 'end' and not record_valid:
-                    raise ValidationError(
-                        'Bạn không thể tính giá cuối kỳ cho loại sản phẩm Nguyên liệu/CCCD đích \ntrước khi hoàn thành tính giá cuối kỳ cho loại sản phẩm Nguyên liệu/CCCD nguồn')
-                if rec.category_type_id == 'tp_hh' and (not record_valid or record_valid[-1].product_type != 'end'):
-                    raise ValidationError(
-                        'Bạn không thể tính giá cuối kỳ cho loại sản phẩm Thành phẩm/Hàng hóa \ntrước khi hoàn thành tính giá cuối kỳ cho loại sản phẩm Nguyên liệu/CCCD')
+            record_valid = rec.search([('category_type_id', '=', 'npl_ccdc'), ('from_date', '=', rec.from_date),
+                                       ('to_date', '=', rec.to_date), ('state', '=', 'step4')])
+            if rec.category_type_id == 'npl_ccdc' and rec.product_type == 'end' and not record_valid:
+                raise ValidationError(
+                    'Bạn không thể tính giá cuối kỳ cho loại sản phẩm Nguyên liệu/CCCD đích \ntrước khi hoàn thành tính giá cuối kỳ cho loại sản phẩm Nguyên liệu/CCCD nguồn')
+            if rec.category_type_id == 'tp_hh' and (not record_valid or (record_valid[-1].product_type == 'end' and record_valid[-1].state != 'step4')):
+                raise ValidationError(
+                    'Bạn không thể tính giá cuối kỳ cho loại sản phẩm Thành phẩm/Hàng hóa \ntrước khi hoàn thành tính giá cuối kỳ cho loại sản phẩm Nguyên liệu/CCCD')
 
-                record_valid_hh = rec.search([('category_type_id', '=', 'tp_hh'), ('from_date', '=', rec.from_date),
-                                              ('to_date', '=', rec.to_date), ('state', '=', 'step4')])
-                if rec.category_type_id == 'tp_hh' and rec.product_type == 'end' and not record_valid_hh:
-                    raise ValidationError(
-                        'Bạn không thể tính giá cuối kỳ cho loại sản phẩm Thành phẩm/Hàng hóa đích \ntrước khi hoàn thành tính giá cuối kỳ cho loại sản phẩm Thành phẩm/Hàng hóa nguồn')
+            record_valid_hh = rec.search([('category_type_id', '=', 'tp_hh'), ('from_date', '=', rec.from_date),
+                                          ('to_date', '=', rec.to_date), ('state', '=', 'step4')])
+            if rec.category_type_id == 'tp_hh' and rec.product_type == 'end' and not record_valid_hh:
+                raise ValidationError(
+                    'Bạn không thể tính giá cuối kỳ cho loại sản phẩm Thành phẩm/Hàng hóa đích \ntrước khi hoàn thành tính giá cuối kỳ cho loại sản phẩm Thành phẩm/Hàng hóa nguồn')
 
-    def prepare_value_by_diff(self):
+    def prepare_value(self, product_id, line, type=None):
         journal = self.env['account.journal']
         journal_up_id = journal.search([
             ('code', '=', 'GL01'),
@@ -91,56 +90,67 @@ class CalculateFinalValue(models.Model):
             ('type', '=', 'general'),
             ('company_id', '=', self.company_id.id)
         ], limit=1)
+        vals = {}
+        if type == 'source':
+            account_credit = line.account_id.id if line.amount_diff > 0 else line.product_id.categ_id.property_stock_valuation_account_id.id
+            account_debit = line.product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id
+        else:
+            account_debit = line.account_id.id if line.amount_diff > 0 else line.product_id.categ_id.property_stock_valuation_account_id.id
+            account_credit = line.product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id
 
+        lines = [
+            (0, 0, {
+                'name': self.name,
+                'product_id': product_id,
+                'quantity': 0,
+                'credit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
+                'account_id': account_credit,
+                'work_order': line.production_code.id,
+                'asset_id': line.asset_code.id,
+                'occasion_code_id': line.occasion_code.id,
+                'analytic_account_id': line.account_analytic.id,
+            }),
+            (0, 0, {
+                'name': self.name,
+                'product_id': product_id,
+                'quantity': 0,
+                'debit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
+                'account_id': account_debit,
+                'work_order': line.production_code.id,
+                'asset_id': line.asset_code.id,
+                'occasion_code_id': line.occasion_code.id,
+                'analytic_account_id': line.account_analytic.id,
+            }),
+
+        ]
+
+        vals.update({
+            'date': self.to_date,
+            'ref': self.name,
+            'journal_id': journal_up_id.id if line.amount_diff > 0 else journal_down_id.id,
+            'auto_post': 'no',
+            'x_root': 'other',
+            'end_period_entry': True,
+            'line_ids': lines,
+            'move_type': 'entry',
+            'stock_valuation_layer_ids': [(0, 0, {
+                'value': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
+                'unit_cost': 0,
+                'quantity': 0,
+                'remaining_qty': 0,
+                'description': self.name,
+                'product_id': product_id,
+                'company_id': self.env.company.id
+            })]
+        })
+        return vals
+
+    def prepare_value_by_diff(self):
         vals = []
         for line in self.goods_diff_lines:
-            product_id = line.product_id.id if self.product_type == 'source' else line.product_end_id.id
-            lines = [
-                (0, 0, {
-                    'name': self.name,
-                    'product_id': product_id,
-                    'quantity': 0,
-                    'credit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
-                    'account_id': line.account_id.id if line.amount_diff > 0 else line.product_id.categ_id.property_stock_valuation_account_id.id,
-                    'work_order': line.production_code.id,
-                    'asset_id': line.asset_code.id,
-                    'occasion_code_id': line.occasion_code.id,
-                    'analytic_account_id': line.account_analytic.id,
-                }),
-                (0, 0, {
-                    'name': self.name,
-                    'product_id': product_id,
-                    'quantity': 0,
-                    'debit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
-                    'account_id': line.product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id,
-                    'work_order': line.production_code.id,
-                    'asset_id': line.asset_code.id,
-                    'occasion_code_id': line.occasion_code.id,
-                    'analytic_account_id': line.account_analytic.id,
-                }),
-
-            ]
-
-            vals.append({
-                'date': self.to_date,
-                'ref': self.name,
-                'journal_id': journal_up_id.id if line.amount_diff > 0 else journal_down_id.id,
-                'auto_post': 'no',
-                'x_root': 'other',
-                'end_period_entry': True,
-                'line_ids': lines,
-                'move_type': 'entry',
-                'stock_valuation_layer_ids': [(0, 0, {
-                    'value': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
-                    'unit_cost': 0,
-                    'quantity': 0,
-                    'remaining_qty': 0,
-                    'description': self.name,
-                    'product_id': product_id,
-                    'company_id': self.env.company.id
-                })]
-            })
-
+            vals.append(self.prepare_value(line.product_id.id, line, 'source'))
+            if line.product_end_id:
+                vals.append(self.prepare_value(line.product_end_id.id, line, 'end'))
         return vals
 
     def create_invoice_diff_entry(self):
