@@ -322,8 +322,8 @@ class ProductInventory(models.Model):
                     {parent_id} parent_id,
                     pp.id product_id,
                     qif.qty_done qty_begin_period,
-                    (qiip.qty_done - rip.qty_done) qty_in_period,
-                    (qiop.qty_done - rip.qty_done) qty_out_period,
+                    (qiip.qty_done - coalesce(rip.qty_done, 0)) qty_in_period,
+                    (qiop.qty_done - coalesce(rip.qty_done, 0)) qty_out_period,
                     ap.amount amount_period,
                     af.amount amount_begin_period
                     
