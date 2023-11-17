@@ -48,6 +48,8 @@ class StockPicking(models.Model):
     create_from_po_inter_company = fields.Boolean(string='Tạo từ PO liên công ty', default=False, readonly=True)
     check_inter_company = fields.Boolean(string='Ẩn button liên công ty', compute='compute_check_inter_company')
 
+
+
     def compute_check_inter_company(self):
         for rec in self:
             location_inter_company = rec.location_dest_id.virtual_location_inter_company

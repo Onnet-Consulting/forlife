@@ -76,6 +76,7 @@ class StockMove(models.Model):
     # Lệnh sản xuất, xử lý khi tạo điều chuyển cho LSX A sang LSX B
     # work_from = fields.Many2one('forlife.production', string="LSX From", ondelete='restrict')
     work_to = fields.Many2one('forlife.production', string="LSX To", ondelete='restrict')
+    product_production_id = fields.Many2one('product.product', string='Thành phẩm')
 
     @api.depends('reason_id')
     def compute_production_order(self):
