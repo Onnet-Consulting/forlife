@@ -143,6 +143,7 @@ class CalculateFinalValue(models.Model):
 	                    where 
 	                    am.date >= '{from_date}'
                         and am.date <= '{to_date} 23:59:59'
+                        and am.state = 'posted'
 	                    
 	                    group by pp.id
 	                    
@@ -170,6 +171,7 @@ class CalculateFinalValue(models.Model):
 	                    where 
 	                    am.date >= '{from_date}'
                         and am.date <= '{to_date} 23:59:59'
+                        and am.state = 'posted'
 	                    
 	                    group by pp.id
 	                    
@@ -224,7 +226,7 @@ class CalculateFinalValue(models.Model):
 	                        
 	                    where 
 	                    am.date <= '{from_date}'
-	
+	                    and am.state = 'posted'
 	                    group by pp.id
 	                    
 	                    union all
@@ -250,6 +252,7 @@ class CalculateFinalValue(models.Model):
 	                    
 	                    where 
 	                    am.date <= '{from_date}'
+	                    and am.state = 'posted'
 	                    
 	                    group by pp.id
 	                    
