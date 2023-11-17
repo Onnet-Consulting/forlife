@@ -22,10 +22,10 @@ class CalculateFinalValue(models.Model):
                     {parent_id} parent_id,
                     pp.id product_id,
                     aa.id account_id,
-                    '' production_code,
-                    case when oc.code is not null then concat('[', oc.code, '] ', oc.name) else '' end occasion_code,
-                    case when aaa.code is not null then concat('[', aaa.code, '] ', aaa.name->>'vi_VN') else '' end account_analytic,
-                    case when aa2.code is not null then concat('[', aa2.code, '] ', aa2.name) else '' end asset_code,
+                    fp.id production_code,
+                    oc.id occasion_code,
+                    aaa.id account_analytic,
+                    aa2.id asset_code,
                     case when sm.product_production_id is not null then sm.product_production_id
                     else spls.product_split_id end product_end_id,
                     case 
@@ -111,6 +111,10 @@ class CalculateFinalValue(models.Model):
         for d in data:
             if d['amount_diff'] == 0:
                 continue
+            if self.product_type == 'source' and d['product_end_id']:
+                continue
+            if self.product_type == 'end' and not d['product_end_id']:
+                continue
             create_vals.append(d)
         self.env['list.exported.goods.diff'].create(create_vals)
         self.state = 'step2'
@@ -122,10 +126,10 @@ class ListExportedGoodsDiff(models.Model):
     parent_id = fields.Many2one('calculate.final.value', string='Kỳ tính', ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Sản phẩm nguồn')
     account_id = fields.Many2one('account.account', string='Tài khoản')
-    production_code = fields.Char(string='Lệnh sản xuất')
-    occasion_code = fields.Char(string='Mã vụ việc')
-    account_analytic = fields.Char(string='Trung tâm chi phí')
-    asset_code = fields.Char(string='Mã tai sản')
+    production_code = fields.Many2one('forlife.production', string='Lệnh sản xuất')
+    occasion_code = fields.Many2one('occasion.code', string='Mã vụ việc')
+    account_analytic = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
+    asset_code = fields.Many2one('assets.assets', string='Mã tài sản')
     product_end_id = fields.Many2one('product.product', string='Sản phẩm đích')
     qty = fields.Float(string='Số lượng')
     amount_export = fields.Float(string='Giá trị xuất')

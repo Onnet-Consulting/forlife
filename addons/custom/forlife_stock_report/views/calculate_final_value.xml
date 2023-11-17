@@ -76,18 +76,11 @@
                                     <span class="o_stat_text">Bảng kê chênh lệch</span>
                                 </div>
                             </button>
-                            <button type="object" name="action_view_entry1" class="oe_stat_button"
+                            <button type="object" name="action_view_entry" class="oe_stat_button"
                                     icon="fa-pencil-square-o">
                                 <div class="o_stat_info">
-                                    <field name="entry1_count" class="o_stat_value" readonly="1"/>
-                                    <span class="o_stat_text">Bút toán chênh lệch sản phẩm nguồn</span>
-                                </div>
-                            </button>
-                            <button type="object" name="action_view_entry2" class="oe_stat_button"
-                                    icon="fa-pencil-square-o">
-                                <div class="o_stat_info">
-                                    <field name="entry2_count" class="o_stat_value" readonly="1"/>
-                                    <span class="o_stat_text">Bút toán chênh lệch sản phẩm đích</span>
+                                    <field name="entry_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Bút toán chênh lệch</span>
                                 </div>
                             </button>
                         </div>
@@ -105,6 +98,9 @@
                             <group>
                                 <field name="category_type_id"/>
                             </group>
+                            <group>
+                                <field name="product_type"/>
+                            </group>
                         </group>
                         <div class="d-flex">
                             <button name="get_data_unit_price_product" string="Đơn giá bình quân sản phẩm"
@@ -112,10 +108,10 @@
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
                             <button name="get_data_diff_value" string="Tính bảng kê chênh lệch" type="object"/>
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
-                            <button name="create_invoice_diff_entry1" string="Hạch toán chênh sản phẩm nguồn"
+                            <button name="create_invoice_diff_entry" string="Hạch toán chênh lệch"
                                     type="object"/>
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
-                            <button name="create_invoice_diff_entry2" string="Hạch toán chênh lệch sản phẩm đích"
+                            <button name="update_standard_price" string="Cập nhật giá vốn"
                                     type="object"/>
                         </div>
 
