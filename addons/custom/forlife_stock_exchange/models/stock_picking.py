@@ -67,10 +67,10 @@ class InheritStockPicking(models.Model):
 
     def validate_product_backup(self, move, material, material_backup_ids, product_qty_prodution_remaining, reason_export_id, reason_type_id):
         product_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material.product_id.id)
-        product_qty = float_round(sum(product_prodution_quantity.mapped('quantity')), precision_rounding=material.production_uom_id.rounding)
+        product_qty = float_round(sum(product_prodution_quantity.mapped('quantity')), precision_rounding=material.product_id.uom_id.rounding)
         material_total = material.conversion_coefficient * material.rated_level * (1+material.loss/100)
         #Lam tron xuong voi npl cho sx - Hang:05/09
-        product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.production_uom_id.rounding, rounding_method='DOWN')
+        product_uom_qty = float_round(move.product_uom_qty * material_total, precision_rounding=material.product_id.uom_id.rounding, rounding_method='DOWN')
         move_outgoing_value = []
         qty_remain = product_uom_qty
         if product_qty >= product_uom_qty:
@@ -85,7 +85,7 @@ class InheritStockPicking(models.Model):
         if not material_backup_01:
             raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
         product_backup_01_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_01.product_id.id)
-        material_backup_01_qty = float_round(sum(product_backup_01_prodution_quantity.mapped('quantity')), precision_rounding=material_backup_01.production_uom_id.rounding)
+        material_backup_01_qty = float_round(sum(product_backup_01_prodution_quantity.mapped('quantity')), precision_rounding=material_backup_01.product_id.uom_id.rounding)
         if material_backup_01_qty >= qty_remain:
             val = self.prepare_data_stock_move_material(material_backup_01.product_id, reason_export_id, qty_remain, material_backup_01, reason_type_id)
             move_outgoing_value.append(val)
@@ -99,7 +99,7 @@ class InheritStockPicking(models.Model):
         if not material_backup_02:
             raise ValidationError(_('Sản phẩm "%s" không đủ tồn kho!', material.product_id.name))
         product_backup_02_prodution_quantity = product_qty_prodution_remaining.filtered(lambda x: x.product_id.id == material_backup_02.product_id.id)
-        material_backup_02_qty = float_round(sum(product_backup_02_prodution_quantity.mapped('quantity')), precision_rounding=material_backup_02.production_uom_id.rounding)
+        material_backup_02_qty = float_round(sum(product_backup_02_prodution_quantity.mapped('quantity')), precision_rounding=material_backup_02.product_id.uom_id.rounding)
         if material_backup_02_qty >= qty_remain:
             val = self.prepare_data_stock_move_material(material_backup_02.product_id, reason_export_id, qty_remain, material_backup_02, reason_type_id)
             move_outgoing_value.append(val)
@@ -122,6 +122,7 @@ class InheritStockPicking(models.Model):
             'bom_model': material._name,
             'bom_id': material.id,
             'reason_type_id': reason_type_id.id,
+            'product_production_id': material.forlife_production_id.product_id.id
         }
 
 
