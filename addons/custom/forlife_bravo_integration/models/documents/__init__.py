@@ -14,3 +14,4 @@ from . import synthetic_account_move_pos
 from . import synthetic_account_move_so_nhanh
 from . import summary_adjusted_invoice_pos
 from . import summary_adjusted_invoice_so_nhanh
+from . import pos_order
