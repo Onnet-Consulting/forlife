@@ -31,7 +31,7 @@ class CalculateFinalValue(models.Model):
                     oc.id occasion_code,
                     aaa.id account_analytic,
                     aa2.id asset_code,
-                    spls.product_split_id end product_end_id,
+                    spls.product_split_id product_end_id,
                     case 
 	                    when spls.quantity > 0 then spls.quantity
                         when (pibpl.qty_product > 0) then sm.quantity_done

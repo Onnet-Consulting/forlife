@@ -69,6 +69,7 @@
 
             <button name="action_cancel" position="after">
                 <button name="create_order_inter_company" attrs="{'invisible': [('check_inter_company', '=', False)]}" string="Tạo đơn liên công ty" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                <button name="action_export" string="Xuất" type="object"/>
             </button>
         </field>
     </record>
