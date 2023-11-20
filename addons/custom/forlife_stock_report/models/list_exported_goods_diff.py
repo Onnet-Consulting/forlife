@@ -1,6 +1,7 @@
 from odoo import fields, api, models, _
 from odoo.exceptions import ValidationError
 from datetime import timedelta
+from itertools import chain
 
 
 class CalculateFinalValue(models.Model):
@@ -80,7 +81,7 @@ class CalculateFinalValue(models.Model):
             from list_product lp left join product_inventory_by_calculate_final pibcf on 
             lp.product_id = pibcf.product_id and pibcf.parent_id = {parent_id}
             
-            where lp.qty <> 0
+            where lp.qty <> 0 {where}
             
             group by
             lp.parent_id, 
@@ -94,30 +95,58 @@ class CalculateFinalValue(models.Model):
         """
 
     def get_data_diff_value(self):
+
         if self.state not in ('step1', 'step2'):
             raise ValidationError('Bản chỉ có thể thực hiện khi hoàn thành tính đơn giá bình quân sản phẩm')
+        sql_product_end = f"""
+            select distinct product_end_id from list_exported_goods_diff legd 
+            where legd.product_end_id is not null and legd.parent_id in (select id  from calculate_final_value cfv where cfv."month" = '{self.month}' and cfv."year" = '{self.year}'
+            and cfv.category_type_id = '{self.category_type_id}' order by cfv.id desc limit 1 offset 2)
+        """
         self.goods_diff_lines.unlink()
-        query = self._sql_string_good_diff().format(
-            company_id=self.env.company.id,
-            from_date=self.from_date,
-            to_date=self.to_date,
-            date_inv=self.from_date - timedelta(days=1),
-            parent_id=self.id,
-            category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
-        )
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
-        create_vals = []
-        for d in data:
-            if d['amount_diff'] == 0:
-                continue
-            if self.product_type == 'source' and d['product_end_id']:
-                continue
-            if self.product_type == 'end' and not d['product_end_id']:
-                continue
-            create_vals.append(d)
-        self.env['list.exported.goods.diff'].create(create_vals)
-        self.state = 'step2'
+        if self.product_type == 'end':
+            self._cr.execute(sql_product_end)
+            product_ids = self._cr.fetchall()
+            if product_ids:
+                query = self._sql_string_good_diff().format(
+                    company_id=self.env.company.id,
+                    from_date=self.from_date,
+                    to_date=self.to_date,
+                    date_inv=self.from_date - timedelta(days=1),
+                    parent_id=self.id,
+                    where=f'and lp.product_id = any(array{list(chain.from_iterable(product_ids))})' if product_ids else '',
+                    category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
+                )
+            else:
+                query = False
+        else:
+            query = self._sql_string_good_diff().format(
+                company_id=self.env.company.id,
+                from_date=self.from_date,
+                to_date=self.to_date,
+                date_inv=self.from_date - timedelta(days=1),
+                parent_id=self.id,
+                where='',
+                category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
+            )
+        if query:
+            self._cr.execute(query)
+            data = self._cr.dictfetchall()
+            create_vals = []
+            product_source = []
+            product_end = []
+            for d in data:
+                product_source.append(d['product_id'])
+                product_end.append(d['product_end_id'])
+            for d in data:
+                if d['amount_diff'] == 0:
+                    continue
+                if self.product_type == 'source' and d['product_id'] in product_end:
+                    continue
+
+                create_vals.append(d)
+            self.env['list.exported.goods.diff'].create(create_vals)
+            self.state = 'step2'
 
 class ListExportedGoodsDiff(models.Model):
     _name = 'list.exported.goods.diff'
