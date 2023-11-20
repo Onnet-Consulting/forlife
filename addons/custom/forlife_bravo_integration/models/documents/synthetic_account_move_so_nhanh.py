@@ -83,7 +83,7 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
             for d in line.line_discount_ids:
                 tax = d.tax_ids.ids or ['']
                 x_price_unit = d.price_unit if d.promotion_type == 'customer_shipping_fee' else 0
-                x_amount_total = d.amount_total if d.promotion_type == 'customer_shipping_fee' else 0
+                x_amount_total = d.amount_total
                 key = f"{d.promotion_type}~{tax[0]}"
                 old_val = discounts.get(key) or {}
                 promotion_type = old_val.get('promotion_type') or d.promotion_type
