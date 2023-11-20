@@ -182,6 +182,40 @@ class AccountDocSale(models.Model):
 
     def bravo_get_sale_invoice_adjust_value(self, employee_code, type):
         self.ensure_one()
+        # todo: xử lý đơn trả nhanh bkav sau khi có đơn phát sinh. hiện tại chưa có đơn chưa code được
+
+        def get_value(x_type):
+            if x_type == 'increase':
+                return {
+                    'Stt': (self.is_post_bkav and self.invoice_no) or self.name or None,
+                    "FormNo": self.invoice_form if (self.is_post_bkav and self.invoice_no) else None,
+                    "DocNo": self.invoice_no or self.name or None,
+                    "Description": self.invoice_description or None,
+                    'EInvoiceTransType': 'adjustIncrease',
+                    'EInvoiceOriginNo': self.debit_origin_id.invoice_no or self.debit_origin_id.name or None,
+                    'OriginFormNo': self.debit_origin_id.invoice_form or None,
+                }
+            if x_type == 'decrease':
+                return {
+                    'Stt': (self.is_post_bkav and self.invoice_no) or self.name or None,
+                    "FormNo": self.invoice_form if (self.is_post_bkav and self.invoice_no) else None,
+                    "DocNo": self.invoice_no or self.name or None,
+                    "Description": self.invoice_description or None,
+                    'EInvoiceTransType': 'adjustDecrease',
+                    'EInvoiceOriginNo': self.origin_move_id.invoice_no or self.origin_move_id.name or None,
+                    'OriginFormNo': self.origin_move_id.invoice_form or None,
+                }
+            if x_type == 'return':
+                return {
+                    'Stt': self.invoice_no or None,
+                    "FormNo": self.invoice_form or None,
+                    "DocNo": self.invoice_no or None,
+                    "Description": f"Điều chỉnh bán hàng ngày {self.create_date.strftime('%d/%m/%Y')}",
+                    'EInvoiceTransType': 'adjustDecrease',
+                    'EInvoiceOriginNo': self.origin_move_id.invoice_no or None,
+                    'OriginFormNo': self.origin_move_id.invoice_form or None,
+                }
+            return {}
         values = []
         invoice_lines = self.invoice_line_ids
         tax_lines = self.line_ids.filtered(lambda l: l.display_type == 'tax')
@@ -190,25 +224,14 @@ class AccountDocSale(models.Model):
         receivable_account_code = receivable_lines.account_id.code or None
         partner = self.partner_id
         exchange_rate = self.exchange_rate
-        value_by_type = {
-            'increase': {
-                'EInvoiceTransType': 'adjustIncrease',
-                'EInvoiceOriginNo': self.debit_origin_id.invoice_no or self.debit_origin_id.name or None,
-                'OriginFormNo': self.debit_origin_id.invoice_form or None,
-            },
-            'decrease': {
-                'EInvoiceTransType': 'adjustDecrease',
-                'EInvoiceOriginNo': self.origin_move_id.invoice_no or self.origin_move_id.name or None,
-                'OriginFormNo': self.origin_move_id.invoice_form or None,
-            },
-        }
+        value_by_type = get_value(type)
 
         journal_value = {
             "CompanyCode": self.company_id.code or None,
-            'Stt': (self.is_post_bkav and self.invoice_no) or self.name or None,
+            "Stt": value_by_type.get('Stt') or None,
             "DocCode": "HC",
-            "FormNo": self.invoice_form if (self.is_post_bkav and self.invoice_no) else None,
-            "DocNo": self.invoice_no or self.name or None,
+            "FormNo": value_by_type.get('FormNo') or None,
+            "DocNo": value_by_type.get('DocNo') or None,
             "DocDate": self.invoice_date or None,
             "CurrencyCode": self.currency_id.name or None,
             "ExchangeRate": exchange_rate,
@@ -216,16 +239,17 @@ class AccountDocSale(models.Model):
             "CustomerName": partner.name or None,
             "Address": partner.contact_address_complete or None,
             "TaxRegNo": partner.vat or None,
-            "Description": self.invoice_description or None,
+            "Description": value_by_type.get('Description') or None,
             "EmployeeCode": employee_code or None,
             "IsTransfer": self.invoice_no and 1 or 0,
             "PushDate": self.create_date or None,
             "DueDate": self.invoice_date_due or None,
-            "EInvoiceTransType": value_by_type[type]['EInvoiceTransType'],
-            "EInvoiceOriginNo": value_by_type[type]['EInvoiceOriginNo'],
-            "OriginFormNo": value_by_type[type]['OriginFormNo'],
+            "EInvoiceTransType": value_by_type.get('EInvoiceTransType') or None,
+            "EInvoiceOriginNo": value_by_type.get('EInvoiceOriginNo') or None,
+            "OriginFormNo": value_by_type.get('OriginFormNo') or None,
         }
 
+        # idx = 0
         for idx, invoice_line in enumerate(invoice_lines, start=1):
             product = invoice_line.product_id
             journal_value_line = journal_value.copy()

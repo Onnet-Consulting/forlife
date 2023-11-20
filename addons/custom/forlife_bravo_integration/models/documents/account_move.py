@@ -78,7 +78,7 @@ class AccountMove(models.Model):
             bravo_table = "B30AccDocJournalEntry"
         elif journal_data == 'account_doc_sale':
             bravo_table = "B30AccDocSales"
-        elif journal_data in ('sale_invoice_adjust_increase', 'sale_invoice_adjust_decrease'):
+        elif journal_data in ('sale_invoice_adjust_increase', 'sale_invoice_adjust_decrease', 'adjust_so_nhanh_return_bkav'):
             bravo_table = "B30AccDocSalesAdjust"
         elif journal_update:
             bravo_table = "B30UpdateData"
@@ -189,6 +189,10 @@ class AccountMove(models.Model):
             so_origins = self.env['sale.order'].search([('name', 'in', self.mapped('invoice_origin')), ('x_sale_chanel', 'in', ('wholesale', 'intercompany')), ('x_is_return', '=', False)])
             pickings = self.env['stock.picking'].search([('name', 'in', self.mapped('ref')), ('x_is_check_return', '=', True)])
             return self.filtered(lambda am: am.issue_invoice_type == 'adjust' and (am.refund_method == 'refund' or am.ref in pickings.mapped('name')) and am.invoice_origin and am.invoice_origin in so_origins.mapped('name'))
+        if journal_data == 'adjust_so_nhanh_return_bkav':
+            so_origins = self.env['sale.order'].search([('name', 'in', self.mapped('invoice_origin')), ('x_sale_chanel', '=', 'online')])
+            pickings = self.env['stock.picking'].search([('name', 'in', self.mapped('ref')), ('x_is_check_return', '=', True)])
+            return self.filtered(lambda am: am.issue_invoice_type == 'adjust' and am.is_post_bkav is True and am.ref and am.ref in pickings.mapped('name') and am.invoice_origin and am.invoice_origin in so_origins.mapped('name'))
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -218,7 +222,7 @@ class AccountMove(models.Model):
             return self.bravo_get_journal_entry_values()
         if journal_data == 'account_doc_sale':
             return self.bravo_get_account_doc_sale_values()
-        if journal_data in ('sale_invoice_adjust_increase', 'sale_invoice_adjust_decrease'):
+        if journal_data in ('sale_invoice_adjust_increase', 'sale_invoice_adjust_decrease', 'adjust_so_nhanh_return_bkav'):
             return self.bravo_get_sale_invoice_adjust_values(type=journal_data.split('_')[3])
         if update_move_data:
             return self.bravo_get_update_move_values(**kwargs)
@@ -332,6 +336,12 @@ class AccountMove(models.Model):
         sale_invoice_adjust_decrease_queries = records.bravo_get_insert_sql(**current_context)
         if sale_invoice_adjust_decrease_queries:
             queries.extend(sale_invoice_adjust_decrease_queries)
+
+        current_context = {CONTEXT_JOURNAL_ACTION: 'adjust_so_nhanh_return_bkav'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        adjust_so_nhanh_return_bkav_queries = records.bravo_get_insert_sql(**current_context)
+        if adjust_so_nhanh_return_bkav_queries:
+            queries.extend(adjust_so_nhanh_return_bkav_queries)
 
         return queries
 
