@@ -100,15 +100,15 @@ class ForlifeProduction(models.Model):
         data = [
             self.code,
             self.name,
-            self.implementation_id.name or '',
-            self.management_id.name or '',
+            self.implementation_id.code or '',
+            self.management_id.code or '',
             self.production_department,
             self.produced_from_date.strftime('%d/%m/%Y'),
             self.to_date.strftime('%d/%m/%Y'),
             self.production_price,
-            self.brand_id.name or '',
-            self.leader_id.name or '',
-            self.machining_id.name or '',
+            self.brand_id.code or '',
+            self.leader_id.code or '',
+            self.machining_id.code or '',
             self.forlife_production_finished_product_ids[0].product_id.barcode,
             self.forlife_production_finished_product_ids[0].produce_qty
         ]

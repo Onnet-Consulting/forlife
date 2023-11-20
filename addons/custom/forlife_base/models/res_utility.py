@@ -58,7 +58,7 @@ class ResUtility(models.AbstractModel):
                         }
                     )
                 else:
-                    values.append(cell.value)
+                    values.append(cell.value.strip())
             yield values
 
     @api.model
