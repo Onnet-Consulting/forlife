@@ -136,7 +136,7 @@ class CalculateFinalValue(models.Model):
             'line_ids': lines,
             'move_type': 'entry',
             'stock_valuation_layer_ids': [(0, 0, {
-                'value': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
+                'value': line.amount_diff,
                 'unit_cost': 0,
                 'quantity': 0,
                 'remaining_qty': 0,
@@ -158,6 +158,7 @@ class CalculateFinalValue(models.Model):
     def create_invoice_diff_entry(self):
         if self.state not in ('step2', 'step3'):
             raise ValidationError('Bản chỉ có thể thực hiện khi đã hoàn thành bảng kê chênh lệch')
+        self.entry_ids.stock_valuation_layer_ids.unlink()
         self.entry_ids.unlink()
 
         move_vals = self.prepare_value_by_diff()

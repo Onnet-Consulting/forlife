@@ -145,6 +145,7 @@ class CalculateFinalValue(models.Model):
 	                    am.date >= '{from_date}'
                         and am.date <= '{to_date} 23:59:59'
                         and am.state = 'posted'
+                        and (am.is_change_price = false or am.is_change_price is null)
 	                    
 	                    group by pp.id
 	                    
@@ -173,6 +174,7 @@ class CalculateFinalValue(models.Model):
 	                    am.date >= '{from_date}'
                         and am.date <= '{to_date} 23:59:59'
                         and am.state = 'posted'
+                        and (am.is_change_price = false or am.is_change_price is null)
 	                    
 	                    group by pp.id
 	                    
@@ -200,6 +202,7 @@ class CalculateFinalValue(models.Model):
                         and am.state = 'posted'
                         and am.company_id = {company_id}
                         and am.end_period_entry is true
+                        and (am.is_change_price = false or am.is_change_price is null)
                         
                         group by 
                             pp.id
@@ -228,6 +231,8 @@ class CalculateFinalValue(models.Model):
 	                    where 
 	                    am.date <= '{from_date}'
 	                    and am.state = 'posted'
+	                    and (am.is_change_price = false or am.is_change_price is null)
+	                    
 	                    group by pp.id
 	                    
 	                    union all
@@ -254,6 +259,7 @@ class CalculateFinalValue(models.Model):
 	                    where 
 	                    am.date <= '{from_date}'
 	                    and am.state = 'posted'
+	                    and (am.is_change_price = false or am.is_change_price is null)
 	                    
 	                    group by pp.id
 	                    
@@ -280,6 +286,7 @@ class CalculateFinalValue(models.Model):
                         and am.state = 'posted'
                         and am.company_id = {company_id}
                         and am.end_period_entry is true
+                        and (am.is_change_price = false or am.is_change_price is null)
                         
                         group by 
                             pp.id

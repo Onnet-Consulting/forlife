@@ -102,17 +102,14 @@
                                 <field name="product_type" attrs="{'readonly': [('state', '!=', 'step1')]}"/>
                             </group>
                         </group>
-                        <div class="d-flex">
-                            <button name="get_data_unit_price_product" string="Đơn giá bình quân sản phẩm"
-                                    type="object"/>
+                        <div class="d-flex" attrs="{'invisible': [('state', '=', 'step4')]}">
+                            <button name="get_data_unit_price_product" string="Đơn giá bình quân sản phẩm" type="object"/>
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
                             <button name="get_data_diff_value" string="Tính bảng kê chênh lệch" type="object"/>
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
-                            <button name="create_invoice_diff_entry" string="Hạch toán chênh lệch"
-                                    type="object"/>
+                            <button name="create_invoice_diff_entry" string="Hạch toán chênh lệch" type="object"/>
                             <span class="fa fa-arrow-right" style="display: flex; align-items: center;"/>
-                            <button name="update_standard_price" string="Cập nhật giá vốn"
-                                    type="object"/>
+                            <button name="update_standard_price" string="Cập nhật giá vốn" type="object"/>
                         </div>
 
                         <notebook>

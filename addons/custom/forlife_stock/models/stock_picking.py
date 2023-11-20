@@ -2,6 +2,9 @@ from odoo import api, fields, models, _
 from datetime import date, datetime, timedelta, time
 from odoo.addons.stock.models.stock_picking import Picking as InheritPicking
 from odoo.exceptions import ValidationError
+import xlsxwriter
+import base64
+import tempfile
 
 
 def _action_done(self):
@@ -47,8 +50,145 @@ class StockPicking(models.Model):
     total_qty_done = fields.Float(string='Tổng số lượng hoàn thành', compute='_compute_total_qty')
     create_from_po_inter_company = fields.Boolean(string='Tạo từ PO liên công ty', default=False, readonly=True)
     check_inter_company = fields.Boolean(string='Ẩn button liên công ty', compute='compute_check_inter_company')
+    data_export = fields.Binary(string='Export', compute='_get_data_export')
 
+    def get_data_export_import(self):
+        attr_value = self.env['res.utility'].get_attribute_code_config()
+        sql = f"""
+            select
+                case 
+                    when (row_number () over (partition by sml.picking_id order by sml.id)) = 1 
+                    then TO_CHAR(
+                    sp.date_done,
+                    'dd/mm/yyyy'
+                    ) else null end date_done,
+                case 
+                    when (row_number () over (partition by sml.picking_id order by sml.id)) = 1 
+                    then sp.name else '' end name,
+                row_number () over (partition by sml.picking_id order by sml.id) num,
+                pp.barcode product,
+                '' qty_done,
+                attr.attrs->'{attr_value.get('mau_sac', '')}' ->> 0 as mau,
+                attr.attrs->'{attr_value.get('size', '')}' ->> 0 as size
+            from
+                stock_move_line sml
+            join stock_picking sp on
+                sml.picking_id = sp.id
+            join product_product pp on
+                sml.product_id = pp.id
+            left join (
+                select
+                    product_id,
+                    json_object_agg(attrs_code,
+                    value) as attrs
+                from
+                    (
+                    select
+                        pp.id as product_id,
+                        pa.attrs_code as attrs_code,
+                        array_agg(coalesce(pav.name::json -> 'vi_VN',
+                        pav.name::json -> 'en_US')) as value
+                    from
+                        product_template_attribute_line ptal
+                    left join product_product pp on
+                        pp.product_tmpl_id = ptal.product_tmpl_id
+                    left join product_attribute_value_product_template_attribute_line_rel rel on
+                        rel.product_template_attribute_line_id = ptal.id
+                    left join product_attribute pa on
+                        ptal.attribute_id = pa.id
+                    left join product_attribute_value pav on
+                        pav.id = rel.product_attribute_value_id
+                    where
+                        pa.attrs_code is not null
+                    group by
+                        pp.id,
+                        pa.attrs_code
+                            ) as att
+                group by
+                    product_id
+                        ) attr on
+                attr.product_id = pp.id
+            where
+                sml.picking_id = {self.id};
+        """
 
+        self._cr.execute(sql)
+        data = self._cr.fetchall()
+        return [list(t) for t in data]
+
+    def render_sheet(self, worksheet, data, format):
+        row = 0
+        for line in data:
+            col = 0
+            for item in line:
+                if row == 0:
+                    worksheet.write(row, col, item, format)
+                else:
+                    worksheet.write(row, col, item)
+                col += 1
+            row += 1
+        return worksheet
+
+    def _get_data_export(self):
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        # Lấy đường dẫn của file tạm
+        temp_file_path = temp_file.name
+        workbook = xlsxwriter.Workbook(temp_file_path)
+
+        worksheet = workbook.add_worksheet(u'Sheet0')
+        header_format = workbook.add_format({
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': '11',
+            'text_wrap': True,
+            'italic': False,
+            'border': 1,
+        })
+        if self.other_import or self.other_export:
+            header = [
+                'Ngày hoàn thành (*)',
+                'Mã phiếu (*)',
+                'Hoạt động không có trong gói hàng / STT dòng (*)',
+                'Hoạt động không có trong gói hàng / Sản phẩm (*)',
+                'Hoạt động không có trong gói hàng / Hoàn thành (*)',
+                'Màu sắc',
+                'Kích cỡ',
+            ]
+
+        else:
+            header = [
+                'Ngày hoàn thành (*)',
+                'Mã phiếu (*)',
+                'Hoạt động không có trong gói hàng / STT dòng (*)',
+                'Hoạt động không có trong gói hàng / Sản phẩm (*)',
+                'Hoạt động không có trong gói hàng / Số lượng mua hoàn thành (*)',
+                'Màu sắc',
+                'Kích cỡ',
+            ]
+
+        lines = [header]
+        lines += self.get_data_export_import()
+
+        worksheet = self.render_sheet(worksheet=worksheet, data=lines, format=header_format)
+        worksheet.set_column(1, len(header), 30)
+        worksheet.set_row(0, 30)
+        workbook.close()
+        temp_file.close()
+        self.data_export = base64.b64encode(open(temp_file_path, "rb").read())
+
+    def action_export(self):
+        name = '/web/content/%s/%s/data_export/template_update_số_lượng_nhập_kho_mua_hàng.xlsx?download=true'
+        if self.other_import:
+            name = '/web/content/%s/%s/data_export/template_update_số_lượng_nhập_khác.xlsx?download=true'
+        elif self.other_export:
+            name = '/web/content/%s/%s/data_export/template_update_số_lượng_xuất_khác.xlsx?download=true'
+        export = {
+            'type': 'ir.actions.act_url',
+            'name': 'Export fee',
+            'url': name % (self._name, self.id),
+        }
+        self.data_export = False
+        return export
 
     def compute_check_inter_company(self):
         for rec in self:
