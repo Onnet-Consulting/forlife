@@ -74,4 +74,18 @@ env['synthetic.account.move.so.nhanh'].sync_bravo_account_move_so_nhanh()</field
         <field name="state">code</field>
         <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 20:00:00')"/>
     </record>
+
+    <record id="ir_cron_sync_bravo_adjusted_invoice" model="ir.cron">
+        <field name="name">Bravo: đồng bộ hóa đơn bán hàng điều chỉnh</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_account_move"/>
+        <field name="code">env['summary.adjusted.invoice.pos'].sync_bravo_adjusted_invoice_pos()
+env['summary.adjusted.invoice.so.nhanh'].sync_bravo_adjusted_invoice_so_nhanh()
+env['pos.order'].sync_bravo_pos_order_change_refund_post_bkav_return()</field>
+        <field name="state">code</field>
+        <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 20:10:00')"/>
+    </record>
 </odoo>

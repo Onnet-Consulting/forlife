@@ -41,7 +41,6 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
                 "Description": f"Tổng hợp bán hàng{line.invoice_date and line.invoice_date.strftime(' %d/%m/%Y') or ''}",
                 "IsTransfer": 1 if line.invoice_no else 0,
                 "DebitAccount2": account_receivable,
-                "PushDate": line.create_date or None,
                 "DueDate": line.invoice_date or None,
                 "DeptCode": partner.property_account_cost_center_id.code or None,
             }
@@ -84,7 +83,7 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
             for d in line.line_discount_ids:
                 tax = d.tax_ids.ids or ['']
                 x_price_unit = d.price_unit if d.promotion_type == 'customer_shipping_fee' else 0
-                x_amount_total = d.amount_total if d.promotion_type == 'customer_shipping_fee' else 0
+                x_amount_total = d.amount_total
                 key = f"{d.promotion_type}~{tax[0]}"
                 old_val = discounts.get(key) or {}
                 promotion_type = old_val.get('promotion_type') or d.promotion_type
@@ -164,5 +163,4 @@ class BravoSyntheticAccountMoveSoNhanh(models.Model):
 
     @api.model
     def bravo_get_default_insert_value(self, **kwargs):
-        date = self and self[0].create_date or False
-        return {'PushDate': date or "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'"}
+        return {'PushDate': self and self[0].create_date or "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'"}
