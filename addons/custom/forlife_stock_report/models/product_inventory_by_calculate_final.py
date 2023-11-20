@@ -322,7 +322,7 @@ class CalculateFinalValue(models.Model):
         sql_product_end = f"""
                     select distinct product_end_id from list_exported_goods_diff legd 
                     where legd.product_end_id is not null and legd.parent_id in (select id from calculate_final_value cfv where cfv."month" = '{self.month}' and cfv."year" = '{self.year}'
-                    and cfv.category_type_id = '{self.category_type_id}' order by cfv.id desc limit 1 offset 2)
+                    and cfv.category_type_id = '{self.category_type_id}' order by cfv.id desc limit 1 offset 1)
                 """
         if self.product_type == 'end':
             self._cr.execute(sql_product_end)
