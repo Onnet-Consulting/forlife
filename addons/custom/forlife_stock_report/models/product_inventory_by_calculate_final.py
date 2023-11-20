@@ -1,5 +1,6 @@
 from odoo import fields, api, models, _
 from datetime import datetime, timedelta
+from itertools import chain
 
 
 class CalculateFinalValue(models.Model):
@@ -303,7 +304,7 @@ class CalculateFinalValue(models.Model):
                 left join amount_first af on pp.id = af.product_id
                 join product_category pc on pt.categ_id = pc.id
                 join product_category_type pct on pc.category_type_id = pct.id
-                where pt.detailed_type = 'product' 
+                where pt.detailed_type = 'product' {where}
                 and pct.code = {category_type} 
                 and (qif.qty_done > 0 or qiip.qty_done > 0 or rip.qty_done > 0)
         
@@ -311,21 +312,44 @@ class CalculateFinalValue(models.Model):
 
     def get_data_unit_price_product(self):
         self.product_inv_lines.unlink()
-        query = self._sql_product_inv_line_str().format(
-            company_id=self.env.company.id,
-            from_date=self.from_date,
-            to_date=self.to_date,
-            from_date_begin=self.from_date - timedelta(days=1),
-            parent_id=self.id,
-            category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
-        )
-        self._cr.execute(query)
-        data = self._cr.dictfetchall()
-        pinv = self.env['product.inventory.by.calculate.final'].create(data)
-        self.write({
-            'product_inv_count': len(pinv),
-            'state': 'step1'
-        })
+        sql_product_end = f"""
+                    select distinct product_end_id from list_exported_goods_diff legd 
+                    where legd.product_end_id is not null and legd.parent_id in (select id from calculate_final_value cfv where cfv."month" = '{self.month}' and cfv."year" = '{self.year}'
+                    and cfv.category_type_id = '{self.category_type_id}' order by cfv.id desc limit 1 offset 2)
+                """
+        if self.product_type == 'end':
+            self._cr.execute(sql_product_end)
+            product_ids = self._cr.fetchall()
+            if product_ids:
+                query = self._sql_product_inv_line_str().format(
+                    company_id=self.env.company.id,
+                    from_date=self.from_date,
+                    to_date=self.to_date,
+                    from_date_begin=self.from_date - timedelta(days=1),
+                    parent_id=self.id,
+                    where=f'and pp.id = any(array{list(chain.from_iterable(product_ids))})' if product_ids else '',
+                    category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
+                )
+            else:
+                query = False
+        else:
+            query = self._sql_product_inv_line_str().format(
+                company_id=self.env.company.id,
+                from_date=self.from_date,
+                to_date=self.to_date,
+                from_date_begin=self.from_date - timedelta(days=1),
+                parent_id=self.id,
+                where=f'',
+                category_type="any(array['2', '3'])" if self.category_type_id == 'npl_ccdc' else "any(array['1'])"
+            )
+        if query:
+            self._cr.execute(query)
+            data = self._cr.dictfetchall()
+            pinv = self.env['product.inventory.by.calculate.final'].create(data)
+            self.write({
+                'product_inv_count': len(pinv),
+                'state': 'step1'
+            })
 
     def action_view_pinv(self):
         self.ensure_one()
