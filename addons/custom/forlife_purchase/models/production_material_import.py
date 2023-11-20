@@ -37,10 +37,21 @@ class ForlifeProduction(models.Model):
                     bom_material_values.update(common_data)
                 elif (material.size and material.size == product.size.name and material.color and material.color == product.color.name):
                     bom_material_values.update(common_data)
-                elif (material.size == product.size.name) and not material.color:
-                    bom_material_values.update(common_data)
-                elif (material.color == product.color.name) and not material.size:
-                    bom_material_values.update(common_data)
+                elif len(material.size) >= 1 and len(material.color) == 0:
+                    size = material.size.split(';')
+                    if product.size.name in size:
+                        bom_material_values.update(common_data)
+                elif len(material.color) >= 1 and len(material.size) == 0:
+                    color = material.color.split(';')
+                    if product.color.name in color:
+                        bom_material_values.update(common_data)
+                elif len(material.size) >= 1 and len(material.color) >= 1:
+                    size = material.size.split(';')
+                    color = material.color.split(';')
+                    for s in size:
+                        for c in color:
+                            if product.size.name == s and product.color.name == c:
+                                bom_material_values.update(common_data)
                 elif (not material.size and not material.color) and not material.product_finish_id:
                     bom_material_values.update(common_data)
 

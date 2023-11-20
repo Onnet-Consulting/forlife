@@ -52,7 +52,7 @@ class ImportProductionFromExcel(models.TransientModel):
         list_brand = []
 
         for o in orders:
-            list_account += [o[2], [o[3]]]
+            list_account += [o[2], o[3]]
             list_product += [o[11]]
             list_partners += [o[10]]
             list_employee += [o[9]]
@@ -173,18 +173,20 @@ class ImportProductionFromExcel(models.TransientModel):
                 list_material = []
                 create_material_vals = []
                 for m in data_material_good.get(production_code, []):
-                    if not product_dict.get(m[0], False):
+                    if not product_dict.get(str(m[0]), False):
                         raise ValidationError(_('Không có Mã vật tư với mã %s trong danh mục sản phẩm.' %m[0]))
-                    if not product_dict.get(m[1], False) and m[1] != '':
+                    if not product_dict.get(str(m[1]), False) and m[1] != '':
                         raise ValidationError(_('Không có Mã thành phẩm với mã %s trong danh mục sản phẩm.' %m[1]))
-                    if not product_dict.get(m[2], False) and m[2] != '':
+                    if not product_dict.get(str(m[2]), False) and m[2] != '':
                         raise ValidationError(_('Không có NPL thay thế với mã %s trong danh mục sản phẩm.'%m[2]))
-                    if not uom_dict.get(m[5], False):
+                    if not uom_dict.get(str(m[5]), False):
                         raise ValidationError(_('Không có Đvt Lệnh sản xuất %s trong danh mục đơn vị tính.'%m[5]))
-                    if m[3] and m[3].strip() not in attributes:
+                    if m[3] and all(s not in attributes for s in m[3].split(';')):
                         raise ValidationError(_('Size %s không tồn tại trong bảng giá trị thuộc tính.' % m[3]))
-                    if m[4] and m[4].strip() not in attributes:
+                    if m[4] and all(c not in attributes for c in m[4].split(';')):
                         raise ValidationError(_('Màu %s không tồn tại trong bảng giá trị thuộc tính.' % m[4]))
+                    # if len(m[3].split(';')) > 1 and len(m[4].split(';')) > 1:
+                    #     raise ValidationError(_('Không thể xử lý khi có nhiều size và nhiều màu trên cùng một dòng'))
 
                     common_data = {
                         'product_id': product_dict.get(m[0], False),
@@ -197,12 +199,23 @@ class ImportProductionFromExcel(models.TransientModel):
                     }
                     if (m[1].strip() == order[11] or m[1] == '') and (m[3].strip() == '' and m[4].strip() == ''):
                         list_material.append((0, 0, common_data))
-                    elif(m[3] and m[3].strip() in product_variant and m[4] and m[4].strip() in product_variant):
-                        list_material.append((0, 0, common_data))
-                    elif (m[3].strip() in product_variant) and (not m[4] or m[4].strip() == ''):
-                        list_material.append((0, 0, common_data))
-                    elif (m[4].strip() in product_variant) and (not m[3] or m[3].strip() == ''):
-                        list_material.append((0, 0, common_data))
+                    elif len(m[3]) >= 1 and len(m[4]) == 0:
+                        size = m[3].split(';')
+                        for s in size:
+                            if s in product_variant:
+                                list_material.append((0, 0, common_data))
+                    elif len(m[4]) >= 1 and len(m[3]) == 0:
+                        color = m[4].split(';')
+                        for c in color:
+                            if c in product_variant:
+                                list_material.append((0, 0, common_data))
+                    elif len(m[4]) >= 1 and len(m[3]) >= 1:
+                        size = m[3].split(';')
+                        color = m[4].split(';')
+                        for s in size:
+                            for c in color:
+                                if s in product_variant and c in product_variant:
+                                    list_material.append((0, 0, common_data))
                     elif (not m[3] and not m[4]) and not m[1]:
                         list_material.append((0, 0, common_data))
 
@@ -221,7 +234,7 @@ class ImportProductionFromExcel(models.TransientModel):
                 create_list_expense = []
                 create_list_by_production_expense = []
                 for e in data_expense_good.get(production_code, []):
-                    if not product_dict.get(e[0], False):
+                    if not product_dict.get(str(e[0]), False):
                         raise ValidationError(_('Không có Mã chi phí %s trong danh mục sản phẩm.' % e[0]))
                     cost_norms = 0
                     if float(e[1]) > 0 and e[3]:

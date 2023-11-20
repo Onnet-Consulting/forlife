@@ -92,11 +92,13 @@ class CalculateFinalValue(models.Model):
         ], limit=1)
         vals = {}
         if type == 'source':
-            account_credit = line.account_id.id if line.amount_diff > 0 else line.product_id.categ_id.property_stock_valuation_account_id.id
-            account_debit = line.product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id
+            account_credit = line.account_id.id if line.amount_diff > 0 else product_id.categ_id.property_stock_valuation_account_id.id
+            account_debit = product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id
         else:
-            account_debit = line.account_id.id if line.amount_diff > 0 else line.product_id.categ_id.property_stock_valuation_account_id.id
-            account_credit = line.product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id
+            account_debit = line.account_id.id if line.amount_diff > 0 else product_id.categ_id.property_stock_valuation_account_id.id
+            account_credit = product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id
+            if account_credit == line.account_id.id or account_debit == line.account_id.id:
+                product_id = line.product_id.id
 
         lines = [
             (0, 0, {

@@ -16,6 +16,10 @@ class CalculateFinalValue(models.Model):
         for rec in self:
             rec.goods_diff_count = len(rec.goods_diff_lines)
 
+    # tạm thời chưa lấy sp đích của lệnh sx khi nào cần sẽ thêm đoạn code này thay thế cho product_end_id
+    # case when sm.product_production_id is not null then sm.product_production_id
+    #      else spls.product_split_id end product_end_id,
+
     def _sql_string_good_diff(self):
         return """
             with list_product as (
@@ -27,8 +31,7 @@ class CalculateFinalValue(models.Model):
                     oc.id occasion_code,
                     aaa.id account_analytic,
                     aa2.id asset_code,
-                    case when sm.product_production_id is not null then sm.product_production_id
-                    else spls.product_split_id end product_end_id,
+                    spls.product_split_id end product_end_id,
                     case 
 	                    when spls.quantity > 0 then spls.quantity
                         when (pibpl.qty_product > 0) then sm.quantity_done
