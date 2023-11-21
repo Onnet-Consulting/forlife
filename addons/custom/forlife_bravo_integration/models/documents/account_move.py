@@ -82,6 +82,10 @@ class AccountMove(models.Model):
             bravo_table = "B30AccDocSalesAdjust"
         elif journal_data == 'update_invoice_status':
             bravo_table = "B30UpdateEInvoiceStatus"
+        elif journal_data == 'ending_valuation_increase':
+            bravo_table = "B30AccDocItemReceipt"
+        elif journal_data == 'ending_valuation_decrease':
+            bravo_table = "B30AccDocItemIssue"
         elif journal_update:
             bravo_table = "B30UpdateData"
         return bravo_table
@@ -198,6 +202,10 @@ class AccountMove(models.Model):
         if journal_data == 'update_invoice_status':
             so_names = self.env['sale.order'].search([('name', 'in', self.mapped('invoice_origin'))]).mapped('name')
             return self.filtered(lambda am: ((am.reversed_entry_id and am.refund_method) or am.debit_origin_id) and (am.pos_order_id or am.invoice_origin in so_names))
+        if journal_data == 'ending_valuation_increase':
+            return self.filtered(lambda am: am.journal_id.code == 'GL01')
+        if journal_data == 'ending_valuation_decrease':
+            return self.filtered(lambda am: am.journal_id.code == 'GL02')
         return self
 
     def bravo_get_insert_values(self, **kwargs):
@@ -231,6 +239,10 @@ class AccountMove(models.Model):
             return self.bravo_get_sale_invoice_adjust_values(type=journal_data.split('_')[3])
         if journal_data == 'update_invoice_status':
             return self.bravo_get_update_invoice_status_values()
+        if journal_data == 'ending_valuation_increase':
+            return self.bravo_get_ending_valuation_increase_values()
+        if journal_data == 'ending_valuation_decrease':
+            return self.bravo_get_ending_valuation_decrease_values()
         if update_move_data:
             return self.bravo_get_update_move_values(**kwargs)
         return [], []
@@ -355,6 +367,18 @@ class AccountMove(models.Model):
         update_invoice_status_queries = records.bravo_get_insert_sql(**current_context)
         if update_invoice_status_queries:
             queries.extend(update_invoice_status_queries)
+
+        current_context = {CONTEXT_JOURNAL_ACTION: 'ending_valuation_increase'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        ending_valuation_increase_queries = records.bravo_get_insert_sql(**current_context)
+        if ending_valuation_increase_queries:
+            queries.extend(ending_valuation_increase_queries)
+
+        current_context = {CONTEXT_JOURNAL_ACTION: 'ending_valuation_decrease'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        ending_valuation_decrease_queries = records.bravo_get_insert_sql(**current_context)
+        if ending_valuation_decrease_queries:
+            queries.extend(ending_valuation_decrease_queries)
 
         return queries
 
