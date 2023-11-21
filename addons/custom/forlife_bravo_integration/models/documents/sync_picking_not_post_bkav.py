@@ -61,7 +61,8 @@ class SyncPickingNotPostBkav(models.AbstractModel):
                         date=split_key[1],
                         partner=(partner and partner[0]),
                         idx=idx,
-                        debit_account=product.with_company(self.env.company).categ_id.expense_online_account_id.code
+                        debit_account=product.with_company(self.env.company).categ_id.expense_online_account_id.code,
+                        dept_code=partner.property_account_cost_center_id.code
                     ))
                 product_ids = product_ids - _product_ids
 
@@ -87,7 +88,8 @@ class SyncPickingNotPostBkav(models.AbstractModel):
                 for idx, product in enumerate(_product_ids, start=1):
                     move_free_good = value.filtered(lambda f: f.product_id == product and f.free_good)
                     move_not_free_good = value.filtered(lambda f: f.product_id == product and not f.free_good)
-                    partner = (move_free_good + move_not_free_good).picking_id.pos_order_id.session_id.config_id.store_id.contact_id
+                    store_id = (move_free_good + move_not_free_good).picking_id.pos_order_id.session_id.config_id.store_id
+                    partner = store_id.contact_id
                     values.extend(self.get_value(
                         move_free_good=move_free_good,
                         move_not_free_good=move_not_free_good,
@@ -95,7 +97,8 @@ class SyncPickingNotPostBkav(models.AbstractModel):
                         date=split_key[1],
                         partner=(partner and partner[0]),
                         idx=idx,
-                        debit_account=product.with_company(self.env.company).categ_id.property_account_expense_categ_id.code
+                        debit_account=product.with_company(self.env.company).categ_id.property_account_expense_categ_id.code,
+                        dept_code=(store_id and store_id[0].analytic_account_id.code)
                     ))
                 product_ids = product_ids - _product_ids
 
@@ -152,7 +155,7 @@ class SyncPickingNotPostBkav(models.AbstractModel):
                 "JobCode": stock_move.occasion_code_id and stock_move.occasion_code_id[0].code or None,
                 "RowId": None,
                 "DocNo_WO": stock_move.work_production and stock_move.work_production[0].code or None,
-                "DeptCode": stock_move.account_analytic_id and stock_move.account_analytic_id[0].code or None,
+                "DeptCode": stock_move.account_analytic_id and stock_move.account_analytic_id[0].code or kwargs.get('dept_code') or None,
                 "Stock_picking_id": ', '.join(map(str, stock_move.picking_id.ids))
             })
         return res
