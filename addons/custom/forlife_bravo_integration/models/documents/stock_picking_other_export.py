@@ -23,7 +23,7 @@ class StockPickingOtherExport(models.Model):
             "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "BuiltinOrder", "DocumentType", "DebitAccount",
             "ItemCode", "ItemName", "UnitPurCode", "CreditAccount", "Quantity9", "ConvertRate9", "Quantity",
             "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode", "RowId",
-            "DocNo_WO", "ProductCode", "DeptCode", "AssetCode",
+            "DocNo_WO", "ProductCode", "DeptCode", "AssetCode", "ExpenseCatgCode",
         ]
 
     def bravo_get_picking_other_export_value(self, employee_code):

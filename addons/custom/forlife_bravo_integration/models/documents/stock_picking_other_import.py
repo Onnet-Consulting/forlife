@@ -23,7 +23,7 @@ class StockPickingOtherImport(models.Model):
             "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DocumentType", "BuiltinOrder",
             "CreditAccount", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9",
             "Quantity", "OriginalUnitCost", "UnitCost", "OriginalAmount", "Amount", "WarehouseCode", "JobCode",
-            "RowId", "DocNo_WO", "DeptCode",
+            "RowId", "DocNo_WO", "DeptCode", "ProductCode", "ExpenseCatgCode", "AssetCode",
         ]
 
     def bravo_get_picking_other_import_value(self, employee_code):
