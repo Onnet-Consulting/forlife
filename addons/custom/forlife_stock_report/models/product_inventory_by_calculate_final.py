@@ -186,8 +186,8 @@ class CalculateFinalValue(models.Model):
                         
                         from account_move_line aml 
                         join account_move am on aml.move_id = am.id
-                        join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
-                        join purchase_order po on ampor.purchase_order_id = po.id
+                        left join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+                        left join purchase_order po on ampor.purchase_order_id = po.id
                         join product_product pp on aml.product_id = pp.id
                         join product_template pt on pp.product_tmpl_id = pt.id
                         join product_category pc on pt.categ_id = pc.id
@@ -271,8 +271,8 @@ class CalculateFinalValue(models.Model):
                         
                         from account_move_line aml 
                         join account_move am on aml.move_id = am.id
-                        join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
-                        join purchase_order po on ampor.purchase_order_id = po.id
+                        left join account_move_purchase_order_rel ampor on am.id = ampor.account_move_id
+                        left join purchase_order po on ampor.purchase_order_id = po.id
                         join product_product pp on aml.product_id = pp.id
                         join product_template pt on pp.product_tmpl_id = pt.id
                         join product_category pc on pt.categ_id = pc.id
