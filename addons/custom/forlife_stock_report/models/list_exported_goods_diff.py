@@ -31,7 +31,7 @@ class CalculateFinalValue(models.Model):
                     oc.id occasion_code,
                     aaa.id account_analytic,
                     aa2.id asset_code,
-                    spls.product_split_id end product_end_id,
+                    spls.product_split_id product_end_id,
                     case 
 	                    when spls.quantity > 0 then spls.quantity
                         when (pibpl.qty_product > 0) then sm.quantity_done
@@ -104,7 +104,7 @@ class CalculateFinalValue(models.Model):
         sql_product_end = f"""
             select distinct product_end_id from list_exported_goods_diff legd 
             where legd.product_end_id is not null and legd.parent_id in (select id  from calculate_final_value cfv where cfv."month" = '{self.month}' and cfv."year" = '{self.year}'
-            and cfv.category_type_id = '{self.category_type_id}' order by cfv.id desc limit 1 offset 2)
+            and cfv.category_type_id = '{self.category_type_id}' order by cfv.id desc limit 1 offset 1)
         """
         self.goods_diff_lines.unlink()
         if self.product_type == 'end':

@@ -57,6 +57,7 @@
                             attrs="{'invisible':['|', ('state', '!=', 'in_approve'), ('type', '!=', False)]}"/>
                     <button string="Reject " name="action_reject"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_approve')]}"/>
+                    <button string="Xuất " name="action_export" type="object"/>
                     <button string="Cancel" name="action_cancel"
                             type="object" attrs="{'invisible':[('state', 'in', ('draft','in_approve','cancel','done'))]}" confirm="Do you really want to cancel?"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,wait_approve,approved,out_approve,done,reject,cancel"/>

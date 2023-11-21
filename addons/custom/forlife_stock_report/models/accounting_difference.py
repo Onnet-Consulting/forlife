@@ -345,7 +345,7 @@ class CalculateFinalValueInherit(models.Model):
                     ],
                     'move_type': 'entry',
                     'stock_valuation_layer_ids': [(0, 0, {
-                        'value': line.diff if line.diff > 0 else -line.diff,
+                        'value': line.diff,
                         'unit_cost': 0,
                         'quantity': 0,
                         'remaining_qty': 0,
@@ -358,6 +358,8 @@ class CalculateFinalValueInherit(models.Model):
         return vals
 
     def action_create_account_move (self):
+        self.move_ids.stock_valuation_layer_ids.unlink()
+        self.move_ids.unlink()
         move_vals = self.prepare_value_by_diff()
         account_move = self.env['account.move'].with_context(not_compute_account_id=True).create(move_vals)
         self.move_ids = [(6, 0, account_move.ids)]

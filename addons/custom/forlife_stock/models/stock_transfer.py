@@ -4,6 +4,9 @@ from odoo import fields, models, api, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import date, datetime
 import math
+import tempfile
+import xlsxwriter
+import base64
 
 
 class StockTransfer(models.Model):
@@ -71,6 +74,167 @@ class StockTransfer(models.Model):
     total_out_qty = fields.Float(string='Tổng số lượng xuất', compute='_compute_total_qty')
     out_confirm_uid = fields.Many2one('res.users', 'Người XN xuất', readonly=True, copy=False)
     done_transfer_uid = fields.Many2one('res.users', 'Người XN nhập', readonly=True, copy=False)
+    data_export = fields.Binary(string='Export', compute='_get_data_export')
+
+
+    def handle_data_export(self):
+        attr_value = self.env['res.utility'].get_attribute_code_config()
+        fields = f"""
+            case 
+                when (row_number () over (partition by stl.stock_transfer_id order by stl.id)) = 1 
+                then st.name else '' end name,
+                st.total_package kien,
+                st.total_weight trong_luong,
+                st.note as note,
+                '' vendor_contract_id,
+                '' delivery_contract_id,
+                '' transport_id,
+                '' location_id,
+                '' location_dest_id,
+                row_number () over (partition by stl.stock_transfer_id order by stl.id) num,
+                pp.barcode product_id,
+                0 qty,
+                attr.attrs->'{attr_value.get('mau_sac', '')}' ->> 0 as mau,
+                attr.attrs->'{attr_value.get('size', '')}' ->> 0 as size
+        """
+        if self.state == 'out_approve':
+            fields = f"""
+                case 
+                when (row_number () over (partition by stl.stock_transfer_id order by stl.id)) = 1 
+                then st.name else '' end name,
+                '' ngay_xuat,
+                row_number () over (partition by stl.stock_transfer_id order by stl.id) num,
+                pp.barcode product_id,
+                0 qty,
+                attr.attrs->'{attr_value.get('mau_sac', '')}' ->> 0 as mau,
+                attr.attrs->'{attr_value.get('size', '')}' ->> 0 as size
+                
+            """
+        sql = f"""
+            select
+                {fields}
+            from
+                stock_transfer_line stl
+            join stock_transfer st on
+                stl.stock_transfer_id = st.id
+            join product_product pp on
+                stl.product_id = pp.id
+            left join (
+                select
+                    product_id,
+                    json_object_agg(attrs_code,
+                    value) as attrs
+                from
+                    (
+                    select
+                        pp.id as product_id,
+                        pa.attrs_code as attrs_code,
+                        array_agg(coalesce(pav.name::json -> 'vi_VN',
+                        pav.name::json -> 'en_US')) as value
+                    from
+                        product_template_attribute_line ptal
+                    left join product_product pp on
+                        pp.product_tmpl_id = ptal.product_tmpl_id
+                    left join product_attribute_value_product_template_attribute_line_rel rel on
+                        rel.product_template_attribute_line_id = ptal.id
+                    left join product_attribute pa on
+                        ptal.attribute_id = pa.id
+                    left join product_attribute_value pav on
+                        pav.id = rel.product_attribute_value_id
+                    where
+                        pa.attrs_code is not null
+                    group by
+                        pp.id,
+                        pa.attrs_code
+                    ) as att
+                group by
+                    product_id
+                    ) attr on
+                attr.product_id = pp.id
+            where st.id = {self.id}
+        """
+
+        self._cr.execute(sql)
+        data = self._cr.fetchall()
+        return [list(t) for t in data]
+
+    def render_sheet(self, worksheet, data, format):
+        row = 0
+        for line in data:
+            col = 0
+            for item in line:
+                if row == 0:
+                    worksheet.write(row, col, item, format)
+                else:
+                    worksheet.write(row, col, item)
+                col += 1
+            row += 1
+        return worksheet
+
+    def _get_data_export(self):
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        # Lấy đường dẫn của file tạm
+        temp_file_path = temp_file.name
+        workbook = xlsxwriter.Workbook(temp_file_path)
+
+        worksheet = workbook.add_worksheet(u'Sheet0')
+        header_format = workbook.add_format({
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': '11',
+            'text_wrap': True,
+            'italic': False,
+            'border': 1,
+        })
+        header = []
+        if self.state == 'out_approve':
+            header = [
+                'Mã phiếu (*)',
+                'Ngày xác nhận nhập (*)',
+                'Chi tiết / STT dòng (*)',
+                'Chi tiết / Sản phẩm (*)',
+                'Chi tiết / Số lượng nhập (*)',
+                'Màu sắc',
+                'Kích cỡ',
+            ]
+        if self.state == 'approved':
+            header = [
+                'Mã phiếu (*)',
+                'Tổng số kiện',
+                'Tổng trọng lượng (Kg)',
+                'Ghi chú',
+                'Hợp đồng số',
+                'Hợp đồng kinh tế số',
+                'Đơn vị vận chuyển',
+                'Tên kho xuất',
+                'Tên kho nhập',
+                'Chi tiết / STT dòng (*)',
+                'Chi tiết / Sản phẩm (*)',
+                'Chi tiết / Số lượng xuất (*)',
+                'Màu sắc',
+                'Kích cỡ',
+            ]
+
+        lines = [header]
+        lines += self.handle_data_export()
+        worksheet = self.render_sheet(worksheet=worksheet, data=lines, format=header_format)
+        worksheet.set_column(1, len(header), 30)
+        worksheet.set_row(0, 30)
+        workbook.close()
+        temp_file.close()
+        self.data_export = base64.b64encode(open(temp_file_path, "rb").read())
+
+    def action_export(self):
+        name = '/web/content/%s/%s/data_export/Template_update_số_lượng_xuất_điều_chuyển.xlsx?download=true'
+        if self.state == 'out_approve':
+            name = '/web/content/%s/%s/data_export/Template_update_số_lượng_nhập_điều_chuyển.xlsx?download=true'
+        export = {
+            'type': 'ir.actions.act_url',
+            'name': 'Export fee',
+            'url': name % (self._name, self.id),
+        }
+        self.data_export = False
+        return export
 
     @api.depends('stock_transfer_line.qty_plan', 'stock_transfer_line.qty_in', 'stock_transfer_line.qty_out')
     def _compute_total_qty(self):
