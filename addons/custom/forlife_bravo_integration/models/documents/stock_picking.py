@@ -36,9 +36,10 @@ class StockPicking(models.Model):
     def action_sync_picking(self):
         if not self:
             return False
+        customer_location = self.env.ref('stock.stock_location_customers')
+
         picking_pos_not_post_bkav = self.env[self._name]
         picking_sale_not_post_bkav = self.env[self._name]
-        customer_location = self.env.ref('stock.stock_location_customers')
         for picking in self.filtered(lambda f: f.picking_type_id.code == 'outgoing' and f.location_dest_id == customer_location):
             if picking.sale_id:
                 order = picking.sale_id
@@ -50,13 +51,34 @@ class StockPicking(models.Model):
                     picking_pos_not_post_bkav |= picking
             else:
                 continue
-        for picking in (self - picking_sale_not_post_bkav - picking_pos_not_post_bkav):
+
+        picking_pos_return_not_post_bkav = self.env[self._name]
+        picking_sale_return_not_post_bkav = self.env[self._name]
+        for picking in self.filtered(lambda f: f.picking_type_id.code == 'incoming' and f.location_dest_id != customer_location):
+            if picking.sale_id and picking.x_is_check_return:
+                order = picking.sale_id
+                if order.x_sale_chanel == 'online':
+                    action = picking.view_move_tax_entry()
+                    domain = action.get('domain')
+                    account_move_lines = self.env['account.move.line'].search(domain)
+                    if not any(account_move_lines.move_id.mapped('is_post_bkav')):
+                        picking_sale_return_not_post_bkav |= picking
+            elif picking.pos_order_id:
+                order = picking.pos_order_id
+                if (order.is_refund_order or order.is_change_order) and not order.is_post_bkav_return:
+                    picking_pos_return_not_post_bkav |= picking
+            else:
+                continue
+
+        for picking in (self - picking_sale_not_post_bkav - picking_pos_not_post_bkav - picking_sale_return_not_post_bkav - picking_pos_return_not_post_bkav):
             insert_queries = picking.bravo_get_insert_sql()
             if insert_queries:
                 self.env[self._name].sudo().with_delay(
                     description=f'Bravo: sync picking {picking.name or picking.id}', channel="root.Bravo").bravo_execute_query(insert_queries)
         if picking_pos_not_post_bkav or picking_sale_not_post_bkav:
             self.env['picking.not.post.bkav'].sync_picking_not_post_bkav(picking_sale_not_post_bkav, picking_pos_not_post_bkav)
+        if picking_pos_return_not_post_bkav or picking_sale_return_not_post_bkav:
+            self.env['picking.return.not.post.bkav'].sync_picking_return_not_post_bkav(picking_sale_return_not_post_bkav, picking_pos_return_not_post_bkav)
         self._cr.execute(f"update stock_picking set is_bravo_pushed = true where id = any (array{self.ids})")
         return True
 
