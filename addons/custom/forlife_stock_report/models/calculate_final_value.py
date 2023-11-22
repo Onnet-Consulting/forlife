@@ -132,7 +132,8 @@ class CalculateFinalValue(models.Model):
             'journal_id': journal_up_id.id if line.amount_diff > 0 else journal_down_id.id,
             'auto_post': 'no',
             'x_root': 'other',
-            'is_change_price': True,
+            'end_period_entry': True,
+            'is_change_price': True if type == 'source' else False,
             'line_ids': lines,
             'move_type': 'entry',
             'stock_valuation_layer_ids': [(0, 0, {
