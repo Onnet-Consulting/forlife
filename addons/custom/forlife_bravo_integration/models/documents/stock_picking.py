@@ -13,6 +13,7 @@ PICKING_TRANSFER_BKAV = 'picking_transfer_bkav'
 CONTEXT_PICKING_UPDATE = 'bravo_picking_update'
 CONTEXT_CANCEL_OTHER_PICKING = 'bravo_cancel_other_picking'
 PICKING_ORDER_BKAV = 'picking_order_bkav'
+PICKING_ORDER_RETURN = 'picking_order_return'
 
 
 class StockPicking(models.Model):
@@ -77,6 +78,8 @@ class StockPicking(models.Model):
             bravo_table = "B30AccDocInventory"
         elif picking_data == PICKING_ORDER_BKAV:
             bravo_table = "B30AccDocExportSales"
+        elif picking_data == PICKING_ORDER_RETURN:
+            bravo_table = "B30AccDocSalesReturn"
         elif picking_update:
             bravo_table = "B30UpdateData"
         elif cancel_other_picking:
@@ -115,6 +118,26 @@ class StockPicking(models.Model):
                 else:
                     continue
             return initial_records
+        if picking_data == PICKING_ORDER_RETURN:
+            initial_records = self.env[self._name]
+            for picking in self.filtered(lambda f: f.picking_type_id.code == 'incoming'):
+                if picking.sale_id and picking.x_is_check_return:
+                    order = picking.sale_id
+                    if order.x_sale_chanel == 'online':
+                        action = picking.view_move_tax_entry()
+                        domain = action.get('domain')
+                        account_move_lines = self.env['account.move.line'].search(domain)
+                        if all(account_move_lines.move_id.mapped('is_post_bkav')):
+                            initial_records |= picking
+                    elif order.x_sale_chanel in ('wholesale', 'intercompany'):
+                        initial_records |= picking
+                elif picking.pos_order_id:
+                    order = picking.pos_order_id
+                    if (order.is_refund_order or order.is_change_order) and order.is_post_bkav_return:
+                        initial_records |= picking
+                else:
+                    continue
+            return initial_records
         if picking_data == PICKING_OTHER_EXPORT_VALUE:
             return self.filtered(lambda m: m.other_export and m.reason_type_id.code != 'X09')
         if picking_data == PICKING_PURCHASE_RETURN_VALUE:
@@ -138,6 +161,8 @@ class StockPicking(models.Model):
             return self.bravo_get_picking_transfer_bkav_values()
         if journal_data == PICKING_ORDER_BKAV:
             return self.bravo_get_picking_order_bkav_values()
+        if journal_data == PICKING_ORDER_RETURN:
+            return self.bravo_get_picking_order_return_values()
         if picking_update:
             return self.bravo_get_update_picking_values(**kwargs)
         if cancel_other_picking:
@@ -188,6 +213,13 @@ class StockPicking(models.Model):
         picking_order_bkav_queries = records.bravo_get_insert_sql(**current_context)
         if picking_order_bkav_queries:
             queries.extend(picking_order_bkav_queries)
+
+        # Picking Order Return
+        current_context = {CONTEXT_PICKING_ACTION: PICKING_ORDER_RETURN}
+        records = self.bravo_filter_record_by_context(**current_context)
+        picking_order_return_queries = records.bravo_get_insert_sql(**current_context)
+        if picking_order_return_queries:
+            queries.extend(picking_order_return_queries)
 
         return queries
 
