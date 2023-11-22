@@ -21,24 +21,6 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                     option.selectedQty = 0
                 }
             });
-
-            onMounted(() => {
-                const self = this
-                let programValid = {};
-                this.state.programs.filter(obj => {
-                    if (!programValid[obj.program.reward_type] || obj.program.disc_percent > programValid[obj.program.reward_type].program.disc_percent) {
-                        programValid[obj.program.reward_type] = obj;
-                    }
-                    else if (programValid[obj.program.reward_type] && programValid[obj.program.reward_type].program.program_id !== obj.program.program_id) {
-                        programValid[obj.program.program_id] = obj;
-                    }
-                    return true;
-                });
-                console.log(programValid)
-                Object.entries(programValid).forEach(([key, value]) => {
-                  self.autoSelectReward(value)
-                });
-            })
         }
 
 /*

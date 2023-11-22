@@ -24,6 +24,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 hasError: false,
 //                additional_reward_remaining_qty: 0,
             });
+            this.valid = true
             this.error_msg = '';
 //            this.state.additional_reward_remaining_qty = this.state.program.max_reward_quantity - this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
 
@@ -40,6 +41,40 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                     this.state.program.isSelected = false;
                 }
             });
+
+            onMounted(() => {
+                const self = this
+                let programValid = {};
+                this.state.programOptions.filter(obj => {
+                    if (!obj.is_buy1_get1) {
+                        if (!programValid[obj.program.reward_type] || obj.program.disc_percent > programValid[obj.program.reward_type].program.disc_percent) {
+                            programValid[obj.program.reward_type] = obj;
+                        }
+                    }
+                    return true;
+                });
+
+                Object.entries(programValid).forEach(([key, value]) => {
+                    if (value.reward_line_vals.length > 0) {
+                        value.isSelected = true
+                        if (self.valid) {
+                            _.each(value.reward_line_vals, async function (line) {
+                                if (self.valid) {
+                                    line.isSelected = true
+                                    line.quantity = line.max_qty
+                                }
+                                self.valid = self._check_valid_rewards()
+                                if (!self.valid) {
+                                    line.isSelected = false
+                                    line.quantity = 0
+                                    value.isSelected = false
+                                }
+                            })
+                        }
+
+                    }
+                });
+            })
 //            Tính năng focus vào ô input, phải tìm đúng node input vừa hành động để focus
 //            onRendered(() => {
 //                let rewardLine = this.state.reward_line_vals
@@ -138,6 +173,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let order = this.env.pos.get_order();
             let orderLines = order._get_clone_order_lines(order.get_orderlines_to_check());
             let selections = this._prepareRewardData(this.state.programOptions);
+
             let [to_apply_lines, remaining] = order.computeForListOfCartProgram(orderLines, selections);
 
             let selected_programs = this._get_selected_programs();
@@ -194,6 +230,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             if (current_selected_qty > this.state.program.max_reward_quantity) {
                 valid = false;
             }
+
             return valid;
         }
 
@@ -226,7 +263,6 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             currentLine.max_qty = qty_remaining;
 
             let quantity = quantity_input > qty_remaining ? qty_remaining : quantity_input;
-
             if (!this._check_valid_rewards()) {
                 currentLine.quantity = 0;
                 this.state.program.isSelected = false;
@@ -263,9 +299,9 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 //            this.state.program.additional_reward_product_qty = parse.float(target.value);
 //        }
 
-        selectItem(cid) {
+        selectItem(cid, line=null) {
             let order = this.env.pos.get_order();
-            let currentLine = this.state.reward_line_vals.find(l => l.line.cid === cid);
+            let currentLine = this.state.reward_line_vals.find(l => l.line.cid === cid) || line;
             currentLine.isSelected = !currentLine.isSelected;
             if (currentLine.isSelected) {
                 this.state.program.isSelected = true;
