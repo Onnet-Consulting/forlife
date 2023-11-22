@@ -103,7 +103,7 @@ class CalculateFinalValue(models.Model):
         lines = [
             (0, 0, {
                 'name': self.name,
-                'product_id': product_id,
+                'product_id': product_id.id,
                 'quantity': 0,
                 'credit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
                 'account_id': account_credit,
@@ -114,7 +114,7 @@ class CalculateFinalValue(models.Model):
             }),
             (0, 0, {
                 'name': self.name,
-                'product_id': product_id,
+                'product_id': product_id.id,
                 'quantity': 0,
                 'debit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
                 'account_id': account_debit,
@@ -142,7 +142,7 @@ class CalculateFinalValue(models.Model):
                 'quantity': 0,
                 'remaining_qty': 0,
                 'description': self.name,
-                'product_id': product_id,
+                'product_id': product_id.id,
                 'company_id': self.env.company.id
             })]
         })
@@ -151,9 +151,9 @@ class CalculateFinalValue(models.Model):
     def prepare_value_by_diff(self):
         vals = []
         for line in self.goods_diff_lines:
-            vals.append(self.prepare_value(line.product_id.id, line, 'source'))
+            vals.append(self.prepare_value(line.product_id, line, 'source'))
             if line.product_end_id:
-                vals.append(self.prepare_value(line.product_end_id.id, line, 'end'))
+                vals.append(self.prepare_value(line.product_end_id, line, 'end'))
         return vals
 
     def create_invoice_diff_entry(self):
