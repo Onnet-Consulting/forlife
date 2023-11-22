@@ -87,14 +87,15 @@ class AccountMove(models.Model):
                     vendor_back_id.copy({'vendor_back_id': res.id})
                 for account_expense_labor_detail_id in res.reversed_entry_id.account_expense_labor_detail_ids:
                     account_expense_labor_detail_id.copy({'move_id': res.id})
-            origin_tax_line_ids = res.reversed_entry_id.line_ids.filtered(lambda x: x.display_type == 'tax')
-            if origin_tax_line_ids:
-                for origin_tax_line_id in origin_tax_line_ids:
-                    tax_line_id = origin_tax_line_id.copy({'move_id': res.id})
-                    debit = tax_line_id.debit
-                    credit = tax_line_id.credit
-                    tax_line_id.write({
-                        'debit': credit,
-                        'credit': debit,
-                    })
+                if res.reversed_entry_id.vendor_back_ids.filtered(lambda x: x.tax_back > 0):
+                    origin_tax_line_ids = res.reversed_entry_id.line_ids.filtered(lambda x: x.display_type == 'tax')
+                    if origin_tax_line_ids:
+                        for origin_tax_line_id in origin_tax_line_ids:
+                            tax_line_id = origin_tax_line_id.copy({'move_id': res.id})
+                            debit = tax_line_id.debit
+                            credit = tax_line_id.credit
+                            tax_line_id.write({
+                                'debit': credit,
+                                'credit': debit,
+                            })
         return res
