@@ -97,13 +97,11 @@ class CalculateFinalValue(models.Model):
         else:
             account_debit = line.account_id.id if line.amount_diff > 0 else product_id.categ_id.property_stock_valuation_account_id.id
             account_credit = product_id.categ_id.property_stock_valuation_account_id.id if line.amount_diff > 0 else line.account_id.id
-            if account_credit == line.account_id.id or account_debit == line.account_id.id:
-                product_id = line.product_id.id
 
         lines = [
             (0, 0, {
                 'name': self.name,
-                'product_id': product_id.id,
+                'product_id': line.product_id.id if account_credit == line.account_id.id else product_id.id,
                 'quantity': 0,
                 'credit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
                 'account_id': account_credit,
@@ -114,7 +112,7 @@ class CalculateFinalValue(models.Model):
             }),
             (0, 0, {
                 'name': self.name,
-                'product_id': product_id.id,
+                'product_id': line.product_id.id if account_debit == line.account_id.id else product_id.id,
                 'quantity': 0,
                 'debit': line.amount_diff if line.amount_diff > 0 else -line.amount_diff,
                 'account_id': account_debit,
