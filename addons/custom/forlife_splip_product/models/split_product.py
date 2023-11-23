@@ -156,12 +156,13 @@ class SplitProduct(models.Model):
                         'product_uom': rec.product_uom_split.id,
                         'product_uom_qty': rec.quantity,
                         'quantity_done': rec.quantity,
-                        'location_id':location_id.id,
+                        'split_line_sub_id': rec.id,
+                        'location_id': location_id.id,
                         'location_dest_id': rec.warehouse_in_id.id
                     }))
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_import': True,
-                'state':'draft',
+                'state': 'draft',
                 'picking_type_id': pk_type.id,
                 'split_product_id': self.id,
                 'move_ids_without_package': data,
@@ -191,7 +192,7 @@ class SplitProduct(models.Model):
             })]
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_export': True,
-                'state':'draft',
+                'state': 'draft',
                 'picking_type_id': pk_type.id,
                 'split_product_id': self.id,
                 'move_ids_without_package': data,

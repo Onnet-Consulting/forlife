@@ -118,7 +118,7 @@ class StockMove(models.Model):
             else:
                 debit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
                 credit_account_id = self.picking_id.location_id.with_company(self.picking_id.company_id).x_property_valuation_out_account_id.id
-            if self.picking_id.picking_type_id.exchange_code != 'incoming':
+            if self.picking_id.picking_type_id.exchange_code != 'incoming' and not self.split_line_sub_id:
                 if not self.picking_id.location_id.is_price_unit:
                     debit_value = credit_value = self.product_id.standard_price * self.quantity_done
                 else:
@@ -129,8 +129,12 @@ class StockMove(models.Model):
                 # debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
                 # if not self.picking_id.location_id.is_price_unit else (self.amount_total / self.previous_qty) * self.quantity_done
             # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
-        res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
-                                                                                      debit_account_id, credit_account_id, svl_id, description).values()]
+            if self.split_line_sub_id:
+                debit_value = credit_value = self.split_line_sub_id.product_id.standard_price * self.quantity_done
+        rslt = super(StockMove, self)._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, svl_id, description)
+        if self.split_line_sub_id and rslt.get('credit_line_vals'):
+            rslt['credit_line_vals']['product_id'] = self.split_line_sub_id.product_id.id
+        res = [(0, 0, line_vals) for line_vals in rslt.values()]
         return res
 
     # Hàm xử lý sửa định giá theo Price unit mới
@@ -147,6 +151,8 @@ class StockMove(models.Model):
                 unit_cost = abs(move._get_price_unit())  # May be negative (i.e. decrease an out move).
             if move.picking_id.other_import and move.picking_id.location_id.is_price_unit:
                 unit_cost = move.amount_total / move.previous_qty if move.previous_qty != 0 else 0
+            if move.split_line_sub_id.product_id:
+                unit_cost = move.split_line_sub_id.product_id.standard_price
             svl_vals = move.product_id._prepare_in_svl_vals(forced_quantity or valued_quantity, unit_cost)
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:

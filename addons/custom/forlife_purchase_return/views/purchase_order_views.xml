@@ -40,6 +40,9 @@
                            attrs="{'column_invisible': ['|', ('received', '=', False), '|', ('parent.purchase_type', '!=', 'product'), ('parent.is_return', '!=', True)]}"
                            sum="discounted subtotal" force_save="1"/>
                 </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='purchase_quantity']" position="replace">
+                    <field name="purchase_quantity" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('parent.is_return', '=', True)]}"/>
+                </xpath>
                 <button name="action_close" position="before">
                     <button string="Tạo đơn trả hàng" name="%(forlife_purchase_return.action_wizard_purchase_order_return)d" type="action" attrs="{'invisible': ['|',('custom_state', '!=', 'approved'), ('is_return', '=', True)]}"/>
                 </button>
