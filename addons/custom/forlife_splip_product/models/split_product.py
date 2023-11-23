@@ -142,7 +142,10 @@ class SplitProduct(models.Model):
 
     def create_orther_import(self, pk_type, company):
         pickings = self.env['stock.picking']
-        location_id = self.env['stock.location'].search([('code','=','N0301')], limit=1)
+        if self.business_type == 'inv':
+            location_id = self.env['stock.location'].search([('code','=','N0201')], limit=1)
+        else:
+            location_id = self.env['stock.location'].search([('code', '=', 'N0301')], limit=1)
         if not location_id:
             raise ValidationError(_('Không tìm thấy địa điểm Nhập tách/gộp mã nguyên phụ liệu mã N0301'))
         for record in self.split_product_line_ids:
@@ -176,7 +179,10 @@ class SplitProduct(models.Model):
 
     def create_orther_export(self, pk_type, company):
         pickings = self.env['stock.picking']
-        location_id = self.env['stock.location'].search([('code','=','X0301')], limit=1)
+        if self.business_type == 'inv':
+            location_id = self.env['stock.location'].search([('code','=','X0201')], limit=1)
+        else:
+            location_id = self.env['stock.location'].search([('code', '=', 'X0301')], limit=1)
         if not location_id:
             raise ValidationError(_('Không tìm thấy địa điểm Xuất tách/gộp mã nguyên phụ liệu mã X0301'))
         for record in self.split_product_line_ids:

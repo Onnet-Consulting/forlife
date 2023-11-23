@@ -38,6 +38,7 @@
                                 <field name="start_date"/>
                                 <field name="opening_time" widget="float_time"/>
                                 <field name="closing_time" widget="float_time"/>
+                                <field name="expired_time"/>
                             </group>
                             <group>
                                 <field name="cashier_ids" widget="many2many_tags" options="{'no_create': True}"/>

@@ -22,6 +22,7 @@ class Store(models.Model):
     opening_time = fields.Float('Opening time', default=8.5)
     closing_time = fields.Float('Closing time', default=22.0)
     active = fields.Boolean(string='Lưu trữ', default=True)
+    expired_time = fields.Float(string='Thời gian đổi trả')
 
     @api.constrains('warehouse_id')
     def _check_warehouse_id(self):

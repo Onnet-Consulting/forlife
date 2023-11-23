@@ -51,7 +51,7 @@ class CalculateFinalValue(models.Model):
                 join account_account aa on aml.account_id = aa.id
                 join stock_picking sp on sm.picking_id = sp.id
                 join stock_location sl on sm.location_id = sl.id and sl."usage" = 'internal'
-                left join split_product sp2 on sp.split_product_id = sp2.id
+                left join split_product sp2 on sp.split_product_id = sp2.id and sp2.business_type = 'split'
                 left join split_product_line_sub spls on sp2.id = spls.split_product_id 
                 left join occasion_code oc on oc.id = sm.occasion_code_id 
                 left join account_analytic_account aaa on sm.account_analytic_id = aaa.id
