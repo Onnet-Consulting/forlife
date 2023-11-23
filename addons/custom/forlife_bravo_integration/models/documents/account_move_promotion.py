@@ -131,12 +131,12 @@ class BravoSyncAccountMovePromotionShippingFee(models.AbstractModel):
 
     @api.model
     def bravo_get_insert_values(self, **kwargs):
-        column_names = self.bravo_get_promotion_shipping_fee()
+        column_names = self.bravo_get_promotion_shipping_fee_columns()
         values = kwargs.get('data')
         return column_names, values
 
     @api.model
-    def bravo_get_promotion_shipping_fee(self):
+    def bravo_get_promotion_shipping_fee_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "Description", "TaxRegName", "TaxRegNo", "EmployeeCode", "IsTransfer",
