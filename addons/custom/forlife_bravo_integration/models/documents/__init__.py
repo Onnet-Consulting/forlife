@@ -21,3 +21,4 @@ from . import sync_picking_not_post_bkav
 from . import sync_picking_return_not_post_bkav
 from . import ending_valuation_adjust
 from . import pos_order_post_bkav
+from . import account_move_promotion
