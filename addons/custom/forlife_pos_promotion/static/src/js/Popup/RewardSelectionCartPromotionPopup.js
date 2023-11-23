@@ -10,7 +10,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
     const core = require('web.core');
     const _t = core._t;
 
-    const { useState, onWillUnmount, onWillDestroy, onMounted, onRendered } = owl;
+    const { useState, onWillUnmount, onWillDestroy, onMounted, onRendered, onWillUpdateProps } = owl;
 
     class RewardSelectionCartPromotionPopup extends PosComponent {
 
@@ -46,35 +46,52 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 const self = this
                 let programValid = {};
                 this.state.programOptions.filter(obj => {
-                    if (!obj.is_buy1_get1) {
-                        if (!programValid[obj.program.reward_type] || obj.program.disc_percent > programValid[obj.program.reward_type].program.disc_percent) {
-                            programValid[obj.program.reward_type] = obj;
-                        }
+                    if (!programValid[obj.program.reward_type] || obj.program.disc_percent > programValid[obj.program.reward_type].program.disc_percent) {
+                        programValid[obj.program.reward_type] = obj;
                     }
                     return true;
                 });
 
-                Object.entries(programValid).forEach(([key, value]) => {
+                Object.entries(programValid).some(async ([key, value]) => {
+                    value.isSelected = true;
+                    self.valid = self._check_valid_rewards()
+                    if (!self.valid) {
+                        return true;
+                    }
                     if (value.reward_line_vals.length > 0) {
-                        value.isSelected = true
-                        if (self.valid) {
-                            _.each(value.reward_line_vals, async function (line) {
-                                if (self.valid) {
-                                    line.isSelected = true
-                                    line.quantity = line.max_qty
-                                }
+                        let max_qty = value.max_reward_quantity
+                        if (value.program.reward_type !== 'cart_get_x_free') {
+                            value.isSelected = true;
+                            value.reward_line_vals.forEach(line => {
+                                let qty = line.max_qty >= max_qty ? max_qty : line.max_qty;
+                                line.isSelected = qty > 0;
+                                line.quantity = qty;
+                                max_qty -= qty;
                                 self.valid = self._check_valid_rewards()
-                                if (!self.valid) {
-                                    line.isSelected = false
-                                    line.quantity = 0
-                                    value.isSelected = false
-                                }
-                            })
-                        }
+                            });
 
+                        } else {
+                            value.reward_line_vals.sort((r1,r2) => r2.line.product.lst_price - r1.line.product.lst_price);
+                            let len_reward = value.reward_line_vals.length;
+                            let next_step = value.required_min_quantity - 1;
+                            for (let i = 0; i < len_reward; i++) {
+                                let qty = value.reward_line_vals[i].max_qty >= max_qty ? max_qty : value.reward_line_vals[i].max_qty;
+
+                                value.reward_line_vals[i].isSelected = qty > 0;
+                                value.reward_line_vals[i].quantity = qty;
+                                next_step += next_step;
+                                max_qty -= qty;
+                                self.valid = self._check_valid_rewards()
+
+                                if (len_reward > next_step && i === next_step) {
+                                    return false;
+                                }
+                            }
+                        }
                     }
                 });
             })
+
 //            Tính năng focus vào ô input, phải tìm đúng node input vừa hành động để focus
 //            onRendered(() => {
 //                let rewardLine = this.state.reward_line_vals
