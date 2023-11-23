@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_workflow_root" name="Workflow" sequence="100"/>
+
+        <menuitem action="business_group_workflow_action" id="menu_business_group_workflow" parent="menu_workflow_root" sequence="1"/>
+        <menuitem action="document_workflow_action" id="menu_document_workflow" parent="menu_workflow_root" sequence="2"/>
+        <menuitem action="approval_level_workflow_action" id="menu_approval_level_workflow" parent="menu_workflow_root" sequence="3"/>
+    </data>
+</odoo>

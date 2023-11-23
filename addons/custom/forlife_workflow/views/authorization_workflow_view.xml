@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="authorization_workflow_view_tree" model="ir.ui.view">
+            <field name="name">authorization_workflow_view_tree</field>
+            <field name="model">authorization.workflow</field>
+            <field name="arch" type="xml">
+                <tree string="authorization_workflow_tree">
+                    <field name="document_workflow_id" invisible="1"/>
+                    <field name="approval_level"/>
+                    <field name="approval_user_id"/>
+                    <field name="authorization_user_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="authorization_workflow_view_form" model="ir.ui.view">
+            <field name="name">authorization_workflow_view_form</field>
+            <field name="model">authorization.workflow</field>
+            <field name="arch" type="xml">
+                <form string="authorization_workflow_form">
+                    <sheet>
+                        <group>
+                            <field name="document_workflow_id" invisible="1"/>
+                            <field name="approval_level" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="approval_user_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="authorization_user_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="from_date"/>
+                            <field name="to_date"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

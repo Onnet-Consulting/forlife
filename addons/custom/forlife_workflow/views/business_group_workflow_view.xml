@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="business_group_workflow_view_tree" model="ir.ui.view">
+            <field name="name">business_group_workflow_view_tree</field>
+            <field name="model">business.group.workflow</field>
+            <field name="arch" type="xml">
+                <tree string="business_group_workflow_tree">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="declare_category_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="business_group_workflow_view_form" model="ir.ui.view">
+            <field name="name">business_group_workflow_view_form</field>
+            <field name="model">business.group.workflow</field>
+            <field name="arch" type="xml">
+                <form string="business_group_workflow_form">
+                    <sheet>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="declare_category_id" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="business_group_workflow_action" model="ir.actions.act_window">
+            <field name="name">Nhóm nghiệp vụ chạy workflow</field>
+            <field name="res_model">business.group.workflow</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>
