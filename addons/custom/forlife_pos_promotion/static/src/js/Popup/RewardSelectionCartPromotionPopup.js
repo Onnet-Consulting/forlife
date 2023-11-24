@@ -59,13 +59,13 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                         return true;
                     }
                     if (value.reward_line_vals.length > 0) {
-                        let max_qty = value.max_reward_quantity
+                        let max_qty = value.max_reward_quantity - value.reward_line_vals.filter((line) => line.isSelected).reduce((sum, r) => sum + r.line.quantity, 0)
                         if (value.program.reward_type !== 'cart_get_x_free') {
                             value.isSelected = true;
                             value.reward_line_vals.forEach(line => {
                                 let qty = line.max_qty >= max_qty ? max_qty : line.max_qty;
                                 line.isSelected = qty > 0;
-                                line.quantity = qty;
+                                line.quantity = qty < max_qty ? qty : max_qty;
                                 max_qty -= qty;
                                 self.valid = self._check_valid_rewards()
                             });
@@ -73,31 +73,44 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                         } else {
                             value.reward_line_vals.sort((r1, r2) => r2.line.product.lst_price - r1.line.product.lst_price);
                             let len_reward = value.reward_line_vals.length;
-                            let next_step = value.required_min_quantity > 0 ? value.required_min_quantity - 1 : 1;
+                            const totalQtyLine = value.reward_line_vals.reduce((sum, r) => sum + r.line.quantity, 0);
+                            const minQtyRequired = value.required_min_quantity
+                            let next_step = minQtyRequired > 0 ? minQtyRequired - 1 : 1;
                             Object.entries(value.reward_line_vals).every(async ([key, reward]) => {
-                                if (max_qty === 0) {
-                                    return true;
+                                if (reward.isSelected || max_qty <= 0) {
+                                    return false;
                                 }
-                                let qty = reward.line.quantity > value.required_min_quantity ? Math.floor(reward.line.quantity / value.required_min_quantity) : 1
-                                if (reward.line.quantity % value.required_min_quantity === 0) {
-                                    reward.isSelected = max_qty >= 0;
-                                    reward.quantity = qty;
+
+                                if (totalQtyLine === minQtyRequired) {
+                                    const qty = Math.floor(totalQtyLine / minQtyRequired)
+                                    value.reward_line_vals[len_reward - 1].isSelected = qty > 0;
+                                    value.reward_line_vals[len_reward - 1].quantity = qty < max_qty ? qty : max_qty;
                                     max_qty -= qty;
+
                                     self.valid = self._check_valid_rewards()
-                                }
-                                else if (len_reward >= value.required_min_quantity && reward.line.quantity > value.required_min_quantity) {
-                                    reward.isSelected = max_qty >= 0;
-                                    reward.quantity = qty;
-                                    max_qty -= qty;
-                                    self.valid = self._check_valid_rewards()
-                                }
-                                else {
-                                    if (parseInt(key) === next_step) {
-                                        reward.isSelected = max_qty >= 0;
-                                        reward.quantity = qty;
+                                    return false;
+                                } else {
+                                    if (reward.line.quantity < minQtyRequired) {
+                                        const qty = Math.floor(totalQtyLine / minQtyRequired)
+                                        value.reward_line_vals[len_reward - 1].isSelected = qty > 0;
+                                        value.reward_line_vals[len_reward - 1].quantity = qty < max_qty ? qty : max_qty;
                                         max_qty -= qty;
-                                        self.valid = self._check_valid_rewards()
+                                        return false;
                                     }
+                                    let qty = Math.floor(reward.line.quantity / minQtyRequired)
+                                    if (reward.line.quantity % minQtyRequired !== 0 && reward.line.quantity < minQtyRequired) {
+                                        qty = 0
+                                    }
+                                    if (reward.line.quantity % minQtyRequired !== 0 && reward.line.quantity > minQtyRequired) {
+                                        const qty_line = reward.line.quantity
+                                        qty = qty_line >= minQtyRequired && max_qty >= value.max_reward_quantity ? Math.floor(qty_line / minQtyRequired) : max_qty
+                                    }
+
+                                    reward.isSelected = qty > 0;
+                                    reward.quantity = qty < max_qty ? qty : max_qty;
+                                    max_qty -= qty;
+
+                                    self.valid = self._check_valid_rewards()
                                 }
                             })
                         }
