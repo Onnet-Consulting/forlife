@@ -42,6 +42,7 @@
         'views/laundry_meta.xml',
 
         'wizard/import_store_first_order_views.xml',
+        'wizard/search_pos_order_wizard_view.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

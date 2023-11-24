@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="search_pos_order_wizard_view_form" model="ir.ui.view">
+            <field name="name">search_pos_order_wizard_view_form</field>
+            <field name="model">search.pos.order.wizard</field>
+            <field name="arch" type="xml">
+                <form string="search_pos_order_wizard_form" create="0" delete="0">
+                    <sheet>
+                        <button name="btn_search" type="object" icon="fa-search-plus" string=" Tra Cứu" class="btn btn-primary oe_right" data-hotkey="d"/>
+                        <group>
+                            <field name="phone_number" class="oe_inline"/>
+                            <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
+                            <label for="from_date" string="Thời gian"/>
+                            <div>từ ngày
+                                <field name="from_date" class="oe_inline"/>
+                                đến ngày
+                                <field name="to_date" class="oe_inline"/>
+                            </div>
+                        </group>
+                        <separator string="Kết quả tra cứu"/>
+                        <field name="result_po_ids" readonly="1">
+                            <tree>
+                                <field name="date_order" string="Ngày đơn hàng"/>
+                                <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="name" widget="CopyClipboardChar" options="{'string': 'Sao chép'}"/>
+                                <field name="pos_reference" widget="CopyClipboardChar" options="{'string': 'Sao chép'}"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="date_order" string="Ngày đơn hàng"/>
+                                    <field name="brand_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="name" widget="CopyClipboardChar" options="{'string': 'Sao chép'}"/>
+                                    <field name="pos_reference" widget="CopyClipboardChar" options="{'string': 'Sao chép'}"/>
+                                </group>
+                            </form>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="search_pos_order_wizard_action" model="ir.actions.act_window">
+            <field name="name">Tra cứu đơn hàng</field>
+            <field name="res_model">search.pos.order.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+
+        <menuitem id="menu_search_pos_order_wizard" parent="point_of_sale.menu_point_of_sale" action="search_pos_order_wizard_action" sequence="1030"/>
+
+    </data>
+</odoo>
