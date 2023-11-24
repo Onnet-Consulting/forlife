@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="authorization_workflow_view_tree" model="ir.ui.view">
+            <field name="name">authorization_workflow_view_tree</field>
+            <field name="model">authorization.workflow</field>
+            <field name="arch" type="xml">
+                <tree string="authorization_workflow_tree">
+                    <field name="code"/>
+                    <field name="type_action_user"/>
+                    <field name="approval_level"/>
+                    <field name="approval_user_id"/>
+                    <field name="authorization_user_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="authorization_workflow_view_form" model="ir.ui.view">
+            <field name="name">authorization_workflow_view_form</field>
+            <field name="model">authorization.workflow</field>
+            <field name="arch" type="xml">
+                <form string="authorization_workflow_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="type_action_user"/>
+                                <field name="document_workflow_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': [('type_action_user', '=', 'wf')], 'invisible': [('type_action_user', '!=', 'wf')]}"/>
+                                <field name="document_code" attrs="{'required': [('type_action_user', '=', 'dd')], 'invisible': [('type_action_user', '!=', 'dd')]}"/>
+                            </group>
+                            <group>
+                                <field name="approval_level" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="approval_user_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="authorization_user_id" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <label for="from_date" string="Thời gian ủy quyền"/>
+                            <div>từ ngày
+                                <field name="from_date" class="oe_inline"/>
+                                đến ngày
+                                <field name="to_date" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="authorization_workflow_action" model="ir.actions.act_window">
+            <field name="name">Ủy quyền workflow</field>
+            <field name="res_model">authorization.workflow</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

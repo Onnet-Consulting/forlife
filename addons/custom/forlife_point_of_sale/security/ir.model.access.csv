@@ -10,3 +10,4 @@ access_pos.laundry.line,pos.laundry.line,model_pos_laundry_line,base.group_syste
 access_laundry.product.status,laundry.product.status,model_laundry_product_status,base.group_system,1,1,1,1
 access_laundry.service,laundry.service,model_laundry_service,base.group_system,1,1,1,1
 access_laundry.repair.status,laundry.repair.status,model_laundry_repair_status,base.group_system,1,1,1,1
+access_search_pos_order_wizard,search_pos_order_wizard,model_search_pos_order_wizard,base.group_user,1,1,1,1

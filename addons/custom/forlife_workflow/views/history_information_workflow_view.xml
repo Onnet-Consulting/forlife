@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="history_information_workflow_view_tree" model="ir.ui.view">
+            <field name="name">history_information_workflow_view_tree</field>
+            <field name="model">history.information.workflow</field>
+            <field name="arch" type="xml">
+                <tree string="history_information_workflow_tree">
+                    <field name="document_code"/>
+                    <field name="approval_level"/>
+                    <field name="user_id"/>
+                    <field name="result"/>
+                    <field name="content"/>
+                    <field name="request_date"/>
+                    <field name="implementation_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="history_information_workflow_view_form" model="ir.ui.view">
+            <field name="name">history_information_workflow_view_form</field>
+            <field name="model">history.information.workflow</field>
+            <field name="arch" type="xml">
+                <form string="history_information_workflow_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="document_code"/>
+                                <field name="approval_level"/>
+                                <field name="user_id"/>
+                            </group>
+                            <group>
+                                <field name="request_date"/>
+                                <field name="implementation_date"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="result"/>
+                            <field name="content"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="history_information_workflow_action" model="ir.actions.act_window">
+            <field name="name">Thông tin kết quả user feedback</field>
+            <field name="res_model">history.information.workflow</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

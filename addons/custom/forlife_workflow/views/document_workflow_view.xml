@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="document_workflow_view_tree" model="ir.ui.view">
+            <field name="name">document_workflow_view_tree</field>
+            <field name="model">document.workflow</field>
+            <field name="arch" type="xml">
+                <tree string="document_workflow_tree">
+                    <field name="code"/>
+                    <field name="type_workflow"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="active"/>
+                    <field name="allow_recall"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="document_workflow_view_form" model="ir.ui.view">
+            <field name="name">document_workflow_view_form</field>
+            <field name="model">document.workflow</field>
+            <field name="arch" type="xml">
+                <form string="document_workflow_form">
+                    <div class="padding-form-custom">
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <label for="from_date" string="Thời gian hiệu lực"/>
+                                <div>từ ngày
+                                    <field name="from_date" class="oe_inline"/>
+                                    đến ngày
+                                    <field name="to_date" class="oe_inline"/>
+                                </div>
+                                <field name="active"/>
+                                <field name="allow_recall"/>
+                            </group>
+                            <group>
+                                <field name="type_workflow"/>
+                                <field name="business_group_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': [('type_workflow', '=', 'bg')], 'invisible': [('type_workflow', '!=', 'bg')]}"/>
+                                <field name="document_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': [('type_workflow', '=', 'd')], 'invisible': [('type_workflow', '!=', 'd')]}"/>
+                                <field name="document_domain" widget="domain" options="{'in_dialog': True, 'model': 'model_name'}" attrs="{'invisible': [('type_workflow', '!=', 'd')]}"/>
+                            </group>
+                        </group>
+                        <separator string="Chi tiết phê duyệt"/>
+                        <field name="detail_ids"/>
+                    </div>
+                    <field name="model_name" invisible="1"/>
+                </form>
+            </field>
+        </record>
+
+        <record id="document_workflow_action" model="ir.actions.act_window">
+            <field name="name">Luồng chứng từ chạy workflow</field>
+            <field name="res_model">document.workflow</field>
+            <field name="domain">[('active', 'in', (False, True))]</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

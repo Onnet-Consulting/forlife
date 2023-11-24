@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_business_group_workflow_user,business_group_workflow user,model_business_group_workflow,base.group_user,1,0,0,0
+access_business_group_workflow_manager,business_group_workflow manager,model_business_group_workflow,base.group_system,1,1,1,1
+
+access_approval_level_workflow_user,approval_level_workflow user,model_approval_level_workflow,base.group_user,1,0,0,0
+access_approval_level_workflow_manager,approval_level_workflow manager,model_approval_level_workflow,base.group_system,1,1,1,1
+
+access_document_workflow_user,document_workflow user,model_document_workflow,base.group_user,1,0,0,0
+access_document_workflow_manager,document_workflow manager,model_document_workflow,base.group_system,1,1,1,1
+
+access_document_detail_workflow_user,document_detail_workflow user,model_document_detail_workflow,base.group_user,1,0,0,0
+access_document_detail_workflow_manager,document_detail_workflow manager,model_document_detail_workflow,base.group_system,1,1,1,1
+
+access_authorization_workflow_user,authorization_workflow user,model_authorization_workflow,base.group_user,1,0,0,0
+access_authorization_workflow_manager,authorization_workflow manager,model_authorization_workflow,base.group_system,1,1,1,1
+
+access_history_information_workflow,history_information_workflow,model_history_information_workflow,base.group_user,1,0,0,0
+
+access_update_status_workflow,update_status_workflow,model_update_status_workflow,base.group_user,1,0,0,0

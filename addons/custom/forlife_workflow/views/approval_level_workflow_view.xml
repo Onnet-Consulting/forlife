@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="approval_level_workflow_view_kanban" model="ir.ui.view">
+            <field name="name">approval_level_workflow_view_kanban</field>
+            <field name="model">approval.level.workflow</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="id"/>
+                    <field name="name"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <h1>Duyệt cấp
+                                            <t t-esc="record.name.value"/>
+                                        </h1>
+                                    </div>
+                                    <div class="col-3">
+                                        <button name="unlink" type="object" icon="fa-trash" title="Xóa" class="btn btn-secondary"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="approval_level_workflow_view_form" model="ir.ui.view">
+            <field name="name">approval_level_workflow_view_form</field>
+            <field name="model">approval.level.workflow</field>
+            <field name="arch" type="xml">
+                <form string="approval_level_workflow_form">
+                    <sheet>
+                        <h1>
+                            Cấp
+                            <field name="name"/>
+                        </h1>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="approval_level_workflow_action" model="ir.actions.act_window">
+            <field name="name">Cấp phê duyệt</field>
+            <field name="res_model">approval.level.workflow</field>
+            <field name="view_mode">kanban,form</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="document_detail_workflow_view_tree" model="ir.ui.view">
+            <field name="name">document_detail_workflow_view_tree</field>
+            <field name="model">document.detail.workflow</field>
+            <field name="arch" type="xml">
+                <tree string="document_detail_workflow_tree">
+                    <field name="document_workflow_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="value_from"/>
+                    <field name="approval_level"/>
+                    <field name="approval_user_id"/>
+                    <field name="request_user_id"/>
+                    <field name="user_number_need_approval"/>
+                    <field name="status_approval_after"/>
+                    <field name="user_number_reject"/>
+                    <field name="type_action_user"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="document_detail_workflow_view_form" model="ir.ui.view">
+            <field name="name">document_detail_workflow_view_form</field>
+            <field name="model">document.detail.workflow</field>
+            <field name="arch" type="xml">
+                <form string="document_detail_workflow_form">
+                    <sheet>
+                        <group>
+                            <field name="document_workflow_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="value_from"/>
+                            <field name="approval_level" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="approval_user_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="request_user_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="user_number_need_approval"/>
+                            <field name="status_approval_after"/>
+                            <field name="user_number_reject"/>
+                            <field name="type_action_user"/>
+                            <field name="from_date"/>
+                            <field name="to_date"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

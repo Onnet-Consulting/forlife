@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="business_group_workflow_sequence" model="ir.sequence">
+            <field name="name">Nhóm nghiệp vụ chạy workflow</field>
+            <field name="code">business.group.workflow</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">BS</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="document_workflow_sequence" model="ir.sequence">
+            <field name="name">Luồng chứng từ chạy workflow</field>
+            <field name="code">document.workflow</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">WF</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="authorization_workflow_sequence" model="ir.sequence">
+            <field name="name">Uỷ quyền workflow</field>
+            <field name="code">authorization.workflow</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">AW</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

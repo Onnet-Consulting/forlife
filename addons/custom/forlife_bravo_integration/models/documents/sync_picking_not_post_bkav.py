@@ -7,6 +7,7 @@ from datetime import timedelta
 class SyncPickingNotPostBkav(models.AbstractModel):
     _name = 'picking.not.post.bkav'
     _inherit = 'bravo.model.insert.action'
+    _description = 'B30AccDocExportSales'
     _bravo_table = 'B30AccDocExportSales'
 
     @api.model
