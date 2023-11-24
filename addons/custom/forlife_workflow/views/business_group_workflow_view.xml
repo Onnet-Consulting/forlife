@@ -14,6 +14,34 @@
             </field>
         </record>
 
+        <record id="business_group_workflow_view_kanban" model="ir.ui.view">
+            <field name="name">business_group_workflow_view_kanban</field>
+            <field name="model">business.group.workflow</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="declare_category_id"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div><strong>Mã nhóm nghiệp vụ: </strong>
+                                    <t t-esc="record.code.value"/>
+                                </div>
+                                <div><strong>Tên mô tả: </strong>
+                                    <t t-esc="record.name.value"/>
+                                </div>
+                                <div><strong>Mã nhóm chứng từ: </strong>
+                                    <t t-esc="record.declare_category_id.value"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
         <record id="business_group_workflow_view_form" model="ir.ui.view">
             <field name="name">business_group_workflow_view_form</field>
             <field name="model">business.group.workflow</field>
@@ -33,7 +61,7 @@
         <record id="business_group_workflow_action" model="ir.actions.act_window">
             <field name="name">Nhóm nghiệp vụ chạy workflow</field>
             <field name="res_model">business.group.workflow</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
         </record>
 
     </data>

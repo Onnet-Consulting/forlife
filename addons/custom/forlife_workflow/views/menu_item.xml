@@ -2,7 +2,7 @@
 <odoo>
     <data>
 
-        <menuitem id="menu_workflow_root" name="Workflow" sequence="100"/>
+        <menuitem id="menu_workflow_root" name="Workflow" sequence="100" web_icon="forlife_workflow,static/description/icon.png"/>
 
         <menuitem action="business_group_workflow_action" id="menu_business_group_workflow" parent="menu_workflow_root" sequence="10"/>
         <menuitem action="document_workflow_action" id="menu_document_workflow" parent="menu_workflow_root" sequence="20"/>
