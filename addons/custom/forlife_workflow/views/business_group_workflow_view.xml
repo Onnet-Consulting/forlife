@@ -26,13 +26,17 @@
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click">
-                                <div><strong>Mã nhóm nghiệp vụ: </strong>
-                                    <t t-esc="record.code.value"/>
+                                <div>
+                                    <strong>Mã nhóm nghiệp vụ:
+                                        <t t-esc="record.code.value"/>
+                                    </strong>
                                 </div>
-                                <div><strong>Tên mô tả: </strong>
+                                <div>
+                                    <strong>Tên mô tả: </strong>
                                     <t t-esc="record.name.value"/>
                                 </div>
-                                <div><strong>Mã nhóm chứng từ: </strong>
+                                <div>
+                                    <strong>Mã nhóm chứng từ: </strong>
                                     <t t-esc="record.declare_category_id.value"/>
                                 </div>
                             </div>

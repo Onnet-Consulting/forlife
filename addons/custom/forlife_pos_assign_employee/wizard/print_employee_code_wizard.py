@@ -9,8 +9,8 @@ class PrintEmployeeCodeWizard(models.TransientModel):
     _description = 'Print Employee Code Wizard'
 
     employee_code = fields.Char(required=True)
-    x_employee_code = fields.Char(max=20)
-    x_employee_name = fields.Char(max=60)
+    x_employee_code = fields.Char(size=20)
+    x_employee_name = fields.Char(size=60)
 
     def print_pdf(self):
         employee = self.env['hr.employee'].search([('code', '=', self.employee_code)], limit=1)
