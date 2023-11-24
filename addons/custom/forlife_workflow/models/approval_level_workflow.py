@@ -6,7 +6,7 @@ class ApprovalLevelWorkflow(models.Model):
     _description = 'Cấp phê duyệt'
     _order = 'name'
 
-    name = fields.Integer('Cấp', default=1)
+    name = fields.Integer('Cấp', default=lambda s: s.env['approval.level.workflow'].search([], order='name desc', limit=1).name + 1)
 
     _sql_constraints = [
         ('unique_name', 'unique (name)', 'Cấp phê duyệt đã tồn tại, vui lòng chọn lại !'),

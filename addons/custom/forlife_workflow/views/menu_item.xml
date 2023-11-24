@@ -8,5 +8,8 @@
         <menuitem action="document_workflow_action" id="menu_document_workflow" parent="menu_workflow_root" sequence="20"/>
         <menuitem action="authorization_workflow_action" id="menu_authorization_workflow" parent="menu_workflow_root" sequence="30"/>
         <menuitem action="approval_level_workflow_action" id="menu_approval_level_workflow" parent="menu_workflow_root" sequence="40"/>
+        <menuitem id="menu_log_workflow" parent="menu_workflow_root" sequence="50" name="Ghi nhận"/>
+        <menuitem action="history_information_workflow_action" id="menu_history_information_workflow" parent="menu_log_workflow" sequence="10"/>
+        <menuitem action="update_status_workflow_action" id="menu_update_status_workflow" parent="menu_log_workflow" sequence="20"/>
     </data>
 </odoo>

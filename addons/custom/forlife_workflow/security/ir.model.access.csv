@@ -13,3 +13,7 @@ access_document_detail_workflow_manager,document_detail_workflow manager,model_d
 
 access_authorization_workflow_user,authorization_workflow user,model_authorization_workflow,base.group_user,1,0,0,0
 access_authorization_workflow_manager,authorization_workflow manager,model_authorization_workflow,base.group_system,1,1,1,1
+
+access_history_information_workflow,history_information_workflow,model_history_information_workflow,base.group_user,1,0,0,0
+
+access_update_status_workflow,update_status_workflow,model_update_status_workflow,base.group_user,1,0,0,0

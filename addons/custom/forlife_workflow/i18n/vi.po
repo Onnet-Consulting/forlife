@@ -1,0 +1,514 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_workflow
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-11-24 03:47+0000\n"
+"PO-Revision-Date: 2023-11-24 03:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__document_domain
+msgid "Bộ lọc chứng từ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model,name:forlife_workflow.model_document_detail_workflow
+msgid "Chi tiết luồng chứng từ chạy workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__detail_ids
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_workflow_view_form
+msgid "Chi tiết phê duyệt"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__allow_recall
+msgid "Cho phép chạy lại"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__document_id
+msgid "Chứng từ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_generate_code_by_sequence__code
+msgid "Code"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow__create_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__create_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__create_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__create_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__create_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__create_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow__create_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__create_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__create_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__create_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__create_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__create_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow__name
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.approval_level_workflow_view_form
+msgid "Cấp"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.actions.act_window,name:forlife_workflow.approval_level_workflow_action
+#: model:ir.model,name:forlife_workflow.model_approval_level_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__approval_level
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__approval_level
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__approval_level
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__approval_level
+#: model:ir.ui.menu,name:forlife_workflow.menu_approval_level_workflow
+msgid "Cấp phê duyệt"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.constraint,message:forlife_workflow.constraint_approval_level_workflow_unique_name
+msgid "Cấp phê duyệt đã tồn tại, vui lòng chọn lại !"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow__display_name
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__display_name
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__display_name
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__display_name
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__display_name
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__display_name
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_detail_workflow__status_approval_after__yes
+msgid "Duyệt"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.approval_level_workflow_view_kanban
+msgid "Duyệt cấp"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_detail_workflow__status_approval_after__all
+msgid "Duyệt hoặc từ chối"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.ui.menu,name:forlife_workflow.menu_log_workflow
+msgid "Ghi nhận"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.actions.act_window,name:forlife_workflow.update_status_workflow_action
+#: model:ir.ui.menu,name:forlife_workflow.menu_update_status_workflow
+msgid "Ghi nhận cập nhật trạng thái"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model,name:forlife_workflow.model_update_status_workflow
+msgid "Ghi nhận cập nhật trạng thái tại các bước chạy workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__value_from
+msgid "Giá trị từ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__from_date
+msgid "Hiệu lực từ ngày"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__to_date
+msgid "Hiệu lực đến ngày"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__type_action_user
+msgid "Hình thức ủy quyền"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow__id
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__id
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__id
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__id
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__id
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__id
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__result
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__result
+msgid "Kết quả"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow____last_update
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow____last_update
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow____last_update
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow____last_update
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow____last_update
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow____last_update
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow__write_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__write_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__write_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__write_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__write_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__write_uid
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_approval_level_workflow__write_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__write_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__write_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__write_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__write_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__write_date
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__type_workflow
+msgid "Loại chứng từ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__type_action_user
+msgid "Loại hành động"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.actions.act_window,name:forlife_workflow.document_workflow_action
+#: model:ir.model,name:forlife_workflow.model_document_workflow
+#: model:ir.ui.menu,name:forlife_workflow.menu_document_workflow
+msgid "Luồng chứng từ chạy workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model,name:forlife_workflow.model_authorization_workflow
+msgid "Luồng ủy quyền cho người dùng khác"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__model_name
+msgid "Model"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__document_code
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__document_code
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__document_code
+msgid "Mã chứng từ chi tiết"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__declare_category_id
+msgid "Mã nhóm chứng từ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__code
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__business_group_id
+msgid "Mã nhóm nghiệp vụ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__code
+msgid "Mã workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__code
+msgid "Mã ủy quyền"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__implementation_date
+msgid "Ngày thực hiện"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__request_date
+msgid "Ngày yêu cầu"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__approval_user_id
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__approval_user_id
+msgid "Người phê duyệt"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__user_id
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__user_id
+msgid "Người thực hiện"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__request_user_id
+msgid "Người yêu cầu"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__authorization_user_id
+msgid "Người được ủy quyền"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.actions.act_window,name:forlife_workflow.business_group_workflow_action
+#: model:ir.model,name:forlife_workflow.model_business_group_workflow
+#: model:ir.ui.menu,name:forlife_workflow.menu_business_group_workflow
+msgid "Nhóm nghiệp vụ chạy workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_detail_workflow__type_action_user__i
+msgid "Nhận thông tin"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_history_information_workflow__content
+msgid "Nội dung"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__user_number_need_approval
+msgid "Số lượng user cần phê duyệt"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__user_number_reject
+msgid "Số lượng user từ chối"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__authorization_workflow__type_action_user__dd
+msgid "Theo chi tiết chứng từ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_workflow__type_workflow__d
+msgid "Theo kiểu chứng từ tùy chỉnh"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_workflow__type_workflow__bg
+msgid "Theo mã nhóm nghiệp vụ"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__authorization_workflow__type_action_user__wf
+msgid "Theo workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.actions.act_window,name:forlife_workflow.history_information_workflow_action
+#: model:ir.model,name:forlife_workflow.model_history_information_workflow
+#: model:ir.ui.menu,name:forlife_workflow.menu_history_information_workflow
+msgid "Thông tin kết quả user feedback"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_workflow_view_form
+msgid "Thời gian hiệu lực"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.authorization_workflow_view_form
+msgid "Thời gian ủy quyền"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_detail_workflow__type_action_user__d
+msgid "Thực hiện phê duyệt"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__status_approval_after
+msgid "Trạng thái cấp phê duyệt trước đó"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_workflow__active
+msgid "Trạng thái hoạt động"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_detail_workflow__status_approval_after__none
+msgid "Trống"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_business_group_workflow__name
+msgid "Tên mô tả"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields.selection,name:forlife_workflow.selection__document_detail_workflow__status_approval_after__no
+msgid "Từ chối"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model,name:forlife_workflow.model_generate_code_by_sequence
+msgid "Tự động sinh mã"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_update_status_workflow__round
+msgid "Vòng chạy workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__document_workflow_id
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__document_workflow_id
+#: model:ir.ui.menu,name:forlife_workflow.menu_workflow_root
+msgid "Workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.approval_level_workflow_view_kanban
+msgid "Xóa"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.approval_level_workflow_view_form
+msgid "approval_level_workflow_form"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.authorization_workflow_view_form
+msgid "authorization_workflow_form"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.authorization_workflow_view_tree
+msgid "authorization_workflow_tree"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.business_group_workflow_view_form
+msgid "business_group_workflow_form"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.business_group_workflow_view_tree
+msgid "business_group_workflow_tree"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_detail_workflow_view_form
+msgid "document_detail_workflow_form"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_detail_workflow_view_tree
+msgid "document_detail_workflow_tree"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_workflow_view_form
+msgid "document_workflow_form"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_workflow_view_tree
+msgid "document_workflow_tree"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.history_information_workflow_view_form
+msgid "history_information_workflow_form"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.history_information_workflow_view_tree
+msgid "history_information_workflow_tree"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.authorization_workflow_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_workflow_view_form
+msgid "từ ngày"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.update_status_workflow_view_form
+msgid "update_status_workflow_form"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.update_status_workflow_view_tree
+msgid "update_status_workflow_tree"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__from_date
+msgid "Áp dụng từ ngày"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_document_detail_workflow__to_date
+msgid "Áp dụng đến ngày"
+msgstr ""
+
+#. module: forlife_workflow
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.authorization_workflow_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_workflow.document_workflow_view_form
+msgid "đến ngày"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__from_date
+msgid "Ủy quyền từ ngày"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.actions.act_window,name:forlife_workflow.authorization_workflow_action
+#: model:ir.ui.menu,name:forlife_workflow.menu_authorization_workflow
+msgid "Ủy quyền workflow"
+msgstr ""
+
+#. module: forlife_workflow
+#: model:ir.model.fields,field_description:forlife_workflow.field_authorization_workflow__to_date
+msgid "Ủy quyền đến ngày"
+msgstr ""

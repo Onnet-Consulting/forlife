@@ -35,7 +35,7 @@ class DocumentDetailWorkflow(models.Model):
     document_workflow_id = fields.Many2one('document.workflow', 'Workflow', required=True)
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
     value_from = fields.Monetary('Giá trị từ', default=0, currency_field='currency_id')
-    approval_level = fields.Many2one('approval.level.workflow', string='Cấp phê duyệt')
+    approval_level = fields.Many2one('approval.level.workflow', string='Cấp phê duyệt', ondelete='restrict')
     approval_user_id = fields.Many2one('res.users', 'Người phê duyệt')
     request_user_id = fields.Many2one('res.users', 'Người yêu cầu')
     user_number_need_approval = fields.Integer('Số lượng user cần phê duyệt', default=1)

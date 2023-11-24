@@ -21,6 +21,8 @@
         'views/document_detail_workflow_view.xml',
         'views/authorization_workflow_view.xml',
         'views/document_workflow_view.xml',
+        'views/history_information_workflow_view.xml',
+        'views/update_status_workflow_view.xml',
         'views/menu_item.xml',
     ],
 }

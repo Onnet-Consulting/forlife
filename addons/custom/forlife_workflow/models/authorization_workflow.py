@@ -11,7 +11,7 @@ class AuthorizationWorkflow(models.Model):
     type_action_user = fields.Selection([('wf', 'Theo workflow'), ('dd', 'Theo chi tiết chứng từ')], 'Hình thức ủy quyền', default='wf', required=1)
     document_workflow_id = fields.Many2one('document.workflow', 'Workflow')
     document_code = fields.Char('Mã chứng từ chi tiết')
-    approval_level = fields.Many2one('approval.level.workflow', string='Cấp phê duyệt', required=1)
+    approval_level = fields.Many2one('approval.level.workflow', string='Cấp phê duyệt', required=1, ondelete='restrict')
     approval_user_id = fields.Many2one('res.users', 'Người phê duyệt', required=1)
     authorization_user_id = fields.Many2one('res.users', 'Người được ủy quyền', required=1)
     from_date = fields.Date(string='Ủy quyền từ ngày')
