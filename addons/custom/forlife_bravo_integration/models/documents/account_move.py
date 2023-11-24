@@ -39,6 +39,9 @@ class AccountMove(models.Model):
             if moves:
                 self.env['synthetic_move_by_journal_code'].with_company(company).action_sync_data_vc01(moves)
                 ids.extend(moves.ids)
+
+            # Tổng hợp chi phí vận chuyển ước tính trên đơn NHANH
+            self.env['sync.account.move.promotion.shipping.fee'].with_company(company).sync_bravo_promotion_shipping_fee()
         if ids:
             self._cr.execute(f"update account_move set is_bravo_pushed = true where id = any (array{ids})")
 
@@ -185,7 +188,7 @@ class AccountMove(models.Model):
         if journal_data in ("journal_entry_payroll", 'journal_entry_other'):
             return self.filtered(lambda am: am.journal_id.code in ('EX01', 'NE01', 'VN01', 'VN02', 'VTI01'))
         if journal_data == 'account_doc_sale':
-            return self.filtered(lambda am: am.issue_invoice_type == 'vat' and am.stock_move_id.picking_id.sale_id and not am.stock_move_id.picking_id.sale_id.x_is_return
+            return self.filtered(lambda am: am.issue_invoice_type in ('vat', 'replace') and am.stock_move_id.picking_id.sale_id and not am.stock_move_id.picking_id.sale_id.x_is_return
                                             and (am.stock_move_id.picking_id.sale_id.x_sale_chanel in ('wholesale', 'intercompany')
                                                  or (am.stock_move_id.picking_id.sale_id.x_sale_chanel == 'online' and am.is_post_bkav)))
         if journal_data == 'sale_invoice_adjust_increase':

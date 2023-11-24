@@ -70,7 +70,8 @@
         <field name="doall" eval="False"/>
         <field name="model_id" ref="model_account_move"/>
         <field name="code">env['synthetic.account.move.pos'].sync_bravo_account_move_pos()
-env['synthetic.account.move.so.nhanh'].sync_bravo_account_move_so_nhanh()</field>
+env['synthetic.account.move.so.nhanh'].sync_bravo_account_move_so_nhanh()
+env['pos.order.post.bkav'].sync_bravo_pos_order_post_bkav()</field>
         <field name="state">code</field>
         <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 20:00:00')"/>
     </record>

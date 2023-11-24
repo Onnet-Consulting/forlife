@@ -4,14 +4,13 @@ from odoo import api, fields, models, _
 from datetime import timedelta
 
 
-class SyncPickingNotPostBkav(models.AbstractModel):
-    _name = 'picking.not.post.bkav'
+class SyncPickingReturnNotPostBkav(models.AbstractModel):
+    _name = 'picking.return.not.post.bkav'
     _inherit = 'bravo.model.insert.action'
-    _description = 'B30AccDocExportSales'
-    _bravo_table = 'B30AccDocExportSales'
+    _bravo_table = 'B30AccDocSalesReturn'
 
     @api.model
-    def sync_picking_not_post_bkav(self, picking_sale, picking_pos):
+    def sync_picking_return_not_post_bkav(self, picking_sale, picking_pos):
         values = []
         sale_values = {}
         pos_values = {}
@@ -19,7 +18,7 @@ class SyncPickingNotPostBkav(models.AbstractModel):
         for picking in picking_sale:
             date_done = (picking.date_done + timedelta(hours=7)).strftime('%Y-%m-%d')
             for stock_move in picking.move_ids:
-                key = f"XBO{stock_move.location_id.warehouse_id.code}{date_done[2:4]}_{date_done}"
+                key = f"TLO{stock_move.location_dest_id.warehouse_id.code}{date_done[2:4]}_{date_done}"
                 value = sale_values.get(key) or stock_move
                 value |= stock_move
                 sale_values.update({key: value})
@@ -27,7 +26,7 @@ class SyncPickingNotPostBkav(models.AbstractModel):
         for picking in picking_pos:
             date_done = (picking.date_done + timedelta(hours=7)).strftime('%Y-%m-%d')
             for stock_move in picking.move_ids:
-                key = f"XBP{stock_move.location_id.warehouse_id.code}{date_done[2:4]}_{date_done}"
+                key = f"TLP{stock_move.location_dest_id.warehouse_id.code}{date_done[2:4]}_{date_done}"
                 value = pos_values.get(key) or stock_move
                 value |= stock_move
                 pos_values.update({key: value})
@@ -38,7 +37,7 @@ class SyncPickingNotPostBkav(models.AbstractModel):
             sequence_stt = self.env['ir.sequence'].search([('code', '=', sequence_key)], limit=1)
             if not sequence_stt:
                 vals = {
-                    'name': 'Gom phiếu xuất bán hàng SO nhanh: ' + sequence_key,
+                    'name': 'Gom phiếu trả hàng SO nhanh: ' + sequence_key,
                     'code': sequence_key,
                     'company_id': None,
                     'prefix': sequence_key,
@@ -62,7 +61,6 @@ class SyncPickingNotPostBkav(models.AbstractModel):
                         date=split_key[1],
                         partner=(partner and partner[0]),
                         idx=idx,
-                        debit_account=product.with_company(self.env.company).categ_id.expense_online_account_id.code,
                         dept_code=partner.property_account_cost_center_id.code
                     ))
                 product_ids = product_ids - _product_ids
@@ -73,7 +71,7 @@ class SyncPickingNotPostBkav(models.AbstractModel):
             sequence_stt = self.env['ir.sequence'].search([('code', '=', sequence_key)], limit=1)
             if not sequence_stt:
                 vals = {
-                    'name': 'Gom phiếu xuất bán hàng POS: ' + sequence_key,
+                    'name': 'Gom phiếu trả hàng POS: ' + sequence_key,
                     'code': sequence_key,
                     'company_id': None,
                     'prefix': sequence_key,
@@ -98,7 +96,6 @@ class SyncPickingNotPostBkav(models.AbstractModel):
                         date=split_key[1],
                         partner=(partner and partner[0]),
                         idx=idx,
-                        debit_account=product.with_company(self.env.company).categ_id.property_account_expense_categ_id.code,
                         dept_code=(store_id and store_id[0].analytic_account_id.code)
                     ))
                 product_ids = product_ids - _product_ids
@@ -106,7 +103,7 @@ class SyncPickingNotPostBkav(models.AbstractModel):
         if values:
             insert_queries = self.bravo_get_insert_sql(data=values)
             if insert_queries:
-                self.sudo().with_delay(description=f"Bravo: đồng bộ phiếu xuất bán POS/SO nhanh tổng hợp", channel="root.Bravo").bravo_execute_query(insert_queries)
+                self.sudo().with_delay(description=f"Bravo: đồng bộ phiếu nhập trả lại POS/SO nhanh tổng hợp", channel="root.Bravo").bravo_execute_query(insert_queries)
 
     @api.model
     def get_value(self, move_free_good, move_not_free_good, **kwargs):
@@ -115,19 +112,22 @@ class SyncPickingNotPostBkav(models.AbstractModel):
             if not stock_move:
                 continue
             account_move = stock_move.account_move_ids
+            credit_lines = account_move.line_ids.filtered(lambda l: l.credit > 0)
             debit_lines = account_move.line_ids.filtered(lambda l: l.debit > 0)
             partner = kwargs.get('partner')
             company = stock_move.company_id and stock_move.company_id[0]
-            warehouse_id = stock_move.location_id.warehouse_id and stock_move.location_id.warehouse_id[0]
+            warehouse_id = stock_move.location_dest_id.warehouse_id and stock_move.location_dest_id.warehouse_id[0]
             date = kwargs.get('date')
             stt_key = kwargs.get('stt_key') or None
             t_move = stock_move[0]
             qty_total = sum(stock_move.mapped('quantity_done'))
             amount_total = sum(debit_lines.mapped('debit'))
+            credit_account = credit_lines.account_id and credit_lines.account_id[0].code or t_move.product_id.categ_id.with_company(self.env.company).property_stock_account_output_categ_id.code
+            debit_account = debit_lines.account_id and debit_lines.account_id[0].code or t_move.product_id.categ_id.with_company(self.env.company).property_stock_valuation_account_id.code
             res.append({
                 "CompanyCode": company.code or None,
                 "Stt": stt_key,
-                "DocCode": "PB",
+                "DocCode": "TL",
                 "DocNo": stt_key,
                 "DocDate": date or None,
                 "CurrencyCode": company.currency_id.name or None,
@@ -135,16 +135,17 @@ class SyncPickingNotPostBkav(models.AbstractModel):
                 "CustomerCode": partner.ref or None,
                 "CustomerName": partner.name or None,
                 "Address": partner.contact_address_complete or None,
-                "Description": f"Xuất kho bán hàng {warehouse_id.name} ngày {(t_move.date + timedelta(hours=7)).strftime('%d/%m/%Y')}",
+                "TaxRegNo": partner.vat or None,
+                "Description": f"Nhập kho hàng bán trả lại {warehouse_id.name} ngày {(t_move.date + timedelta(hours=7)).strftime('%d/%m/%Y')}",
                 "EmployeeCode": None,
                 "IsTransfer": 0,
                 "PushDate": date or None,
                 "BuiltinOrder": kwargs.get('idx'),
-                "DebitAccount": kwargs.get('debit_account') or None,
+                "DebitAccount": debit_account or None,
                 'ItemCode': t_move.product_id.barcode or None,
                 'ItemName': t_move.product_id.name or None,
                 'UnitPurCode': t_move.product_uom.code or None,
-                "CreditAccount": t_move.product_id.categ_id.with_company(self.env.company).property_stock_valuation_account_id.code or None,
+                "CreditAccount": credit_account or None,
                 'Quantity9': qty_total,
                 'ConvertRate9': 1,
                 'Quantity': qty_total,
@@ -163,7 +164,7 @@ class SyncPickingNotPostBkav(models.AbstractModel):
 
     @api.model
     def bravo_get_insert_values(self, **kwargs):
-        column_names = self.env['stock.picking'].bravo_get_picking_order_bkav_columns() + ['PushDate', 'Stock_picking_id']
+        column_names = self.env['stock.picking'].bravo_get_picking_order_return_columns() + ['PushDate', 'Stock_picking_id']
         values = kwargs.get('data')
         return column_names, values
 
