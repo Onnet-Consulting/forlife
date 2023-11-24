@@ -8,8 +8,7 @@
             <field name="arch" type="xml">
                 <tree string="document_workflow_tree">
                     <field name="code"/>
-                    <field name="business_group_id"/>
-                    <field name="document_id"/>
+                    <field name="type_workflow"/>
                     <field name="from_date"/>
                     <field name="to_date"/>
                     <field name="active"/>
@@ -25,23 +24,26 @@
                 <form string="document_workflow_form">
                     <div class="padding-form-custom">
                         <group>
-                            <field name="code"/>
-                            <field name="business_group_id" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="document_id" options="{'no_create': True, 'no_open': True}"/>
-                            <field name="document_domain" widget="domain" options="{'in_dialog': True, 'model': 'model_name'}"/>
-                            <field name="from_date"/>
-                            <field name="to_date"/>
-                            <field name="active"/>
-                            <field name="allow_recall"/>
+                            <group>
+                                <field name="code"/>
+                                <label for="from_date" string="Thời gian hiệu lực"/>
+                                <div>từ ngày
+                                    <field name="from_date" class="oe_inline"/>
+                                    đến ngày
+                                    <field name="to_date" class="oe_inline"/>
+                                </div>
+                                <field name="active"/>
+                                <field name="allow_recall"/>
+                            </group>
+                            <group>
+                                <field name="type_workflow"/>
+                                <field name="business_group_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': [('type_workflow', '=', 'bg')], 'invisible': [('type_workflow', '!=', 'bg')]}"/>
+                                <field name="document_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': [('type_workflow', '=', 'd')], 'invisible': [('type_workflow', '!=', 'd')]}"/>
+                                <field name="document_domain" widget="domain" options="{'in_dialog': True, 'model': 'model_name'}" attrs="{'invisible': [('type_workflow', '!=', 'd')]}"/>
+                            </group>
                         </group>
-                        <notebook>
-                            <page name="detail" string="Chi tiết phê duyệt">
-                                <field name="detail_ids"/>
-                            </page>
-                            <page name="authorization" string="Luồng ủy quyền">
-                                <field name="authorization_ids"/>
-                            </page>
-                        </notebook>
+                        <separator string="Chi tiết phê duyệt"/>
+                        <field name="detail_ids"/>
                     </div>
                     <field name="model_name" invisible="1"/>
                 </form>

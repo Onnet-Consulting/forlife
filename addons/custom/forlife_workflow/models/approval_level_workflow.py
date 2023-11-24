@@ -12,5 +12,8 @@ class ApprovalLevelWorkflow(models.Model):
         ('unique_name', 'unique (name)', 'Cấp phê duyệt đã tồn tại, vui lòng chọn lại !'),
     ]
 
-    def get_approval_level(self):
-        return [(r.name, r.name) for r in self.env['approval.level.workflow'].search([])]
+    def name_get(self):
+        res = []
+        for record in self:
+            res.append((record.id, f'Cấp {record.name}'))
+        return res
